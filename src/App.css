@@ -1,38 +1,221 @@
-.App {
-  text-align: center;
+* {
+    box-sizing: border-box;
 }
 
-.App-logo {
-  height: 40vmin;
-  pointer-events: none;
+body {
+    font-family: "Montserrat", sans-serif;
+    height: 100vh;
+    margin: 0 auto;
+    font-size: 16px;
 }
 
-@media (prefers-reduced-motion: no-preference) {
-  .App-logo {
-    animation: App-logo-spin infinite 20s linear;
-  }
+input {
+    height: 40px;
+    border-radius: 4px;
+    padding: 0 6px;
+    font-size: 16px;
+    border: 1px solid rgb(169, 169, 169);
+    width: 100%;
 }
 
-.App-header {
-  background-color: #282c34;
-  min-height: 100vh;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  font-size: calc(10px + 2vmin);
-  color: white;
+select {
+    height: 40px;
+    width: 130px;
+    background: transparent;
+    border-radius: 4px;
+    font-size: 16px;
+    padding: 0 2px;
 }
 
-.App-link {
-  color: #61dafb;
+.container {
+    display: flex;
+
+    flex-direction: column;
+
+    height: 100%;
 }
 
-@keyframes App-logo-spin {
-  from {
-    transform: rotate(0deg);
-  }
-  to {
-    transform: rotate(360deg);
-  }
+.header {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    height: 50px;
+    font-weight: 700;
+    border-bottom: 1px solid black;
+    font-size: 20px;
+    text-transform: uppercase;
+    flex-shrink: 0;
+}
+
+.content {
+    max-width: 400px;
+    margin: 0 auto;
+
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    flex-grow: 1;
+}
+
+.balance-block {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    margin: 24px 16px;
+    height: 150px;
+    background: rgb(105, 226, 212);
+    color: #fff;
+    border-radius: 8px;
+    padding: 16px;
+}
+
+.balance-row {
+    display: flex;
+    justify-content: space-between;
+}
+
+.balance-label {
+    font-size: 20px;
+    font-weight: 600;
+}
+
+.balance-date {
+    font-size: 14px;
+}
+
+.add-button {
+    background: transparent;
+    border: 2px solid #fff;
+    border-radius: 8px;
+    color: #fff;
+    font-size: 18px;
+    cursor: pointer;
+    padding: 0px 12px;
+    height: 40px;
+}
+
+.balance-amount {
+    font-size: 60px;
+    font-weight: 700;
+    line-height: 60px;
+}
+
+.transaction-block {
+    display: flex;
+    flex-direction: column;
+    margin: 0px 16px;
+    border-radius: 8px;
+    border: 1px solid black;
+    padding: 16px 0 16px 16px;
+    position: relative;
+}
+
+.close-button {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    cursor: pointer;
+    z-index: 1;
+}
+
+.close-icon {
+    width: 22px;
+    height: 22px;
+}
+
+.row {
+    display: flex;
+    justify-content: space-between;
+    border-radius: 8px;
+    padding: 16px 0px;
+}
+
+.text {
+    opacity: 0.9;
+    font-weight: 600;
+    margin-bottom: 6px;
+}
+
+.confirmation-button {
+    background: rgb(105, 226, 212);
+    border: none;
+    border-radius: 8px;
+    color: #fff;
+    font-size: 18px;
+    cursor: pointer;
+    padding: 0px 12px;
+    height: 40px;
+    width: 80px;
+    cursor: pointer;
+    margin-left: auto;
+    margin-right: 16px;
+}
+
+.transaction-field {
+    flex-grow: 1;
+    margin-right: 16px;
+}
+
+/* .hidden {
+  display: none;
+} */
+
+.history-item {
+    margin: 24px 0px;
+    border-radius: 8px;
+    border: 1px solid black;
+    padding: 16px;
+}
+
+.history-item-row {
+    display: flex;
+    width: 100%;
+    justify-content: space-between;
+}
+
+.history-text {
+    opacity: 0.9;
+}
+
+.history-amount {
+    font-weight: 700;
+}
+
+.history-amount.positive {
+    color: #62C21D;
+}
+
+.history-amount.negative {
+    color: red;
+}
+
+.balance-amount.positive {
+  color: #fff;
+}
+
+.bbalance-amount.negative {
+  color: red;
+}
+
+.history {
+    margin: 24px 16px;
+}
+
+.history-title {
+    font-weight: 600;
+}
+
+.history-header {
+    display: flex;
+    height: 20px;
+}
+
+.arrow-icon {
+    width: 24px;
+    cursor: pointer;
+}
+
+.close {
+    transform: rotate(-180deg);
 }
