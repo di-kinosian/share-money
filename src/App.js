@@ -1,18 +1,24 @@
 import closeIcon from "./assets/img/close-icon.svg";
-
+import moment from "moment";
 import { v4 as uuid } from "uuid";
 import "./App.css";
+import { DateInput, TimeInput } from "semantic-ui-calendar-react";
 import { useEffect, useState } from "react";
 import AuthModals from "./components/AuthModals";
 import { addTransaction, fetchBalance } from "./modules/core/duck";
 import { Provider, useDispatch, useSelector } from "react-redux";
 import store from "./config/store";
 import History from "./History";
-import { getBalance, getHistory } from "./modules/core/selectors";
+import { getHistory } from "./modules/core/selectors";
 import "semantic-ui-css/semantic.min.css";
-import { formatDateForDatepicker, formatMoney } from "./helpers/format";
+import { formatMoney } from "./helpers/format";
 import { getConnatationForNumber } from "./helpers/format";
 import BalanceCard from "./BalanceCard";
+import burgerIcon from "./assets/img/burger-icon.svg";
+import { Icon } from "semantic-ui-react";
+
+const DATE_FORMAT = "DD-MMMM-YYYY";
+const TIME_FORMAT = "HH:mm";
 
 const users = [
     { name: "Sasha", id: "1765567" },
@@ -27,7 +33,6 @@ const getBalanceFromHistory = (history) => {
 };
 
 function App() {
-    console.log(getConnatationForNumber(0), "hi");
     const dispatch = useDispatch();
 
     const history = useSelector(getHistory);
@@ -40,7 +45,9 @@ function App() {
     const [titleState, setTitleState] = useState("");
     const [amountState, setAmountState] = useState("0.00");
     const [payerState, setPayerState] = useState(users[0]);
-    const [dateState, setDateState] = useState(new Date().valueOf());
+    const [dateState, setDateState] = useState(moment().format(DATE_FORMAT));
+    const [timeState, setTimeState] = useState(moment().format(TIME_FORMAT));
+    const [isMenuVisible, setIsMenuVisible] = useState(false);
 
     const [isAddTransactionVisible, setIsAddTransactionVisible] = useState(
         false
@@ -60,23 +67,26 @@ function App() {
     };
 
     const confirmationButtonClick = () => {
-        // let amountValue = +amountState;
-        // if (payerState.name === "Sasha") {
-        //     amountValue = amountValue * 1;
-        // } else {
-        //     amountValue = amountValue * -1;
-        // }
-        // const historyObject = {
-        //     id: uuid(),
-        //     dateTime: dateState,
-        //     title: titleState,
-        //     amount: amountValue,
-        //     balance: balance + amountValue,
-        //     payer: payerState,
-        // };
-        // dispatch(addTransaction(historyObject));
-        // setTitleState("");
-        // setAmountState("0.00");
+        let amountValue = +amountState;
+        if (payerState.name === "Sasha") {
+            amountValue = amountValue * 1;
+        } else {
+            amountValue = amountValue * -1;
+        }
+        const historyObject = {
+            id: uuid(),
+            dateTime: moment(
+                dateState + " " + timeState,
+                DATE_FORMAT + " " + TIME_FORMAT
+            ).format(),
+            title: titleState,
+            amount: amountValue,
+            balance: balance + amountValue,
+            payer: payerState,
+        };
+        dispatch(addTransaction(historyObject));
+        setTitleState("");
+        setAmountState("0.00");
     };
 
     const openAddBlock = () => {
@@ -95,7 +105,21 @@ function App() {
         setAmountState(Number(amountState).toFixed(2));
     };
 
-    console.log(payerState);
+    const openMenu = () => {
+        setIsMenuVisible(true);
+    };
+
+    const closeMenu = () => {
+        setIsMenuVisible(false);
+    };
+
+    const handleDateChange = (event, data) => {
+        setDateState(data.value);
+    };
+
+    const handleTimeChange = (event, data) => {
+        setTimeState(data.value);
+    };
 
     return (
         <div className="container">
@@ -107,6 +131,22 @@ function App() {
                         dispatch(toggleLoginModal(true));
                     }}
                 /> */}
+                <img
+                    src={burgerIcon}
+                    className="burger-icon"
+                    onClick={openMenu}
+                />
+                {isMenuVisible && (
+                    <div className="menu-overlay">
+                        <div className="menu">
+                            <img
+                                src={closeIcon}
+                                className="close-menu-icon"
+                                onClick={closeMenu}
+                            />
+                        </div>
+                    </div>
+                )}
             </div>
             <div className="content">
                 <BalanceCard balance={balance} onAddClick={openAddBlock} />
@@ -157,29 +197,44 @@ function App() {
                         <div className="row">
                             <div className="transaction-field">
                                 <div className="text">Date</div>
-                                <input
-                                    type="date"
-                                    name="calendar"
-                                    value={formatDateForDatepicker(dateState)}
-                                    onChange={(e) =>
-                                        setDateState(
-                                            new Date(e.target.value).valueOf()
-                                        )
+                                <DateInput
+                                    placeholder="Date"
+                                    popupPosition="bottom right"
+                                    className="example-calendar-input"
+                                    name="date"
+                                    closable
+                                    clearIcon={
+                                        <Icon name="remove" color="red" />
                                     }
+                                    dateFormat={DATE_FORMAT}
+                                    animation="scale"
+                                    duration={200}
+                                    hideMobileKeyboard
+                                    value={dateState}
+                                    iconPosition="left"
+                                    preserveViewMode={false}
+                                    autoComplete="off"
+                                    onChange={handleDateChange}
                                 />
                             </div>
-                            {/* <div className="transaction-field">
+                            <div className="transaction-field">
                                 <div className="text">Time</div>
-                                <input
-                                    type="time"
-                                    value={formatDate(dateState)}
-                                    onChange={(e) =>
-                                        setDateState(
-                                            new Date(e.target.value).valueOf()
-                                        )
-                                    }
+                                <TimeInput
+                                    placeholder="Time"
+                                    popupPosition="bottom right"
+                                    className="example-calendar-input"
+                                    name="time"
+                                    animation="horizontal flip"
+                                    duration={300}
+                                    closable
+                                    autoComplete="off"
+                                    hideMobileKeyboard
+                                    value={timeState}
+                                    iconPosition="left"
+                                    onChange={handleTimeChange}
+                                    dateFormat={TIME_FORMAT}
                                 />
-                            </div> */}
+                            </div>
                         </div>
                         <button
                             className="confirmation-button"

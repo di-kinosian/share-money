@@ -46,6 +46,7 @@ select {
     font-size: 20px;
     text-transform: uppercase;
     flex-shrink: 0;
+    position: relative;
 }
 
 .content {
@@ -218,4 +219,36 @@ select {
 
 .close {
     transform: rotate(-180deg);
+}
+
+.burger-icon {
+  width: 24px;
+  height: 24px;
+  position: absolute;
+  top: 14px;
+  left: 20px;
+}
+
+.menu-overlay {
+  position: fixed;
+  top: 0px;
+  left: 0px;
+  width: 100vw;
+  height: 100vh;
+  background: rgba(0, 0, 0, 0.5);
+}
+
+.menu {
+  width: 300px;
+  height: 100%;
+  background: rgb(255, 255, 255);
+  border-right: 1px solid black;
+}  
+
+.close-menu-icon{
+  position: absolute;
+  top: 10px;
+  left: 260px;
+  width: 24px;
+  height: 24px;
 }

@@ -1,4 +1,5 @@
 import arrowIcon from "./assets/img/arrow-icon.svg";
+import moment from "moment";
 import "./App.css";
 import { useEffect, useState } from "react";
 import { fetchHistory } from "./modules/core/duck";
@@ -44,7 +45,9 @@ function History(props) {
                     {props.history.map((historyItem) => (
                         <div className="history-item" key={historyItem.id}>
                             <div className="history-item-row">
-                                {formatDateTime(new Date(historyItem.dateTime))}
+                                {formatDateTime(
+                                    moment(historyItem.dateTime).toDate()
+                                )}
                             </div>
                             <div className="history-item-row">
                                 <div className="history-text">
