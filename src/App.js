@@ -4,7 +4,6 @@ import { v4 as uuid } from "uuid";
 import "./App.css";
 import { DateInput, TimeInput } from "semantic-ui-calendar-react";
 import { useEffect, useState } from "react";
-import AuthModals from "./components/AuthModals";
 import { addTransaction, fetchBalance } from "./modules/core/duck";
 import { Provider, useDispatch, useSelector } from "react-redux";
 import store from "./config/store";
@@ -12,10 +11,10 @@ import History from "./History";
 import { getHistory } from "./modules/core/selectors";
 import "semantic-ui-css/semantic.min.css";
 import { formatMoney } from "./helpers/format";
-import { getConnatationForNumber } from "./helpers/format";
 import BalanceCard from "./BalanceCard";
-import burgerIcon from "./assets/img/burger-icon.svg";
 import { Icon } from "semantic-ui-react";
+import HeaderProvider from "./providers/HeaderProvider";
+import Field from "./components/Field";
 
 const DATE_FORMAT = "DD-MMMM-YYYY";
 const TIME_FORMAT = "HH:mm";
@@ -47,7 +46,6 @@ function App() {
     const [payerState, setPayerState] = useState(users[0]);
     const [dateState, setDateState] = useState(moment().format(DATE_FORMAT));
     const [timeState, setTimeState] = useState(moment().format(TIME_FORMAT));
-    const [isMenuVisible, setIsMenuVisible] = useState(false);
 
     const [isAddTransactionVisible, setIsAddTransactionVisible] = useState(
         false
@@ -105,14 +103,6 @@ function App() {
         setAmountState(Number(amountState).toFixed(2));
     };
 
-    const openMenu = () => {
-        setIsMenuVisible(true);
-    };
-
-    const closeMenu = () => {
-        setIsMenuVisible(false);
-    };
-
     const handleDateChange = (event, data) => {
         setDateState(data.value);
     };
@@ -122,32 +112,7 @@ function App() {
     };
 
     return (
-        <div className="container">
-            <AuthModals />
-            <div className="header">
-                Share money{" "}
-                {/* <button
-                    onClick={() => {
-                        dispatch(toggleLoginModal(true));
-                    }}
-                /> */}
-                <img
-                    src={burgerIcon}
-                    className="burger-icon"
-                    onClick={openMenu}
-                />
-                {isMenuVisible && (
-                    <div className="menu-overlay">
-                        <div className="menu">
-                            <img
-                                src={closeIcon}
-                                className="close-menu-icon"
-                                onClick={closeMenu}
-                            />
-                        </div>
-                    </div>
-                )}
-            </div>
+        <HeaderProvider>
             <div className="content">
                 <BalanceCard balance={balance} onAddClick={openAddBlock} />
                 {isAddTransactionVisible && (
@@ -160,17 +125,17 @@ function App() {
                             />
                         </div>
                         <div className="transaction-field">
-                            <div className="text">Title</div>
-                            <input
-                                value={titleState}
-                                onChange={handleTitleChange}
-                                id="title-input"
-                                placeholder="Enter title"
-                            />
+                            <Field label={"Title"}>
+                                <input
+                                    value={titleState}
+                                    onChange={handleTitleChange}
+                                    id="title-input"
+                                    placeholder="Enter title"
+                                />
+                            </Field>
                         </div>
                         <div className="row">
-                            <div className="transaction-field">
-                                <div className="text">Amount</div>
+                            <Field label={"Amount"}>
                                 <input
                                     value={amountState}
                                     onChange={onAmountChange}
@@ -181,22 +146,19 @@ function App() {
                                     id="amount-input"
                                     className="amount-input"
                                 />
-                            </div>
-                            <div className="transaction-field">
-                                <div className="text">Payer</div>
+                            </Field>
+                            <Field label={"Payer"}>
                                 <select
                                     className="payer-select"
                                     value={payerState.name}
                                     onChange={handlePayerChange}
                                 >
-                                    <option>Sasha</option>
-                                    <option>Andrey</option>
+                                    {users.map((item) => <option>{item.name}</option>)}
                                 </select>
-                            </div>
+                            </Field>
                         </div>
                         <div className="row">
-                            <div className="transaction-field">
-                                <div className="text">Date</div>
+                            <Field label={"Date"}>
                                 <DateInput
                                     placeholder="Date"
                                     popupPosition="bottom right"
@@ -216,9 +178,9 @@ function App() {
                                     autoComplete="off"
                                     onChange={handleDateChange}
                                 />
-                            </div>
-                            <div className="transaction-field">
-                                <div className="text">Time</div>
+                            </Field>
+
+                            <Field label={"Time"}>
                                 <TimeInput
                                     placeholder="Time"
                                     popupPosition="bottom right"
@@ -234,7 +196,7 @@ function App() {
                                     onChange={handleTimeChange}
                                     dateFormat={TIME_FORMAT}
                                 />
-                            </div>
+                            </Field>
                         </div>
                         <button
                             className="confirmation-button"
@@ -246,7 +208,7 @@ function App() {
                 )}
                 <History />
             </div>
-        </div>
+        </HeaderProvider>
     );
 }
 
