@@ -1,15 +1,14 @@
-import arrowIcon from "./assets/img/arrow-icon.svg";
+import arrowIcon from "../../assets/img/arrow-icon.svg";
 import moment from "moment";
-import "./App.css";
 import { useEffect, useState } from "react";
-import { fetchHistory } from "./modules/core/duck";
+import { fetchHistory } from "../../modules/core/duck";
 import { connect } from "react-redux";
 import {
     formatMoney,
     getConnatationForNumber,
     formatDateTime,
-} from "./helpers/format";
-import { SortDirection, sorterBy } from "./helpers/data";
+} from "../../helpers/format";
+import { SortDirection, sorterBy } from "../../helpers/data";
 
 function History(props) {
     useEffect(() => {

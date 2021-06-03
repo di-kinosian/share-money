@@ -1,4 +1,5 @@
 import closeIcon from "../../assets/img/close-icon.svg";
+import logo from "../../assets/img/logo.png";
 import "../../App.css";
 import { useState } from "react";
 
@@ -26,6 +27,7 @@ function HeaderProvider(props) {
                 vertical
                 visible={isMenuVisible}
                 width="wide"
+                direction="right"
             >
                 <div className="menu">
                     <img
@@ -37,6 +39,7 @@ function HeaderProvider(props) {
                 </div>
             </Sidebar>
             <Sidebar.Pusher dimmed={isMenuVisible}>
+                <img alt="" src={logo} className="logo-icon"  />
                 <div className="header">
                     Share money{" "}
                     {/* <button
