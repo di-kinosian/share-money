@@ -1,14 +1,15 @@
-import arrowIcon from "../../assets/img/arrow-icon.svg";
-import moment from "moment";
-import { useEffect, useState } from "react";
-import { fetchHistory } from "../../modules/core/duck";
-import { connect } from "react-redux";
+import arrowIcon from '../../assets/img/arrow-icon.svg';
+import moment from 'moment';
+import { useEffect, useState } from 'react';
+import { fetchHistory } from '../../modules/core/duck';
+import { connect } from 'react-redux';
 import {
     formatMoney,
     getConnatationForNumber,
     formatDateTime,
-} from "../../helpers/format";
-import { SortDirection, sorterBy } from "../../helpers/data";
+} from '../../helpers/format';
+import { SortDirection, sorterBy } from '../../helpers/data';
+import { HistoryItem } from './HistoryItem';
 
 function History(props) {
     useEffect(() => {
@@ -33,8 +34,8 @@ function History(props) {
                     onClick={toggleHistory}
                     style={{
                         transform: isHistoryVisible
-                            ? "rotate(-90deg)"
-                            : "rotate(180deg)",
+                            ? 'rotate(-90deg)'
+                            : 'rotate(180deg)',
                     }}
                 />
                 <div className="history-title">History</div>
@@ -42,25 +43,7 @@ function History(props) {
             {isHistoryVisible && (
                 <div className="history-content">
                     {props.history.map((historyItem) => (
-                        <div className="history-item" key={historyItem.id}>
-                            <div className="history-item-row">
-                                {formatDateTime(
-                                    moment(historyItem.dateTime).toDate()
-                                )}
-                            </div>
-                            <div className="history-item-row">
-                                <div className="history-text">
-                                    {historyItem.title}
-                                </div>
-                                <div
-                                    className={`history-amount ${getConnatationForNumber(
-                                        historyItem.amount
-                                    )}`}
-                                >
-                                    {formatMoney(historyItem.amount)}
-                                </div>
-                            </div>
-                        </div>
+                        <HistoryItem historyItem={historyItem}/>
                     ))}
                 </div>
             )}
@@ -71,7 +54,7 @@ function History(props) {
 const connector = connect(
     (state) => ({
         history: state.core.history.sort(
-            sorterBy(SortDirection.DESC, "dateTime")
+            sorterBy(SortDirection.DESC, 'dateTime')
         ),
     }),
     {

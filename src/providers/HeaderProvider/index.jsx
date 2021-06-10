@@ -4,7 +4,7 @@ import "../../App.css";
 import { useState } from "react";
 
 import burgerIcon from "../../assets/img/burger-icon.svg";
-import { Sidebar } from "semantic-ui-react";
+import { Icon, Sidebar } from "semantic-ui-react";
 
 function HeaderProvider(props) {
     const [isMenuVisible, setIsMenuVisible] = useState(false);
@@ -36,10 +36,18 @@ function HeaderProvider(props) {
                         onClick={closeMenu}
                         alt=""
                     />
+                    <div className="menu-row">
+                        <Icon name="user circle" className="menu-icon" />
+                        <div className="menu-text">Account</div>
+                    </div>
+                    <div className="menu-row">
+                        <Icon name="log out" className="menu-icon"></Icon>
+                        <div className="menu-text">Log out</div>
+                    </div>
                 </div>
             </Sidebar>
             <Sidebar.Pusher dimmed={isMenuVisible}>
-                <img alt="" src={logo} className="logo-icon"  />
+                <img alt="" src={logo} className="logo-icon" />
                 <div className="header">
                     Share money{" "}
                     {/* <button
