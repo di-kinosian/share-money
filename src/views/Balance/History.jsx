@@ -1,15 +1,9 @@
 import arrowIcon from '../../assets/img/arrow-icon.svg';
-import moment from 'moment';
 import { useEffect, useState } from 'react';
 import { fetchHistory } from '../../modules/core/duck';
 import { connect } from 'react-redux';
-import {
-    formatMoney,
-    getConnatationForNumber,
-    formatDateTime,
-} from '../../helpers/format';
 import { SortDirection, sorterBy } from '../../helpers/data';
-import { HistoryItem } from './HistoryItem';
+import HistoryItem from './HistoryItem';
 
 function History(props) {
     useEffect(() => {
@@ -43,7 +37,12 @@ function History(props) {
             {isHistoryVisible && (
                 <div className="history-content">
                     {props.history.map((historyItem) => (
-                        <HistoryItem historyItem={historyItem}/>
+                        <HistoryItem
+                            title={historyItem.title}
+                            amount={historyItem.amount}
+                            date={historyItem.dateTime}
+                            key={historyItem.id}
+                        />
                     ))}
                 </div>
             )}

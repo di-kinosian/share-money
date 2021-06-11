@@ -7,7 +7,7 @@ import store from "./config/store";
 import Root from "./views/Root";
 import Balance from "./views/Balance";
 
-function App(props) {
+function App() {
     return (
         <Provider store={store}>
             <Router history={history}>
@@ -23,11 +23,6 @@ function App(props) {
                 </HeaderProvider>
             </Router>
         </Provider>
-
-        // <div className="transaction-field">
-        //     <div className="text">{props.label}</div>
-        //     {props.children}
-        // </div>
     );
 }
 

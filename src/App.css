@@ -182,7 +182,7 @@ select {
 .history-item-row {
     display: flex;
     width: 100%;
-    justify-content: space-between;
+      
 }
 
 .history-text {
@@ -191,6 +191,7 @@ select {
 
 .history-amount {
     font-weight: 700;
+    margin-left: auto;
 }
 
 .history-amount.positive {
@@ -309,3 +310,43 @@ select {
     padding-left: 10px;
     }
 
+.user-row {
+    display: flex;
+    flex-direction: column;
+
+}
+
+.user-block {
+    display: flex;
+    
+}
+/* .User {
+    justify-content: space-between;
+} */
+
+.user-input {
+    height: 40px;
+    border-radius: 4px;
+    padding: 0 6px;
+    font-size: 16px;
+    border: 1px solid rgb(169, 169, 169);
+    width: 100px;
+    margin-left: 30px;
+
+}
+
+.User {
+    margin: 10px 0 5px 0;
+    font-family:'Helvetica Neue',Arial,Helvetica,sans-serif;
+    font-size: 14px;
+    line-height: 1.4285em;
+    font-weight: 600;
+}
+
+.delete-icon {
+    width: 20px;
+    height: 20px;
+    margin-left: 8px;
+    position: relative;
+    bottom: 4px;
+}

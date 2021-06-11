@@ -4,24 +4,26 @@ import {
     getConnatationForNumber,
     formatDateTime,
 } from '../../helpers/format';
+import deleteIcon from '../../assets/img/delete-icon.svg';
 
 function HistoryItem(props) {
     //    const [isHistoryItem, setIsHistoryItemVisible] = useState()
 
     return (
-        <div className="history-item" key={props.historyItem.id}>
+        <div className="history-item" key={props.id}>
             <div className="history-item-row">
-                {formatDateTime(moment(props.historyItem.dateTime).toDate())}
+                {formatDateTime(moment(props.dateTime).toDate())}
             </div>
             <div className="history-item-row">
-                <div className="history-text">{props.historyItem.title}</div>
+                <div className="history-text">{props.title}</div>
                 <div
                     className={`history-amount ${getConnatationForNumber(
-                        props.historyItem.amount
+                        props.amount
                     )}`}
                 >
-                    {formatMoney(props.historyItem.amount)}
+                    {formatMoney(props.amount)}
                 </div>
+                <img alt="" src={deleteIcon} className="delete-icon" />
             </div>
         </div>
     );

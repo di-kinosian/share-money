@@ -11,8 +11,8 @@ import "semantic-ui-css/semantic.min.css";
 import { formatMoney } from "../../helpers/format";
 import BalanceCard from "./BalanceCard";
 import { Icon } from "semantic-ui-react";
-import HeaderProvider from "../../providers/HeaderProvider";
 import Field from "../../components/Field";
+// import TransactionBlock from './TransactionBlock';
 
 const DATE_FORMAT = "DD-MMMM-YYYY";
 const TIME_FORMAT = "HH:mm";
@@ -198,6 +198,7 @@ function Balance() {
                 </div>
             )}
             <History />
+            {/* <TransactionBlock /> */}
         </div>
     );
 }
