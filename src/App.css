@@ -242,11 +242,14 @@ select {
 }
 
 .logo-icon {
+    width: 30px;
+    height: 30px;
+}
+
+.logo {
     position: absolute;
     top: 10px;
     left: 12px;
-    width: 30px;
-    height: 30px;
 }
 
 .menu-overlay {
@@ -349,4 +352,74 @@ select {
     margin-left: 8px;
     position: relative;
     bottom: 4px;
+}
+
+.container-profile{
+max-width: 400px;
+margin: 0 auto;
+display: flex;
+flex-direction: column;
+width: 100%;
+flex-grow: 1;
+overflow: auto;
+}
+
+.profile {
+    display: flex;
+    flex-direction: column;
+    margin: 30px 16px;
+    border-radius: 8px;
+    padding: 16px;
+    position: relative;
+    box-shadow: 1px 1px 9px rgb(34 60 80 / 40%);
+}
+
+#input-name, #input-email {
+    height: 40px;
+    width: 100%;
+    border-radius: 4px;
+    font-size: 16px;
+    border: 1px solid rgb(169, 169, 169);
+    margin: 0px 0 16px 0;
+   box-sizing: border-box;
+}
+
+.save-button {
+    background: rgb(105, 226, 212);
+    border: none;
+    border-radius: 8px;
+    color: #fff;
+    font-size: 18px;
+    cursor: pointer;
+    height: 40px;
+    width: 80px;
+    cursor: pointer;
+    margin-left: auto;
+}
+
+.container-home-page {
+    padding: 16px;
+}
+
+.home-page {
+    width: fit-content;
+    margin: 0 auto;
+    font-weight: 800;
+    border-bottom: 1px solid gray;
+    font-size: 19px;
+}
+
+.partners {
+    margin: 16px 0;
+    padding: 8px;
+    display: flex;
+    height: 60px;
+    align-items: center;
+    justify-content: space-between;
+    border-radius: 8px;
+    box-shadow: 1px 1px 9px rgb(34 60 80 / 40%);
+}
+
+.name-partners {
+    font-weight: 600;
 }

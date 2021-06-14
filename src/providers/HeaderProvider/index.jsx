@@ -5,6 +5,8 @@ import { useState } from "react";
 
 import burgerIcon from "../../assets/img/burger-icon.svg";
 import { Icon, Sidebar } from "semantic-ui-react";
+import { Link, NavLink } from "react-router-dom";
+import history from "../../config/history";
 
 function HeaderProvider(props) {
     const [isMenuVisible, setIsMenuVisible] = useState(false);
@@ -16,6 +18,10 @@ function HeaderProvider(props) {
     const closeMenu = () => {
         setIsMenuVisible(false);
     };
+
+    const onProfileClick = () => {
+        closeMenu()
+    }
 
     return (
         <Sidebar.Pushable>
@@ -38,7 +44,7 @@ function HeaderProvider(props) {
                     />
                     <div className="menu-row">
                         <Icon name="user circle" className="menu-icon" />
-                        <div className="menu-text">Account</div>
+                        <div className="menu-text" onClick={onProfileClick}><Link to="/profile">Profile</Link></div>
                     </div>
                     <div className="menu-row">
                         <Icon name="log out" className="menu-icon"></Icon>
@@ -47,8 +53,10 @@ function HeaderProvider(props) {
                 </div>
             </Sidebar>
             <Sidebar.Pusher dimmed={isMenuVisible}>
-                <img alt="" src={logo} className="logo-icon" />
                 <div className="header">
+                    <Link to="/" className="logo" >
+                        <img alt="" src={logo} className="logo-icon" />
+                    </Link>
                     Share money{" "}
                     {/* <button
                     onClick={() => {
