@@ -1,6 +1,6 @@
 import { createAction } from "redux-actions";
 import { transformUser } from "../../modules/auth/helpers";
-import { signinService } from "./services";
+import { signinService, signupService } from "./services";
 import { createActions, handleActions } from "redux-actions";
 import { all, put, takeLatest } from "redux-saga/effects";
 
@@ -16,11 +16,9 @@ const login = createAction("AUTH/LOGIN");
 const loginSuccess = createAction("AUTH/LOGIN_SUCCESS");
 const loginFailure = createAction("AUTH/LOGIN_FAILURE");
 
-export const { signup, signupSuccess, signupFailure } = createActions(
-    "AUTH/SIGNUP",
-    "AUTH/SIGNUP_SUCCESS",
-    "AUTH/SIGNUP_FAILURE"
-);
+const signup = createAction("AUTH/SIGNUP");
+const signupSuccess = createAction("AUTH/SIGNUP_SUCCESS");
+const signupFailure = createAction("AUTH/SIGNUP_FAILURE");
 
 export const { logout, logoutSuccess, logoutFailure } = createActions(
     "AUTH/LOGOUT",
@@ -76,12 +74,28 @@ function* loginSaga(action) {
     }
 }
 
+function* signupSaga(action) {
+    try {
+        console.log('saga')
+        const data = yield signupService(
+            action.payload.email,
+            action.payload.password
+        );
+        yield put(signupSuccess(transformUser(data)));
+    } catch (err) {
+        yield put(signupFailure(err));
+    }
+}
+
 export function* saga() {
-    yield all([takeLatest(login, loginSaga)]);
+    yield all([
+        takeLatest(login, loginSaga),
+        takeLatest(signup, signupSaga),    
+    ]);
 }
 
 export const getUser = (state) => state.auth.user;
 
 export default reducer;
 
-export { login };
+export { login,signup };

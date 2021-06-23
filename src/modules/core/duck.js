@@ -1,24 +1,32 @@
 import { createAction } from "redux-actions";
+import { v4 as uuid } from "uuid";
 import firebase from "../../config/firebase";
 import { handleActions } from "redux-actions";
 import { all, put, select, takeLatest } from "redux-saga/effects";
 import { getBalance } from "./selectors";
+import { getUser } from "../auth/duck";
+import history from "../../config/history";
 
 const initialState = {
     balance: 0,
     history: [],
     isHistoryLoading: false,
     isBalanceLoading: false,
+    addBalanceInProgress: false,
 };
 
 export const fetchBalance = createAction("CORE/FETCH_BALANCE");
 export const fetchBalanceSuccess = createAction("CORE/FETCH_BALANCE_SUCCESS");
+
+export const fetchBalances = createAction("CORE/FETCH_BALANCES");
+
 
 export const setBalance = createAction("CORE/SET_BALANCE");
 export const addTransaction = createAction("CORE/ADD_TRANSACTION");
 
 export const fetchHistory = createAction("CORE/FETCH_HISTORY");
 export const fetchHistorySuccess = createAction("CORE/FETCH_HISTORY_SUCCESS");
+export const addBalace = createAction("CORE/ADD_BALANCE");
 
 const reducer = handleActions(
     {
@@ -48,6 +56,10 @@ const reducer = handleActions(
             ...state,
             history: action.payload,
             isHistoryLoading: false,
+        }),
+        [addBalace]: (state, action) => ({
+            ...state,
+            addBalanceInProgress: true,
         }),
     },
     initialState
@@ -91,11 +103,41 @@ function* fetchBalanceSaga() {
     }
 }
 
+function* addBalaceSaga() {
+    try {
+        const user = yield select(getUser)
+        const id = uuid();
+        yield firebase.database().ref("balances/" + id).set({ users: { [user._id]: true}, id, title: 'New balance' });
+        yield firebase.database().ref(`userBalances/${user._id}/${id}`).set(true);
+        history.push('/balance/' + id)
+       console.log('saga run', id)
+    } catch (err) {
+        console.error(err);
+    }
+}
+
+function* fetchUserBalances() {
+    try {
+        const user = yield select(getUser)
+        const result = (yield firebase.database().ref("userBalances/" + user._id).get()).val();
+        const balanceIds = Object.keys(result)
+        if (balanceIds?.length) {
+            const balances = (yield all(balanceIds.map(id => firebase.database().ref("balances/" + id).get()))).map(b => b.val())
+            console.log(balances);
+        }
+       console.log('saga fetchUserBalances', result)
+    } catch (err) {
+        console.error(err);
+    }
+}
+
 export function* saga() {
     yield all([
         takeLatest(addTransaction, addHistoryItemSaga),
         takeLatest(fetchHistory, fetchHistorySaga),
         takeLatest(fetchBalance, fetchBalanceSaga),
+        takeLatest(addBalace, addBalaceSaga),
+        takeLatest(fetchBalances, fetchUserBalances),
     ]);
 }
 

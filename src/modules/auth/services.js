@@ -7,7 +7,7 @@ export const signinService = (email, password) =>
     .then((response) => response.user);
 
 export const signupService = (email, password) => {
-  console.log('here');
+  console.log('service');
 
   return firebase
     .auth()

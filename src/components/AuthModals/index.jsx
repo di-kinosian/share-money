@@ -1,7 +1,7 @@
 import React, { useCallback, useEffect } from "react";
 import firebase from "../../config/firebase";
 import { connect, useDispatch } from "react-redux";
-import { restoreUser } from "../../modules/auth/duck";
+import { restoreUser, toggleLoginModal } from "../../modules/auth/duck";
 import { transformUser } from "../../modules/auth/helpers";
 import LoginModal from "./LoginModal";
 import SignupModal from "./SignupModal";
@@ -15,6 +15,10 @@ const AuthModals = (props) => {
     useEffect(() => {
         const unsubscribe = firebase.auth().onAuthStateChanged(handleUser);
         return () => unsubscribe();
+    }, []);
+
+    useEffect(() => {
+        dispatch(toggleLoginModal(true))
     }, []);
 
     if (props.user) {
