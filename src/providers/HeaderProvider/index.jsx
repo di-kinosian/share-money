@@ -1,27 +1,13 @@
 import closeIcon from '../../assets/img/close-icon.svg';
 import logo from '../../assets/img/logo.png';
 import '../../App.css';
-import { useMemo, useState } from 'react';
+import { useState } from 'react';
 
 import burgerIcon from '../../assets/img/burger-icon.svg';
 import { Icon, Sidebar } from 'semantic-ui-react';
-import { Link, NavLink } from 'react-router-dom';
-import history from '../../config/history';
-import AuthModals from '../../components/AuthModals';
-import { getUser } from '../../modules/auth/duck';
-import { useDispatch, useSelector } from 'react-redux';
-import { fetchBalances } from '../../modules/core/duck';
-
+import { Link } from 'react-router-dom';
 function HeaderProvider(props) {
-    const user = useSelector(getUser);
-    const dispatch = useDispatch();
     const [isMenuVisible, setIsMenuVisible] = useState(false);
-
-    useMemo(() => {
-        if (user) {
-            dispatch(fetchBalances());
-        }
-    }, [dispatch, user]);
 
     const openMenu = () => {
         setIsMenuVisible(true);
@@ -37,7 +23,6 @@ function HeaderProvider(props) {
 
     return (
         <Sidebar.Pushable>
-            <AuthModals />
             <Sidebar
                 animation="overlay"
                 icon="labeled"

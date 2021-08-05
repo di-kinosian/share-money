@@ -10,8 +10,10 @@ import history from "../../config/history";
 const initialState = {
     balance: 0,
     history: [],
+    userBalances: [],
     isHistoryLoading: false,
     isBalanceLoading: false,
+    isUserBalancesLoading: false,
     addBalanceInProgress: false,
 };
 
@@ -19,6 +21,7 @@ export const fetchBalance = createAction("CORE/FETCH_BALANCE");
 export const fetchBalanceSuccess = createAction("CORE/FETCH_BALANCE_SUCCESS");
 
 export const fetchBalances = createAction("CORE/FETCH_BALANCES");
+export const fetchBalancesSuccess = createAction("CORE/FETCH_BALANCES_SUCCESS");
 
 
 export const setBalance = createAction("CORE/SET_BALANCE");
@@ -56,6 +59,15 @@ const reducer = handleActions(
             ...state,
             history: action.payload,
             isHistoryLoading: false,
+        }),
+        [fetchBalances]: (state, action) => ({
+            ...state,
+            isUserBalancesLoading: true,
+        }),
+        [fetchBalancesSuccess]: (state, action) => ({
+            ...state,
+            isUserBalancesLoading: false,
+            userBalances: action.payload,
         }),
         [addBalace]: (state, action) => ({
             ...state,
@@ -121,9 +133,11 @@ function* fetchUserBalances() {
         const user = yield select(getUser)
         const result = (yield firebase.database().ref("userBalances/" + user._id).get()).val();
         const balanceIds = Object.keys(result)
+        console.log('ids',balanceIds)
         if (balanceIds?.length) {
             const balances = (yield all(balanceIds.map(id => firebase.database().ref("balances/" + id).get()))).map(b => b.val())
-            console.log(balances);
+            console.log('balances', balances);
+            yield put(fetchBalancesSuccess(balances))
         }
        console.log('saga fetchUserBalances', result)
     } catch (err) {

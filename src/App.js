@@ -1,33 +1,40 @@
-import "./App.css";
-import { Route, Switch, Router, BrowserRouter } from "react-router-dom";
-import history from "./config/history";
-import HeaderProvider from "./providers/HeaderProvider";
-import { Provider } from "react-redux";
-import store from "./config/store";
-import Home from "./views/Home";
-import Balance from "./views/Balance";
+import './App.css';
+import { Route, Switch, Router, Redirect } from 'react-router-dom';
+import history from './config/history';
+import HeaderProvider from './providers/HeaderProvider';
+import { Provider } from 'react-redux';
+import store from './config/store';
+import Home from './views/Home';
+import Balance from './views/Balance';
 import Profile from './views/Profile';
+import AuthModals from './components/AuthModals';
+import BalanceNew from './views/BalanceNew';
 
 function App() {
     return (
         <Provider store={store}>
-            <BrowserRouter>
+            <Router history={history}>
+                <AuthModals />
+
                 <HeaderProvider>
                     <Switch>
-                        <Route exact={true} path={"/"} component={Home} />
+                        <Route exact={true} path={'/'}>
+                            <Home />
+                        </Route>
+                        <Route path={'/balance/:balanceId'}>
+                            <BalanceNew />
+                        </Route>
+                        <Route path={'/special'}>
+                            <Balance />
+                        </Route>
                         <Route
                             exact={true}
-                            path={"/balance/:balanceId"}
-                            component={Balance}
-                        />
-                        <Route
-                            exact={true}
-                            path={"/profile"}
+                            path={'/profile'}
                             component={Profile}
                         />
                     </Switch>
                 </HeaderProvider>
-            </BrowserRouter>
+            </Router>
         </Provider>
     );
 }
