@@ -4,6 +4,7 @@ import { fetchHistory } from '../../modules/core/duck';
 import { connect } from 'react-redux';
 import { SortDirection, sorterBy } from '../../helpers/data';
 import HistoryItem from './HistoryItem';
+import moment from 'moment';
 
 function History(props) {
     useEffect(() => {
@@ -15,9 +16,7 @@ function History(props) {
     const toggleHistory = () => {
         setIsHistoryVisible(!isHistoryVisible);
     };
-
-    console.log(props.history);
-
+    
     return (
         <div className="history">
             <div className="history-header">
@@ -53,7 +52,7 @@ function History(props) {
 const connector = connect(
     (state) => ({
         history: state.core.history.sort(
-            sorterBy(SortDirection.DESC, 'dateTime')
+            sorterBy(SortDirection.DESC, record => typeof record.dateTime === 'number' ? record.dateTime : moment(record.dateTime).utc().valueOf())
         ),
     }),
     {

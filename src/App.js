@@ -5,10 +5,10 @@ import HeaderProvider from './providers/HeaderProvider';
 import { Provider } from 'react-redux';
 import store from './config/store';
 import Home from './views/Home';
-import Balance from './views/Balance';
+import Special from './views/Special';
 import Profile from './views/Profile';
 import AuthModals from './components/AuthModals';
-import BalanceNew from './views/BalanceNew';
+import Balance from './views/Balance';
 
 function App() {
     return (
@@ -22,10 +22,10 @@ function App() {
                             <Home />
                         </Route>
                         <Route path={'/balance/:balanceId'}>
-                            <BalanceNew />
+                            <Balance />
                         </Route>
                         <Route path={'/special'}>
-                            <Balance />
+                            <Special />
                         </Route>
                         <Route
                             exact={true}

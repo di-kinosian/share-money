@@ -13,15 +13,11 @@ import BalanceCard from "./BalanceCard";
 import { Icon } from "semantic-ui-react";
 import Field from "../../components/Field";
 import { withRouter } from "react-router";
+import { changeDate, changeTitle, changeAmount, changeTime, changePayer } from "../../modules/special/duck";
 // import TransactionBlock from './TransactionBlock';
+import { DATE_FORMAT, TIME_FORMAT, USERS } from "../../modules/special/constants";
 
-const DATE_FORMAT = "DD-MMMM-YYYY";
-const TIME_FORMAT = "HH:mm";
 
-const users = [
-    { name: "Sasha", id: "1765567" },
-    { name: "Andrey", id: "2765432342" },
-];
 
 const getBalanceFromHistory = (history) => {
     if (history && history.length) {
@@ -40,32 +36,33 @@ function Balance() {
         dispatch(fetchBalance());
     }, []);
 
-    const [titleState, setTitleState] = useState("");
-    const [amountState, setAmountState] = useState("0.00");
-    const [payerState, setPayerState] = useState(users[0]);
-    const [dateState, setDateState] = useState(moment().format(DATE_FORMAT));
-    const [timeState, setTimeState] = useState(moment().format(TIME_FORMAT));
+    const title = useSelector(state => state.special.title);
+    const amount = useSelector(state => state.special.amount);
+    const date = useSelector(state => state.special.date);
+    const time = useSelector(state => state.special.time);
+    const payer = useSelector(state => state.special.payer);
 
+   
     const [isAddTransactionVisible, setIsAddTransactionVisible] = useState(
         false
     );
 
     const handleTitleChange = (event) => {
-        setTitleState(event.target.value);
+        dispatch(changeTitle(event.target.value))
     };
 
     const onAmountChange = (event) => {
-        setAmountState(event.target.value);
+        dispatch(changeAmount(event.target.value));
     };
 
     const handlePayerChange = (event) => {
-        const user = users.find((item) => item.name === event.target.value);
-        setPayerState(user);
+        const user = USERS.find((item) => item.name === event.target.value);
+        dispatch(changePayer(user));
     };
 
     const confirmationButtonClick = () => {
-        let amountValue = +amountState;
-        if (payerState.name === "Sasha") {
+        let amountValue = +amount;
+        if (payer.name === "Sasha") {
             amountValue = amountValue * 1;
         } else {
             amountValue = amountValue * -1;
@@ -73,17 +70,17 @@ function Balance() {
         const historyObject = {
             id: uuid(),
             dateTime: moment(
-                dateState + " " + timeState,
+                date + " " + time,
                 DATE_FORMAT + " " + TIME_FORMAT
             ).format(),
-            title: titleState,
+            title: title,
             amount: amountValue,
             balance: balance + amountValue,
-            payer: payerState,
+            payer: payer,
         };
         dispatch(addTransaction(historyObject));
-        setTitleState("");
-        setAmountState("0.00");
+        dispatch(changeTitle(''))
+        dispatch(changeTitle("0.00"));
     };
 
     const openAddBlock = () => {
@@ -99,16 +96,18 @@ function Balance() {
     };
 
     const onAmountBlur = () => {
-        setAmountState(Number(amountState).toFixed(2));
+        dispatch(changeTitle(Number(amount).toFixed(2)));
     };
 
     const handleDateChange = (event, data) => {
-        setDateState(data.value);
+        dispatch(changeDate(data.value));
     };
 
     const handleTimeChange = (event, data) => {
-        setTimeState(data.value);
+        dispatch(changeTime(data.value));
     };
+
+    console.log(date)
 
     return (
         <div className="content">
@@ -120,7 +119,7 @@ function Balance() {
                     </div>
                     <Field label={"Title"}>
                         <input
-                            value={titleState}
+                            value={title}
                             onChange={handleTitleChange}
                             id="title-input"
                             placeholder="Enter title"
@@ -129,7 +128,7 @@ function Balance() {
                     <div className="row">
                         <Field label={"Amount"}>
                             <input
-                                value={amountState}
+                                value={amount}
                                 onChange={onAmountChange}
                                 onFocus={onAmountFocus}
                                 onBlur={onAmountBlur}
@@ -142,10 +141,10 @@ function Balance() {
                         <Field label={"Payer"}>
                             <select
                                 className="payer-select"
-                                value={payerState.name}
+                                value={payer.name}
                                 onChange={handlePayerChange}
                             >
-                                {users.map((item) => (
+                                {USERS.map((item) => (
                                     <option>{item.name}</option>
                                 ))}
                             </select>
@@ -164,7 +163,7 @@ function Balance() {
                                 animation="scale"
                                 duration={200}
                                 hideMobileKeyboard
-                                value={dateState}
+                                value={date}
                                 iconPosition="left"
                                 preserveViewMode={false}
                                 autoComplete="off"
@@ -183,7 +182,7 @@ function Balance() {
                                 closable
                                 autoComplete="off"
                                 hideMobileKeyboard
-                                value={timeState}
+                                value={time}
                                 iconPosition="left"
                                 onChange={handleTimeChange}
                                 dateFormat={TIME_FORMAT}
@@ -192,7 +191,7 @@ function Balance() {
                     </div>
                     <button
                         className="confirmation-button"
-                        onClick={confirmationButtonClick}
+                        // onClick={confirmationButtonClick}
                     >
                         OK
                     </button>
