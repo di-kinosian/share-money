@@ -14,7 +14,7 @@ const initialState = {
 	isHistoryLoading: false,
 	isBalanceLoading: false,
 	isUserBalancesLoading: false,
-    isUserBalanceLoading: false,
+	isUserBalanceLoading: false,
 	addBalanceInProgress: false,
 };
 
@@ -35,6 +35,7 @@ export const addTransaction = createAction('CORE/ADD_TRANSACTION');
 export const fetchHistory = createAction('CORE/FETCH_HISTORY');
 export const fetchHistorySuccess = createAction('CORE/FETCH_HISTORY_SUCCESS');
 export const addBalace = createAction('CORE/ADD_BALANCE');
+export const addBalaceSuccess = createAction('CORE/ADD_BALANCE_SUCCESS');
 
 const reducer = handleActions(
 	{
@@ -78,14 +79,18 @@ const reducer = handleActions(
 			...state,
 			addBalanceInProgress: true,
 		}),
+		[addBalaceSuccess]: (state, action) => ({
+			...state,
+			addBalanceInProgress: false,
+		}),
 		[fetchBalanceById]: (state) => ({
 			...state,
 			isUserBalanceLoading: true,
 		}),
-        [fetchBalanceByIdSuccess]: (state, action) => ({
-            ...state,
-            isUserBalanceLoading: false,
-        })
+		[fetchBalanceByIdSuccess]: (state, action) => ({
+			...state,
+			isUserBalanceLoading: false,
+		}),
 	},
 	initialState
 );
@@ -128,20 +133,25 @@ function* fetchBalanceSaga() {
 	}
 }
 
-function* addBalaceSaga() {
+function* addBalaceSaga(action) {
 	try {
 		const user = yield select(getUser);
 		const id = uuid();
 		yield firebase
 			.database()
 			.ref('balances/' + id)
-			.set({ users: { [user._id]: true }, id, title: 'New balance' });
+			.set({ users: { [user._id]: 0 }, id, title: 'New balance' });
 		yield firebase
 			.database()
 			.ref(`userBalances/${user._id}/${id}`)
 			.set(true);
-		history.push('/balance/' + id);
-		console.log('saga run', id);
+		yield firebase
+			.database()
+			.ref('balanceDetails/' + id)
+			.set({
+				users: { [user._id]: 0 },
+			});
+		yield put(addBalaceSuccess());
 	} catch (err) {
 		console.error(err);
 	}
@@ -165,7 +175,6 @@ function* fetchUserBalances() {
 						.get()
 				)
 			)).map((b) => b.val());
-			console.log('balances', balances);
 			yield put(fetchBalancesSuccess(balances));
 		}
 		console.log('saga fetchUserBalances', result);
@@ -174,11 +183,15 @@ function* fetchUserBalances() {
 	}
 }
 
-function* myFirstSaga() {
+function* fetchBalanceByIdSaga(action) {
 	try {
-		yield console.log('firstSaga!!!');
-        yield delay(2000);
-        yield put(fetchBalanceByIdSuccess())
+		const result = (yield firebase
+			.database()
+			.ref('balanceDetails/' + action.payload)
+			.get()).val();
+		yield console.log(result);
+		yield delay(2000);
+		yield put(fetchBalanceByIdSuccess());
 	} catch (err) {
 		console.error(err);
 	}
@@ -191,7 +204,7 @@ export function* saga() {
 		takeLatest(fetchBalance, fetchBalanceSaga),
 		takeLatest(addBalace, addBalaceSaga),
 		takeLatest(fetchBalances, fetchUserBalances),
-		takeLatest(fetchBalanceById, myFirstSaga),
+		takeLatest(fetchBalanceById, fetchBalanceByIdSaga),
 	]);
 }
 

@@ -54,6 +54,7 @@ select {
 	flex-shrink: 0;
 	position: relative;
 	box-shadow: 0px 3px 5px rgba(34, 60, 80, 0.2);
+	margin-bottom: 16px;
 }
 
 .content {
