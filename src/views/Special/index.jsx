@@ -191,7 +191,7 @@ function Balance() {
                     </div>
                     <button
                         className="confirmation-button"
-                        // onClick={confirmationButtonClick}
+                        onClick={confirmationButtonClick}
                     >
                         OK
                     </button>

@@ -3,38 +3,40 @@ import { useDispatch, useSelector } from 'react-redux';
 import { Icon, Loader } from 'semantic-ui-react';
 import './styles.css';
 import { getUser } from '../../modules/auth/duck';
-import { addBalace, fetchBalances } from '../../modules/core/duck';
+import {
+	addBalance,
+	fetchBalances,
+	deleteBalance,
+} from '../../modules/core/duck';
 import { getUserBalances } from '../../modules/core/selectors';
 import deleteIcon from '../../assets/img/delete-icon.svg';
 import { useHistory } from 'react-router-dom';
 
 function BalanceItem(props) {
-	console.log(props);
-	const [showing, setShowing] = useState(true);
 	const history = useHistory();
+	const dispatch = useDispatch();
 
 	const handelBalanceClick = () => {
 		history.push('/balance/' + props.id);
 		console.log('какой я по счету??');
 	};
 
-	const deleteBalance = (event) => {
-		setShowing(false);
-		console.log('Work!');
+	const deleteBalanceItem = (event) => {
+		dispatch(deleteBalance(props.id));
 		event.stopPropagation();
 	};
 
-	return showing ? (
+	return (
 		<div className="balance" onClick={handelBalanceClick}>
 			<div className="balance-name">{props.title}</div>
 			<img
 				alt=""
 				src={deleteIcon}
 				className="balance-delete-icon"
-				onClick={deleteBalance}
+				onClick={deleteBalanceItem}
 			/>
 		</div>
-	) : null;
+	);
 }
 
 function Home() {
@@ -42,7 +44,19 @@ function Home() {
 	const balances = useSelector(getUserBalances);
 	const dispatch = useDispatch();
 
-	const [showingModal, setShowingModal] = useState(true);
+	const [showingModal, setShowingModal] = useState(false);
+	const [title, setTitle] = useState('');
+
+	const changeTitle = (event) => {
+		setTitle(event.target.value);
+	};
+
+	const createNewBalance = () => {
+		dispatch(addBalance(title));
+		console.log(title);
+		setTitle('');
+		setShowingModal(false);
+	};
 
 	useEffect(() => {
 		if (user) {
@@ -97,10 +111,20 @@ function Home() {
 							type="text"
 							className="modal-input"
 							placeholder="Enter text"
+							value={title}
+							onChange={changeTitle}
 						/>
 						<div className="modal-buttons">
-							<button className="modal-button modal-cancel-button" onClick={onCloseBalance}>Cancel</button>
-							<button className="modal-button modal-create-button">
+							<button
+								className="modal-button modal-cancel-button"
+								onClick={onCloseBalance}
+							>
+								Cancel
+							</button>
+							<button
+								className="modal-button modal-create-button"
+								onClick={createNewBalance}
+							>
 								Create
 							</button>
 						</div>

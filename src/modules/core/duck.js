@@ -2,10 +2,18 @@ import { createAction } from 'redux-actions';
 import { v4 as uuid } from 'uuid';
 import firebase from '../../config/firebase';
 import { handleActions } from 'redux-actions';
-import { all, delay, put, select, takeLatest } from 'redux-saga/effects';
+import {
+	all,
+	delay,
+	put,
+	select,
+	takeEvery,
+	takeLatest,
+} from 'redux-saga/effects';
 import { getBalance } from './selectors';
 import { getUser } from '../auth/duck';
 import history from '../../config/history';
+import { addBalanceService, deleteBalanceService } from './service';
 
 const initialState = {
 	balance: 0,
@@ -34,8 +42,9 @@ export const addTransaction = createAction('CORE/ADD_TRANSACTION');
 
 export const fetchHistory = createAction('CORE/FETCH_HISTORY');
 export const fetchHistorySuccess = createAction('CORE/FETCH_HISTORY_SUCCESS');
-export const addBalace = createAction('CORE/ADD_BALANCE');
+export const addBalance = createAction('CORE/ADD_BALANCE');
 export const addBalaceSuccess = createAction('CORE/ADD_BALANCE_SUCCESS');
+export const deleteBalance = createAction('CORE/DELETE_BALANCE');
 
 const reducer = handleActions(
 	{
@@ -75,13 +84,14 @@ const reducer = handleActions(
 			isUserBalancesLoading: false,
 			userBalances: action.payload,
 		}),
-		[addBalace]: (state, action) => ({
+		[addBalance]: (state, action) => ({
 			...state,
 			addBalanceInProgress: true,
 		}),
 		[addBalaceSuccess]: (state, action) => ({
 			...state,
 			addBalanceInProgress: false,
+			userBalances: [action.payload, ...state.userBalances],
 		}),
 		[fetchBalanceById]: (state) => ({
 			...state,
@@ -90,6 +100,12 @@ const reducer = handleActions(
 		[fetchBalanceByIdSuccess]: (state, action) => ({
 			...state,
 			isUserBalanceLoading: false,
+		}),
+		[deleteBalance]: (state, action) => ({
+			...state,
+			userBalances: state.userBalances.filter(
+				(item) => item.id !== action.payload
+			),
 		}),
 	},
 	initialState
@@ -136,22 +152,16 @@ function* fetchBalanceSaga() {
 function* addBalaceSaga(action) {
 	try {
 		const user = yield select(getUser);
-		const id = uuid();
-		yield firebase
-			.database()
-			.ref('balances/' + id)
-			.set({ users: { [user._id]: 0 }, id, title: 'New balance' });
-		yield firebase
-			.database()
-			.ref(`userBalances/${user._id}/${id}`)
-			.set(true);
-		yield firebase
-			.database()
-			.ref('balanceDetails/' + id)
-			.set({
-				users: { [user._id]: 0 },
-			});
-		yield put(addBalaceSuccess());
+		const balanceId = uuid();
+		const newBalance = {
+			users: {
+				[user._id]: 0,
+			},
+			id: balanceId,
+			title: action.payload,
+		};
+		yield addBalanceService(balanceId, user._id, newBalance);
+		yield put(addBalaceSuccess(newBalance));
 	} catch (err) {
 		console.error(err);
 	}
@@ -190,8 +200,17 @@ function* fetchBalanceByIdSaga(action) {
 			.ref('balanceDetails/' + action.payload)
 			.get()).val();
 		yield console.log(result);
-		yield delay(2000);
 		yield put(fetchBalanceByIdSuccess());
+	} catch (err) {
+		console.error(err);
+	}
+}
+
+function* deleteBalanceSaga(action) {
+	console.log(action);
+	try {
+		const user = yield select(getUser);
+		yield deleteBalanceService(action.payload, user._id);
 	} catch (err) {
 		console.error(err);
 	}
@@ -202,9 +221,10 @@ export function* saga() {
 		takeLatest(addTransaction, addHistoryItemSaga),
 		takeLatest(fetchHistory, fetchHistorySaga),
 		takeLatest(fetchBalance, fetchBalanceSaga),
-		takeLatest(addBalace, addBalaceSaga),
+		takeLatest(addBalance, addBalaceSaga),
 		takeLatest(fetchBalances, fetchUserBalances),
 		takeLatest(fetchBalanceById, fetchBalanceByIdSaga),
+		takeEvery(deleteBalance, deleteBalanceSaga),
 	]);
 }
 
