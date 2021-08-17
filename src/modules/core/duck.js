@@ -143,6 +143,7 @@ function* fetchHistorySaga() {
 function* fetchBalanceSaga() {
 	try {
 		const result = yield firebase.database().ref('balance').get();
+		console.log('here');
 		yield put(fetchBalanceSuccess(result.val()));
 	} catch (err) {
 		console.error(err);

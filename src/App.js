@@ -15,16 +15,15 @@ function App() {
         <Provider store={store}>
             <Router history={history}>
                 <AuthModals />
-
                 <HeaderProvider>
                     <Switch>
                         <Route exact={true} path={'/'}>
                             <Home />
                         </Route>
-                        <Route path={'/balance/:balanceId'}>
+                        <Route exact={true} path={'/balance/:balanceId'}>
                             <Balance />
                         </Route>
-                        <Route path={'/special'}>
+                        <Route exact={true} path={'/special'}>
                             <Special />
                         </Route>
                         <Route
