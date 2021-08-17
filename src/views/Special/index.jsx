@@ -78,6 +78,7 @@ function Balance() {
             balance: balance + amountValue,
             payer: payer,
         };
+        console.log(historyObject)
         dispatch(addTransaction(historyObject));
         dispatch(changeTitle(''))
         dispatch(changeTitle("0.00"));
@@ -96,7 +97,7 @@ function Balance() {
     };
 
     const onAmountBlur = () => {
-        dispatch(changeTitle(Number(amount).toFixed(2)));
+        dispatch(changeAmount(Number(amount).toFixed(2)));
     };
 
     const handleDateChange = (event, data) => {
