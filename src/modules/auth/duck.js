@@ -1,6 +1,6 @@
 import { createAction } from 'redux-actions';
 import { transformUser } from '../../modules/auth/helpers';
-import { signinService, signupService } from './services';
+import { signinService, signoutService, signupService } from './services';
 import { createActions, handleActions } from 'redux-actions';
 import { all, put, takeLatest } from 'redux-saga/effects';
 import { USER_STORAGE_KEY } from './constants';
@@ -23,10 +23,8 @@ const signup = createAction('AUTH/SIGNUP');
 const signupSuccess = createAction('AUTH/SIGNUP_SUCCESS');
 const signupFailure = createAction('AUTH/SIGNUP_FAILURE');
 
-export const { logout, logoutSuccess, logoutFailure } = createActions(
+export const logout = createAction(
 	'AUTH/LOGOUT',
-	'AUTH/LOGOUT_SUCCESS',
-	'AUTH/LOGOUT_FAILURE'
 );
 
 export const toggleLoginModal = createAction('AUTH/SHOW_LOGIN_MODAL');
@@ -93,11 +91,16 @@ function* persistUserSaga(action) {
     yield localStorage.setItem(USER_STORAGE_KEY, JSON.stringify(action.payload))
 }
 
+function* logoutSaga() {
+    yield signoutService()
+}
+
 export function* saga() {
 	yield all([
 		takeLatest(login, loginSaga),
 		takeLatest(signup, signupSaga),
 		takeLatest([restoreUser, loginSuccess], persistUserSaga),
+        takeLatest(logout, logoutSaga),
 	]);
 }
 

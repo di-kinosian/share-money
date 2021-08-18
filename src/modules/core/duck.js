@@ -10,10 +10,15 @@ import {
 	takeEvery,
 	takeLatest,
 } from 'redux-saga/effects';
-import { getBalance } from './selectors';
+import { getBalance, getBalanceDetails } from './selectors';
 import { getUser } from '../auth/duck';
 import history from '../../config/history';
-import { addBalanceService, deleteBalanceService } from './service';
+import {
+	addBalanceService,
+	addUserToBalanceService,
+	deleteBalanceService,
+	getBalanceDetailsService,
+} from './services';
 
 const initialState = {
 	balance: 0,
@@ -24,6 +29,7 @@ const initialState = {
 	isUserBalancesLoading: false,
 	isUserBalanceLoading: false,
 	addBalanceInProgress: false,
+	balanceDetails: null,
 };
 
 export const fetchBalance = createAction('CORE/FETCH_BALANCE');
@@ -45,6 +51,8 @@ export const fetchHistorySuccess = createAction('CORE/FETCH_HISTORY_SUCCESS');
 export const addBalance = createAction('CORE/ADD_BALANCE');
 export const addBalaceSuccess = createAction('CORE/ADD_BALANCE_SUCCESS');
 export const deleteBalance = createAction('CORE/DELETE_BALANCE');
+
+export const joinToBalance = createAction('CORE/JOIN_TO_BALANCE');
 
 const reducer = handleActions(
 	{
@@ -100,6 +108,7 @@ const reducer = handleActions(
 		[fetchBalanceByIdSuccess]: (state, action) => ({
 			...state,
 			isUserBalanceLoading: false,
+			balanceDetails: action.payload,
 		}),
 		[deleteBalance]: (state, action) => ({
 			...state,
@@ -182,7 +191,7 @@ function* fetchUserBalances() {
 				balanceIds.map((id) =>
 					firebase
 						.database()
-						.ref('balances/' + id)
+						.ref('balanceDetails/' + id)
 						.get()
 				)
 			)).map((b) => b.val());
@@ -196,12 +205,8 @@ function* fetchUserBalances() {
 
 function* fetchBalanceByIdSaga(action) {
 	try {
-		const result = (yield firebase
-			.database()
-			.ref('balanceDetails/' + action.payload)
-			.get()).val();
-		yield console.log(result);
-		yield put(fetchBalanceByIdSuccess());
+		const result = yield getBalanceDetailsService(action.payload);
+		yield put(fetchBalanceByIdSuccess(result));
 	} catch (err) {
 		console.error(err);
 	}
@@ -217,6 +222,18 @@ function* deleteBalanceSaga(action) {
 	}
 }
 
+function* joinToBalanceSaga(action) {
+	console.log(action, "Saga work!");
+	try {
+		const balance = yield select(getBalanceDetails);
+		const user = yield select(getUser);
+		yield addUserToBalanceService(balance.id, user._id);
+		console.log('here');
+	} catch (err) {
+		console.error(err);
+	}
+}
+
 export function* saga() {
 	yield all([
 		takeLatest(addTransaction, addHistoryItemSaga),
@@ -226,6 +243,7 @@ export function* saga() {
 		takeLatest(fetchBalances, fetchUserBalances),
 		takeLatest(fetchBalanceById, fetchBalanceByIdSaga),
 		takeEvery(deleteBalance, deleteBalanceSaga),
+		takeLatest(joinToBalance, joinToBalanceSaga),
 	]);
 }
 

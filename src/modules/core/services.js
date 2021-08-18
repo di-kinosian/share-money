@@ -1,10 +1,6 @@
 import firebase from '../../config/firebase';
 
 export function* deleteBalanceService(balanceId, userId) {
-	yield firebase
-		.database()
-		.ref('balances/' + balanceId + '/users/' + userId)
-		.remove();
 
 	yield firebase
 		.database()
@@ -18,10 +14,6 @@ export function* deleteBalanceService(balanceId, userId) {
 }
 
 export function* addBalanceService(balanceId, userId, newBalance) {
-	yield firebase
-		.database()
-		.ref('balances/' + balanceId)
-		.set(newBalance);
 	yield firebase
 		.database()
 		.ref(`userBalances/${userId}/${balanceId}`)
@@ -50,7 +42,7 @@ export function* addTransactionService(balance, transaction) {
 	});
 	yield firebase
 		.database()
-		.ref(`balanceDetails/${balanceId}/users`)
+		.ref(`balanceDetails/${balance.id}/users`)
 		.set(amounts);
 	yield firebase
 		.database()
@@ -62,6 +54,7 @@ export function* getBalanceHistoryService(balanceId) {
 	const result = yield firebase
 		.database()
 		.ref(`balanceHistories/${balanceId}`)
+		.get()
 
 	return Object.values(result.val());
 }
@@ -70,6 +63,14 @@ export function* getBalanceDetailsService(balanceId) {
 	const result = yield firebase
 		.database()
 		.ref(`balanceDetails/${balanceId}`)
-
-	return result.val();
+		.get()
+	
+	const balanceDetails = result.val();
+	return {
+		...balanceDetails,
+		users: Object.keys(balanceDetails.users).map((id) => ({
+			id,
+			amount: balanceDetails.users[id]
+		}))
+	}
 }

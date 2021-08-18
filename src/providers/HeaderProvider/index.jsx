@@ -6,8 +6,11 @@ import { useState } from 'react';
 import burgerIcon from '../../assets/img/burger-icon.svg';
 import { Icon, Sidebar } from 'semantic-ui-react';
 import { Link } from 'react-router-dom';
+import { useDispatch } from 'react-redux';
+import { logout } from '../../modules/auth/duck';
 function HeaderProvider(props) {
     const [isMenuVisible, setIsMenuVisible] = useState(false);
+    const dispatch = useDispatch();
 
     const openMenu = () => {
         setIsMenuVisible(true);
@@ -21,14 +24,18 @@ function HeaderProvider(props) {
         closeMenu();
     };
 
+    const onLogoutClick = () => {
+        dispatch(logout())
+    }
+
     return (
         <Sidebar.Pushable>
             <Sidebar
                 animation="overlay"
                 icon="labeled"
-                inverted
+                inverted="true"
                 onHide={() => setIsMenuVisible(false)}
-                vertical
+                vertical="true"
                 visible={isMenuVisible}
                 width="wide"
                 direction="right"
@@ -48,7 +55,7 @@ function HeaderProvider(props) {
                     </div>
                     <div className="menu-row">
                         <Icon name="log out" className="menu-icon"></Icon>
-                        <div className="menu-text">Log out</div>
+                        <div className="menu-text" onClick={onLogoutClick}>Log out</div>
                     </div>
                 </div>
             </Sidebar>
