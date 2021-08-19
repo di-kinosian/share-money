@@ -18,7 +18,6 @@ function BalanceItem(props) {
 
 	const handelBalanceClick = () => {
 		history.push('/balance/' + props.id);
-		console.log('какой я по счету??');
 	};
 
 	const deleteBalanceItem = (event) => {
@@ -53,7 +52,6 @@ function Home() {
 
 	const createNewBalance = () => {
 		dispatch(addBalance(title));
-		console.log(title);
 		setTitle('');
 		setShowingModal(false);
 	};

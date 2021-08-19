@@ -30,7 +30,6 @@ const SignupModal = (props) => {
   const isLoginDisabled = !!(error || !email || !password);
 
   const onSubmit = (e) => {
-    console.log('submit')
     e.preventDefault();
     dispatch(signup());
   };

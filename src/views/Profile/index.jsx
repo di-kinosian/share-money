@@ -6,7 +6,6 @@ function Profile() {
     const [emailState, setEmailState] = useState('');
 
     const saveButtonClick = () => {
-        console.log('here');
     };
 
     const handleNameChange = (event) => {

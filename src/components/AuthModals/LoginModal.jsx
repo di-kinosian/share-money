@@ -31,7 +31,6 @@ const LoginModal = (props) => {
 
   const onSubmit = async (e) => {
     e.preventDefault();
-    console.log(login)
     dispatch(login({ email, password }));
   };
 

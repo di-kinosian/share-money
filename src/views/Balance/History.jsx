@@ -16,7 +16,6 @@ function History(props) {
         setIsHistoryVisible(!isHistoryVisible);
     };
 
-    console.log(props.history);
 
     return (
         <div className="history">

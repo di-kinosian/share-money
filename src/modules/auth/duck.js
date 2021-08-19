@@ -1,6 +1,6 @@
 import { createAction } from 'redux-actions';
 import { transformUser } from '../../modules/auth/helpers';
-import { signinService, signoutService, signupService } from './services';
+import { addUserToDatabaseService, signinService, signoutService, signupService } from './services';
 import { createActions, handleActions } from 'redux-actions';
 import { all, put, takeLatest } from 'redux-saga/effects';
 import { USER_STORAGE_KEY } from './constants';
@@ -68,7 +68,9 @@ function* loginSaga(action) {
 			action.payload.email,
 			action.payload.password
 		);
-		yield put(loginSuccess(transformUser(data)));
+		const user = transformUser(data)
+		yield put(loginSuccess(user));
+		yield addUserToDatabaseService(user)
 	} catch (err) {
 		yield put(loginFailure(err));
 	}
@@ -76,7 +78,6 @@ function* loginSaga(action) {
 
 function* signupSaga(action) {
 	try {
-		console.log('saga');
 		const data = yield signupService(
 			action.payload.email,
 			action.payload.password

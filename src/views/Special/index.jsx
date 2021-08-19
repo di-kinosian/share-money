@@ -78,7 +78,6 @@ function Balance() {
             balance: balance + amountValue,
             payer: payer,
         };
-        console.log(historyObject)
         dispatch(addTransaction(historyObject));
         dispatch(changeTitle(''))
         dispatch(changeTitle("0.00"));
@@ -108,7 +107,6 @@ function Balance() {
         dispatch(changeTime(data.value));
     };
 
-    console.log(date)
 
     return (
         <div className="content">

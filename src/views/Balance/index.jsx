@@ -8,7 +8,8 @@ import './styles.css';
 import { useHistory, useLocation, useParams } from 'react-router-dom';
 import { Loader } from 'semantic-ui-react';
 import { PageContent } from './styled';
-import {getBalanceDetails} from '../../modules/core/selectors';
+import { getBalanceDetails } from '../../modules/core/selectors';
+import { NewTransactionWidget } from './NewTransactionWidget';
 
 function Balance() {
 	const dispatch = useDispatch();
@@ -20,9 +21,7 @@ function Balance() {
 
 	const needToJoin = useMemo(() => {
 		const users = balance?.users;
-		console.log(balance);
 		let user = users?.find((item) => item.id === userId);
-		console.log(user, 'user');
 		return !user;
 	}, [userId, balance]);
 
@@ -48,9 +47,24 @@ function Balance() {
 
 	return (
 		<PageContent>
-			{isLoading ? <Loader active /> : null}
+			{/* {isLoading ? <Loader active /> : null}
 			NEW BALANCE COPMPONENT
-			<QRCode value={window.location.href} />
+			<QRCode value={window.location.href} /> */}
+			<NewTransactionWidget
+				prop1={{}}
+				props4343="sdfsdfsd"
+				hi={"bye"}
+				users={[
+					{
+						id: '1',
+						name: 'Alex Makhynenko',
+					},
+					{
+						id: '2',
+						name: 'Maks Krupenko',
+					},
+				]}
+			/>
 		</PageContent>
 	);
 }

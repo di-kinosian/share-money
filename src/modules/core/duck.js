@@ -123,7 +123,6 @@ const reducer = handleActions(
 function* addHistoryItemSaga(action) {
 	try {
 		const balance = yield select(getBalance);
-		console.log(balance);
 		yield firebase.database().ref('balance').set(action.payload.balance);
 		yield firebase
 			.database()
@@ -152,7 +151,6 @@ function* fetchHistorySaga() {
 function* fetchBalanceSaga() {
 	try {
 		const result = yield firebase.database().ref('balance').get();
-		console.log('here');
 		yield put(fetchBalanceSuccess(result.val()));
 	} catch (err) {
 		console.error(err);
@@ -185,7 +183,6 @@ function* fetchUserBalances() {
 			.ref('userBalances/' + user._id)
 			.get()).val();
 		const balanceIds = Object.keys(result);
-		console.log('ids', balanceIds);
 		if (balanceIds?.length) {
 			const balances = (yield all(
 				balanceIds.map((id) =>
@@ -197,7 +194,6 @@ function* fetchUserBalances() {
 			)).map((b) => b.val());
 			yield put(fetchBalancesSuccess(balances));
 		}
-		console.log('saga fetchUserBalances', result);
 	} catch (err) {
 		console.error(err);
 	}
@@ -213,7 +209,6 @@ function* fetchBalanceByIdSaga(action) {
 }
 
 function* deleteBalanceSaga(action) {
-	console.log(action);
 	try {
 		const user = yield select(getUser);
 		yield deleteBalanceService(action.payload, user._id);
@@ -223,12 +218,10 @@ function* deleteBalanceSaga(action) {
 }
 
 function* joinToBalanceSaga(action) {
-	console.log(action, "Saga work!");
 	try {
 		const balance = yield select(getBalanceDetails);
 		const user = yield select(getUser);
 		yield addUserToBalanceService(balance.id, user._id);
-		console.log('here');
 	} catch (err) {
 		console.error(err);
 	}
