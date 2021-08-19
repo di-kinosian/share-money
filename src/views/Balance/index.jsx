@@ -7,6 +7,7 @@ import { fetchBalanceById } from '../../modules/core/duck';
 
 import { useHistory, useLocation, useParams } from 'react-router-dom';
 import { Loader } from 'semantic-ui-react';
+import { PageContent } from './styled';
 
 function Balance() {
 	const dispatch = useDispatch();
@@ -21,11 +22,11 @@ function Balance() {
 	}, [dispatch, params.balanceId]);
 
 	return (
-		<div className="content">
+		<PageContent>
 			{isLoading ? <Loader active /> : null}
 			NEW BALANCE COPMPONENT
 			<QRCode value={window.location.href} />
-		</div>
+		</PageContent>
 	);
 }
 
