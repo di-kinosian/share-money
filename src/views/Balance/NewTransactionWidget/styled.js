@@ -61,8 +61,6 @@ export const AmountInput = styled.input`
 	width: 100%;
 `;
 
-export const DateInput = styled.input``;
-
 export const PayerInput = styled.input`
 	font-family: sans-serif;
 	font-size: 100%;
