@@ -4,10 +4,13 @@ import '../../App.css';
 import { useState } from 'react';
 
 import burgerIcon from '../../assets/img/burger-icon.svg';
-import { Icon, Sidebar } from 'semantic-ui-react';
+import { Icon } from 'semantic-ui-react';
 import { Link } from 'react-router-dom';
 import { useDispatch } from 'react-redux';
 import { logout } from '../../modules/auth/duck';
+import Sidebar from '../../components/Sidebar';
+import * as s from './styled';
+
 function HeaderProvider(props) {
     const [isMenuVisible, setIsMenuVisible] = useState(false);
     const dispatch = useDispatch();
@@ -25,20 +28,30 @@ function HeaderProvider(props) {
     };
 
     const onLogoutClick = () => {
-        dispatch(logout())
-    }
+        dispatch(logout());
+        closeMenu();
+    };
 
     return (
-        <Sidebar.Pushable>
+        <>
+            <s.Header>
+                <Link to="/" className="logo">
+                    <img alt="" src={logo} className="logo-icon" />
+                </Link>
+                Share money
+                <img
+                    src={burgerIcon}
+                    className="burger-icon"
+                    onClick={openMenu}
+                    alt=""
+                />
+            </s.Header>
             <Sidebar
-                animation="overlay"
-                icon="labeled"
-                inverted="true"
-                onHide={() => setIsMenuVisible(false)}
-                vertical="true"
-                visible={isMenuVisible}
-                width="wide"
-                direction="right"
+                isOpen={isMenuVisible}
+                onClose={() => {
+                    setIsMenuVisible(false);
+                }}
+                width="260px"
             >
                 <div className="menu">
                     <img
@@ -55,31 +68,14 @@ function HeaderProvider(props) {
                     </div>
                     <div className="menu-row">
                         <Icon name="log out" className="menu-icon"></Icon>
-                        <div className="menu-text" onClick={onLogoutClick}>Log out</div>
+                        <div className="menu-text" onClick={onLogoutClick}>
+                            Log out
+                        </div>
                     </div>
                 </div>
             </Sidebar>
-            <Sidebar.Pusher dimmed={isMenuVisible}>
-                <div className="header">
-                    <Link to="/" className="logo">
-                        <img alt="" src={logo} className="logo-icon" />
-                    </Link>
-                    Share money{' '}
-                    {/* <button
-                    onClick={() => {
-                        dispatch(toggleLoginModal(true));
-                    }}
-                /> */}
-                    <img
-                        src={burgerIcon}
-                        className="burger-icon"
-                        onClick={openMenu}
-                        alt=""
-                    />
-                </div>
-                {props.children}
-            </Sidebar.Pusher>
-        </Sidebar.Pushable>
+            <s.PageWrapper>{props.children}</s.PageWrapper>
+        </>
     );
 }
 
