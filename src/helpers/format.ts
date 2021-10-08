@@ -4,18 +4,18 @@ function formatMoney(amount) {
 
 function formatDateForDatepicker(date) {
     var d = new Date(date),
-        month = "" + (d.getMonth() + 1),
-        day = "" + d.getDate(),
+        month = '' + (d.getMonth() + 1),
+        day = '' + d.getDate(),
         year = d.getFullYear();
 
-    if (month.length < 2) month = "0" + month;
-    if (day.length < 2) day = "0" + day;
+    if (month.length < 2) month = '0' + month;
+    if (day.length < 2) day = '0' + day;
 
-    return [year, month, day].join("-");
+    return [year, month, day].join('-');
 }
 
 function getConnatationForNumber(num) {
-    return num >= 0 ? "positive" : "negative";
+    return num >= 0 ? 'positive' : 'negative';
 }
 
 function formatDate(date) {
@@ -23,12 +23,12 @@ function formatDate(date) {
     let month = date.getMonth() + 1;
     const year = date.getFullYear();
     if (day < 10) {
-        day = "0" + day;
+        day = '0' + day;
     }
     if (month < 10) {
-        month = "0" + month;
+        month = '0' + month;
     }
-    return day + "/" + month + "/" + year;
+    return day + '/' + month + '/' + year;
 }
 
 function formatTime(date) {
@@ -36,19 +36,19 @@ function formatTime(date) {
     let minute = date.getMinutes();
     let second = date.getSeconds();
     if (hour < 10) {
-        hour = "0" + hour;
+        hour = '0' + hour;
     }
     if (minute < 10) {
-        minute = "0" + minute;
+        minute = '0' + minute;
     }
     if (second < 10) {
-        second = "0" + second;
+        second = '0' + second;
     }
-    return hour + ":" + minute + ":" + second;
+    return hour + ':' + minute + ':' + second;
 }
 
 function formatDateTime(date) {
-    return formatDate(date) + " " + '(' + formatTime(date) + ')';
+    return `${formatDate(date)} (${formatTime(date)})`;
 }
 
 export {

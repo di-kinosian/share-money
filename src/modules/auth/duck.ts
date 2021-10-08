@@ -1,16 +1,16 @@
-import { createAction } from "redux-actions";
-import { signInWithPopup, GoogleAuthProvider } from "firebase/auth";
-import { transformUser } from "./helpers";
+import { createAction } from 'redux-actions';
+import { signInWithPopup, GoogleAuthProvider } from 'firebase/auth';
+import { transformUser } from './helpers';
 import {
     addUserToDatabaseService,
     signinService,
     signoutService,
     signupService,
-} from "./services";
-import { handleActions } from "redux-actions";
-import { all, put, takeLatest } from "redux-saga/effects";
-import { USER_STORAGE_KEY } from "./constants";
-import { auth } from "../../firebase";
+} from './services';
+import { handleActions } from 'redux-actions';
+import { all, put, takeLatest } from 'redux-saga/effects';
+import { USER_STORAGE_KEY } from './constants';
+import { auth } from '../../firebase';
 
 const initialUserState = JSON.parse(localStorage.getItem(USER_STORAGE_KEY));
 
@@ -24,21 +24,21 @@ const initialState = {
 
 const provider = new GoogleAuthProvider();
 
-const login = createAction("AUTH/LOGIN");
-const loginSuccess = createAction("AUTH/LOGIN_SUCCESS");
-const loginFailure = createAction("AUTH/LOGIN_FAILURE");
+const login = createAction('AUTH/LOGIN');
+const loginSuccess = createAction('AUTH/LOGIN_SUCCESS');
+const loginFailure = createAction('AUTH/LOGIN_FAILURE');
 
-const signup = createAction("AUTH/SIGNUP");
-const signupSuccess = createAction("AUTH/SIGNUP_SUCCESS");
-const signupFailure = createAction("AUTH/SIGNUP_FAILURE");
+const signup = createAction('AUTH/SIGNUP');
+const signupSuccess = createAction('AUTH/SIGNUP_SUCCESS');
+const signupFailure = createAction('AUTH/SIGNUP_FAILURE');
 
-const externalSignIn = createAction("AUTH/EXTERNAL_SIGN_IN");
+const externalSignIn = createAction('AUTH/EXTERNAL_SIGN_IN');
 
-export const logout = createAction("AUTH/LOGOUT");
+export const logout = createAction('AUTH/LOGOUT');
 
-export const toggleLoginModal = createAction("AUTH/SHOW_LOGIN_MODAL");
-export const toggleSignupModal = createAction("AUTH/SHOW_SIGNUP_MODAL");
-export const restoreUser = createAction("AUTH/RESTORE_USER");
+export const toggleLoginModal = createAction('AUTH/SHOW_LOGIN_MODAL');
+export const toggleSignupModal = createAction('AUTH/SHOW_SIGNUP_MODAL');
+export const restoreUser = createAction('AUTH/RESTORE_USER');
 
 const reducer = handleActions(
     {
@@ -95,7 +95,7 @@ function* signupSaga(action) {
             action.payload.email,
             action.payload.password
         );
-        console.log("here", data);
+        console.log('here', data);
         yield put(signupSuccess(transformUser(data)));
     } catch (err) {
         yield put(signupFailure(err));

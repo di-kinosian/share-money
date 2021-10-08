@@ -65,26 +65,29 @@ export const useValue = <T>(ref: Query) => {
     return { value, loading, error };
 };
 
-export const useMultipleValues = <T>(parentPath: string, keys: string[], childKey?: string) => {
+export const useMultipleValues = <T>(
+    parentPath: string,
+    keys: string[],
+    childKey?: string
+) => {
     const [loading, setLoading] = useState<boolean>(true);
     const [error, setError] = useState(null);
     const [list, setList] = useState<T[] | null>(null);
 
     useEffect(() => {
         try {
-            console.log(keys, "keys")
+            console.log(keys, 'keys');
             if (!keys.length) return;
-            Promise.all(keys.map((key) =>
-                get(child(ref(database), parentPath + key + childKey))
-            )).then(
-                snapshots => {
-                    const res = []
-                    snapshots.forEach(snapshot => res.push(snapshot.val()))
-                    setList(res)
-                    setLoading(false)
-                }
-            )
-
+            Promise.all(
+                keys.map((key) =>
+                    get(child(ref(database), parentPath + key + childKey))
+                )
+            ).then((snapshots) => {
+                const res = [];
+                snapshots.forEach((snapshot) => res.push(snapshot.val()));
+                setList(res);
+                setLoading(false);
+            });
         } catch (err) {
             setError(err);
             console.error(err, 'error');

@@ -3,7 +3,7 @@ import { v4 as uuid } from 'uuid';
 import { database } from '../../firebase';
 import { handleActions } from 'redux-actions';
 import { all, put, select, takeEvery, takeLatest } from 'redux-saga/effects';
-import { getBalance, getBalanceDetails } from './selectors';
+import { getBalanceDetails } from './selectors';
 import { getUser } from '../auth/duck';
 import {
     addBalanceService,

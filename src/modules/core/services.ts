@@ -1,6 +1,5 @@
 import { get, ref, remove, set } from 'firebase/database';
 import { all } from 'redux-saga/effects';
-import { v4 as uuid } from 'uuid';
 import { database } from '../../firebase';
 
 export function* deleteBalanceService(balanceId, userId) {

@@ -1,4 +1,4 @@
-import { EventHandler, useState } from 'react';
+import { useState } from 'react';
 
 import './styles.css';
 
@@ -7,7 +7,6 @@ import * as s from './styled';
 import Modal from '../../components/Modal';
 import Field from '../../components/Field';
 import Button from '../../components/Button';
-import { Input } from 'semantic-ui-react';
 
 interface ICreateBalanceModalProps {
     onClose: () => void;
