@@ -3,8 +3,8 @@ import {
     formatMoney,
     getConnatationForNumber,
     formatDateTime,
-} from '../../helpers/format';
-import deleteIcon from '../../assets/img/delete-icon.svg';
+} from '../../../helpers/format';
+import deleteIcon from '../../../assets/img/delete-icon.svg';
 
 function HistoryItem(props) {
 
