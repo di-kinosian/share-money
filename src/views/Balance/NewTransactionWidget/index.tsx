@@ -213,7 +213,6 @@ function NewTransactionWidget(props: IProps) {
                                 value={paidUsers[user.id]}
                                 type="number"
                                 id="amount-input"
-                                className="amount-input"
                                 onChange={changePaidAmount}
                                 onBlur={formatPaidAmount}
                                 data-id={user.id}
@@ -233,7 +232,6 @@ function NewTransactionWidget(props: IProps) {
                                 value={spentUsers[user.id]}
                                 type="number"
                                 id="amount-input"
-                                className="amount-input"
                                 data-id={user.id}
                                 onChange={changeSpentAmount}
                                 onBlur={formatSpentAmount}

@@ -21,5 +21,5 @@ export const Header = styled.header`
 export const PageWrapper = styled.main`
     display: flex;
     flex-direction: column;
-    margin-top: 50px;
+    padding-top: 50px;
 `;
