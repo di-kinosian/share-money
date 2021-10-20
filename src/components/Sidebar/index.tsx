@@ -28,8 +28,6 @@ const Sidebar: React.FC<IProps> = ({ isOpen, width, onClose, children }) => {
         }
     }, [isOpen]);
 
-    console.log(isOpened);
-
     return (
         isMounted && (
             <s.SidebarOverlay isOpened={isOpened} onClick={onClose}>

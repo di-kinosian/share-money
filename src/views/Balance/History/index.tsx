@@ -18,8 +18,6 @@ function History(props: IProps) {
 		getBalanceHistoryRef(props.balanceId)
 	);
 
-	console.log(list, props.users);
-
 	const [isHistoryVisible, setIsHistoryVisible] = useState(true);
 
 	const toggleHistory = () => {

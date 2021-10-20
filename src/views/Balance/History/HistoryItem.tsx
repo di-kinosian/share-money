@@ -17,7 +17,6 @@ function HistoryItem(props) {
 
 	const unshowHistoryInfo = (event) => {
 		setShowing(false);
-		// console.log('i am working');
 		event.stopPropagation();
 	};
 
@@ -31,8 +30,6 @@ function HistoryItem(props) {
 			total: paid - spent,
 		};
 	});
-
-	// console.log('!', props.data, props.users);
 
 	return (
 		<div className="history-item" key={props.id} onClick={showHistoryInfo}>
@@ -59,8 +56,6 @@ function HistoryItem(props) {
 					<div className="header-cell cell">Total</div>
 
 					{preparedUsers.map((user) => {
-						// console.log(user);
-
 						return (
 							<>
 								<div className="table-cell cell">
@@ -78,12 +73,6 @@ function HistoryItem(props) {
 							</>
 						);
 					})}
-
-					{/* <div className="table-cell cell">Diana</div>
-					<div className="table-cell cell">xxx</div>
-					<div className="table-cell cell">xxx</div>
-					<div className="table-cell cell">xxx</div> */}
-
 					<img
 						alt=""
 						src={liftIcon}

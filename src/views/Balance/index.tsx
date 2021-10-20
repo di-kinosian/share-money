@@ -70,7 +70,6 @@ function Balance() {
     };
 
     const onAddTransaction = (transaction) => {
-        console.log(transaction);
 
         addTransaction(balance, transaction);
     };
