@@ -70,7 +70,6 @@ function Balance() {
     };
 
     const onAddTransaction = (transaction) => {
-        console.log(transaction);
 
         addTransaction(balance, transaction);
     };
@@ -111,7 +110,7 @@ function Balance() {
                     onAdd={onAddTransaction}
                 />
             )}
-            <History balanceId={params.balanceId} userId={user?.uid} />
+            <History balanceId={params.balanceId} userId={user?.uid} users={users} />
         </PageContent>
     );
 }

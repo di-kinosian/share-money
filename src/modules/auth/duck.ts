@@ -95,7 +95,6 @@ function* signupSaga(action) {
             action.payload.email,
             action.payload.password
         );
-        console.log('here', data);
         yield put(signupSuccess(transformUser(data)));
     } catch (err) {
         yield put(signupFailure(err));
@@ -105,7 +104,6 @@ function* signupSaga(action) {
 function* externalSignInSaga(action) {
     try {
         const result = yield signInWithPopup(auth, provider);
-        console.log(result);
         const user = transformUser(result.user);
         yield put(loginSuccess(user));
         yield addUserToDatabaseService(user);
