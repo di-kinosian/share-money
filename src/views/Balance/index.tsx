@@ -111,7 +111,7 @@ function Balance() {
                     onAdd={onAddTransaction}
                 />
             )}
-            <History balanceId={params.balanceId} userId={user?.uid} />
+            <History balanceId={params.balanceId} userId={user?.uid} users={users} />
         </PageContent>
     );
 }

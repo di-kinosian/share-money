@@ -4,12 +4,13 @@ import HistoryItem from './HistoryItem';
 import { Loader } from 'semantic-ui-react';
 import { useList } from '../../../firebase/hooks';
 import { getBalanceHistoryRef } from '../../../firebase/refs';
-import { IHistoryItem } from '../../../firebase/types';
+import { IHistoryItem, IUserProfile } from '../../../firebase/types';
 import * as s from './styled';
 
 interface IProps {
 	balanceId: string;
 	userId: string;
+	users: IUserProfile[]
 }
 
 function History(props: IProps) {
@@ -17,7 +18,7 @@ function History(props: IProps) {
 		getBalanceHistoryRef(props.balanceId)
 	);
 
-	console.log(list);
+	console.log(list, props.users);
 
 	const [isHistoryVisible, setIsHistoryVisible] = useState(true);
 
@@ -46,14 +47,18 @@ function History(props: IProps) {
 						<Loader active />
 					) : (
 						list &&
-						list.map((historyItem) => (
-							<HistoryItem
-								title={historyItem.title}
-								amount={historyItem.amount}
-								date={historyItem.date}
-								key={historyItem.id}
-							/>
-						))
+						list.map((historyItem) => {
+							return (
+								<HistoryItem
+									title={historyItem.title}
+									amount={historyItem.amount}
+									date={historyItem.date}
+									key={historyItem.id}
+									data={historyItem}
+									users={props.users}
+								/>
+							);
+						})
 					)}
 				</s.HistoryContent>
 			)}
