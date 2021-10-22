@@ -131,6 +131,11 @@ select {
   display: none;
 } */
 
+.history-info-container {
+	position: relative;
+	margin-bottom: 12px;
+}
+
 .history-item {
 	margin: 24px 0px;
 	border-radius: 8px;
@@ -152,19 +157,18 @@ select {
 }
 
 .cell {
-    display: flex;
+	display: flex;
 	padding: 0 8px;
 	align-items: center;
-    height: 32px;
+	height: 32px;
 }
 
 .header-cell {
 	background-color: #f1f0f0;
-    font-weight: bold;
+	font-weight: bold;
 }
 
 .table-cell {
-	
 }
 
 .history-text {
@@ -289,20 +293,14 @@ select {
 	font-weight: 600;
 }
 
-.delete-icon {
+.lift-icon {
 	width: 20px;
 	height: 20px;
-	margin-left: 8px;
-	position: relative;
-	bottom: 4px;
-}
-
-.lift-icon {
-    width: 20px;
-	height: 20px;
-	position: relative;
-	top: 10px;
-    cursor: pointer;
+	cursor: pointer;
+	margin: 8px 0 0 0;
+	position: absolute;
+	right: 1px;
+	bottom: -17px;
 }
 
 .container-profile {

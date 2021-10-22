@@ -1,6 +1,7 @@
 import { useMemo, useState } from 'react';
 import 'semantic-ui-css/semantic.min.css';
 import './styles.css';
+
 import { useParams } from 'react-router-dom';
 import { Loader } from 'semantic-ui-react';
 import { PageContent } from './styled';

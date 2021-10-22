@@ -20,6 +20,10 @@ function HistoryItem(props) {
 		event.stopPropagation();
 	};
 
+	const total =
+		props.data.paidUsers[props.userId] -
+		props.data.spentUsers[props.userId];
+
 	const preparedUsers = props.users?.map((user) => {
 		const paid = props.data.paidUsers[user.id] || '-';
 		const spent = props.data.spentUsers[user.id] || '-';
@@ -34,45 +38,45 @@ function HistoryItem(props) {
 	return (
 		<div className="history-item" key={props.id} onClick={showHistoryInfo}>
 			<div className="history-item-row">
-				{formatDateTime(moment(props.dateTime).toDate())}
+				{formatDateTime(moment(props.date).toDate())}
 			</div>
 			<div className="history-item-row">
 				<div className="history-text">{props.title}</div>
 				<div
 					className={`history-amount ${getConnatationForNumber(
-						props.amount
+						total
 					)}`}
 				>
-					{formatMoney(props.amount)}
+					{formatMoney(total)}
 				</div>
-
-				<img alt="" src={deleteIcon} className="delete-icon" />
 			</div>
 			{showing ? (
-				<div className="history-full-info">
-					<div className="header-cell cell">Name</div>
-					<div className="header-cell cell">Paid</div>
-					<div className="header-cell cell">Spent</div>
-					<div className="header-cell cell">Total</div>
+				<div className="history-info-container">
+					<div className="history-full-info">
+						<div className="header-cell cell">Name</div>
+						<div className="header-cell cell">Paid</div>
+						<div className="header-cell cell">Spent</div>
+						<div className="header-cell cell">Total</div>
 
-					{preparedUsers.map((user) => {
-						return (
-							<>
-								<div className="table-cell cell">
-									{user.name}
-								</div>
-								<div className="table-cell cell">
-									{formatMoney(user.paid)}
-								</div>
-								<div className="table-cell cell">
-									{formatMoney(user.spent)}
-								</div>
-								<div className="table-cell cell">
-									{formatMoney(user.total)}
-								</div>
-							</>
-						);
-					})}
+						{preparedUsers.map((user) => {
+							return (
+								<>
+									<div className="table-cell cell">
+										{user.name}
+									</div>
+									<div className="table-cell cell">
+										{formatMoney(user.paid)}
+									</div>
+									<div className="table-cell cell">
+										{formatMoney(user.spent)}
+									</div>
+									<div className="table-cell cell">
+										{formatMoney(user.total)}
+									</div>
+								</>
+							);
+						})}
+					</div>
 					<img
 						alt=""
 						src={liftIcon}

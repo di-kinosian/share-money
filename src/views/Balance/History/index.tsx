@@ -49,11 +49,11 @@ function History(props: IProps) {
 							return (
 								<HistoryItem
 									title={historyItem.title}
-									amount={historyItem.amount}
 									date={historyItem.date}
 									key={historyItem.id}
 									data={historyItem}
 									users={props.users}
+									userId={props.userId}
 								/>
 							);
 						})
