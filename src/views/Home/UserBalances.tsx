@@ -12,6 +12,7 @@ import { push, set } from 'firebase/database';
 import { getBalanceDetailsRef, getUserBalancesRef } from '../../firebase/refs';
 import { IBalanceDetails } from '../../firebase/types';
 import { useKeysList, useMultipleValues } from '../../firebase/hooks';
+import MoneyValue from '../../components/MoneyValue';
 
 function BalanceItem(props) {
 	const history = useHistory();
@@ -26,9 +27,12 @@ function BalanceItem(props) {
 		event.stopPropagation();
 	};
 
+	const balanceAmount = props.users[props.userId];
+
 	return (
 		<div className="balance" onClick={handelBalanceClick}>
 			<div className="balance-name">{props.title}</div>
+			<MoneyValue value={balanceAmount}/>
 			<img
 				alt=""
 				src={deleteIcon}
@@ -106,6 +110,7 @@ function UserBalances() {
 						id={balance.id}
 						title={balance.title}
 						users={balance.users}
+						userId={user._id}
 					/>
 				))}
 			{isAddButtonVisible && (

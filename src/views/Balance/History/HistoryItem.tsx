@@ -5,8 +5,8 @@ import {
 	getConnatationForNumber,
 	formatDateTime,
 } from '../../../helpers/format';
-import deleteIcon from '../../../assets/img/delete-icon.svg';
 import liftIcon from '../../../assets/img/lift-icon-angle.png';
+import MoneyValue from '../../../components/MoneyValue';
 
 function HistoryItem(props) {
 	const [showing, setShowing] = useState(false);
@@ -42,13 +42,7 @@ function HistoryItem(props) {
 			</div>
 			<div className="history-item-row">
 				<div className="history-text">{props.title}</div>
-				<div
-					className={`history-amount ${getConnatationForNumber(
-						total
-					)}`}
-				>
-					{formatMoney(total)}
-				</div>
+				<MoneyValue value={total} />
 			</div>
 			{showing ? (
 				<div className="history-info-container">
