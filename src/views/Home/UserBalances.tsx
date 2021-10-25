@@ -12,7 +12,6 @@ import { push, set } from 'firebase/database';
 import { getBalanceDetailsRef, getUserBalancesRef } from '../../firebase/refs';
 import { IBalanceDetails } from '../../firebase/types';
 import { useKeysList, useMultipleValues } from '../../firebase/hooks';
-import { formatMoney } from '../../helpers/format';
 import MoneyValue from '../../components/MoneyValue';
 
 function BalanceItem(props) {
