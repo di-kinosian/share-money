@@ -11,6 +11,7 @@ function Home() {
     const user = useSelector(getUser);
 
     if (user) {
+        console.log('user', user);
         return <UserBalances />;
     }
 

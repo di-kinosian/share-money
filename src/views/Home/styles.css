@@ -6,7 +6,6 @@
     padding: 8px;
     display: flex;
     align-items: center;
-    justify-content: space-between;
     border-radius: 8px;
     box-shadow: 1px 1px 9px rgb(34 60 80 / 40%);
     flex-shrink: 0;

@@ -175,9 +175,14 @@ select {
 	opacity: 0.9;
 }
 
-.history-amount {
+.history-amount,
+.balance-amount {
 	font-weight: 700;
 	margin-left: auto;
+}
+
+.balance-amount {
+	font-size: 14px;
 }
 
 .history-amount.positive {

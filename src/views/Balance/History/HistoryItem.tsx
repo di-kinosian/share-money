@@ -5,7 +5,6 @@ import {
 	getConnatationForNumber,
 	formatDateTime,
 } from '../../../helpers/format';
-import deleteIcon from '../../../assets/img/delete-icon.svg';
 import liftIcon from '../../../assets/img/lift-icon-angle.png';
 
 function HistoryItem(props) {
