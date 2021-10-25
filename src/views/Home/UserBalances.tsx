@@ -61,7 +61,6 @@ const addBalance = (userId: string, title: string) => {
 
 function UserBalances() {
 	const user = useSelector(getUser);
-	console.log('user2', user);
 	const dispatch = useDispatch();
 
 	const { list: keys } = useKeysList(getUserBalancesRef(user._id));
@@ -101,7 +100,6 @@ function UserBalances() {
 		() => !addBalanceInProgress && !isCreate,
 		[addBalanceInProgress, isCreate]
 	);
-	console.log('list', list);
 
 	return (
 		<div className="container-home-page">
