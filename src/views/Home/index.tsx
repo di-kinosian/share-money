@@ -5,6 +5,8 @@ import UserBalances from './UserBalances';
 import Button from '../../components/Button';
 import { useHistory } from 'react-router-dom';
 import { ROUTES } from '../../routes/constants';
+import * as s from './styled';
+
 
 function Home() {
     const history = useHistory();
@@ -18,12 +20,12 @@ function Home() {
         history.push(ROUTES.LOGIN);
     };
     return (
-        <div className="container-home-page">
-            <div className="home-page">Spent money together!</div>
+        <s.ContainerHomePage>
+            <s.PageTitle>Spent money together!</s.PageTitle>
             <Button variant="primary" onClick={onLoginClick}>
                 Login
             </Button>
-        </div>
+        </s.ContainerHomePage>
     );
 }
 

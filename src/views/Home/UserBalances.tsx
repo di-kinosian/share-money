@@ -30,16 +30,15 @@ function BalanceItem(props) {
 	const balanceAmount = props.users[props.userId];
 
 	return (
-		<div className="balance" onClick={handelBalanceClick}>
-			<div className="balance-name">{props.title}</div>
+		<s.Balance onClick={handelBalanceClick}>
+			<s.BalanceName>{props.title}</s.BalanceName>
 			<MoneyValue value={balanceAmount}/>
-			<img
+			<s.BalanceDeleteIcon
 				alt=""
 				src={deleteIcon}
-				className="balance-delete-icon"
 				onClick={deleteBalanceItem}
 			/>
-		</div>
+		</s.Balance>
 	);
 }
 // Firebase
@@ -101,8 +100,8 @@ function UserBalances() {
 	);
 
 	return (
-		<div className="container-home-page">
-			<div className="home-page">Balances</div>
+		<s.ContainerHomePage>
+			<s.PageTitle>Balances</s.PageTitle>
 			{list &&
 				list.map((balance) => (
 					<BalanceItem
@@ -124,7 +123,7 @@ function UserBalances() {
 					onCreate={createNewBalance}
 				/>
 			)}
-		</div>
+		</s.ContainerHomePage>
 	);
 }
 

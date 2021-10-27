@@ -178,7 +178,6 @@ function NewTransactionWidget(props: IProps) {
                             min={0}
                             type="number"
                             id="amount-input"
-                            className="amount-input"
                         />
                     </Field>
                 </s.TracsactionField>
