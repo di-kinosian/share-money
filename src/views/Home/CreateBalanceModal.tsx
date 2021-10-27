@@ -1,9 +1,6 @@
 import { useState } from 'react';
-
 import './styles.css';
-
 import * as s from './styled';
-
 import Modal from '../../components/Modal';
 import Field from '../../components/Field';
 import Button from '../../components/Button';
@@ -37,12 +34,12 @@ function CreateBalanceModal({ onClose, onCreate }: ICreateBalanceModalProps) {
                     />
                 </Field>
 
-                <div className="modal-buttons">
+                <s.ModalButton>
                     <Button onClick={onClose}>Cancel</Button>
                     <Button variant="primary" onClick={createNewBalance}>
                         Create
                     </Button>
-                </div>
+                </s.ModalButton>
             </s.ModalContent>
         </Modal>
     );

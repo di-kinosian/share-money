@@ -101,12 +101,6 @@ select {
 	padding: 16px 0px;
 }
 
-.text {
-	opacity: 0.9;
-	font-weight: 600;
-	margin-bottom: 6px;
-}
-
 .confirmation-button {
 	background: rgb(105, 226, 212);
 	border: none;
@@ -127,35 +121,6 @@ select {
 	margin-right: 16px;
 }
 
-/* .hidden {
-  display: none;
-} */
-
-.history-info-container {
-	position: relative;
-	margin-bottom: 12px;
-}
-
-.history-item {
-	margin: 24px 0px;
-	border-radius: 8px;
-	/* border: 1px solid black; */
-	padding: 16px;
-	box-shadow: 2px 2px 7px rgba(34, 60, 80, 0.3);
-}
-
-.history-item-row {
-	display: flex;
-	width: 100%;
-}
-
-.history-full-info {
-	display: grid;
-	grid-template-columns: 1fr 60px 60px 60px;
-	grid-template-rows: 32px;
-	margin: 8px 0 0 0;
-}
-
 .cell {
 	display: flex;
 	padding: 0 8px;
@@ -169,10 +134,6 @@ select {
 }
 
 .table-cell {
-}
-
-.history-text {
-	opacity: 0.9;
 }
 
 .history-amount,
@@ -197,26 +158,6 @@ select {
 	transform: rotate(-180deg);
 }
 
-.burger-icon {
-	width: 24px;
-	height: 24px;
-	position: absolute;
-	top: 14px;
-	right: 20px;
-	cursor: pointer;
-}
-
-.logo-icon {
-	width: 30px;
-	height: 30px;
-}
-
-.logo {
-	position: absolute;
-	top: 10px;
-	left: 12px;
-}
-
 .menu-overlay {
 	position: fixed;
 	top: 0px;
@@ -224,48 +165,6 @@ select {
 	width: 100vw;
 	height: 100vh;
 	background: rgba(0, 0, 0, 0.5);
-}
-
-.menu {
-	width: 100%;
-	height: 100vh;
-	background: rgb(255, 255, 255);
-	box-shadow: 0 20px rgba(34, 36, 38, 0.15);
-	padding-top: 50px;
-	display: flex;
-	flex-direction: column;
-	justify-content: space-between;
-}
-
-.close-menu-icon {
-	position: absolute;
-	top: 13px;
-	right: 13px;
-	width: 24px;
-	height: 24px;
-	cursor: pointer;
-}
-
-.menu-row {
-	width: 100%;
-	height: 50px;
-	display: flex;
-	align-items: center;
-	cursor: pointer;
-	border-top: 1px solid #d8d8d8;
-}
-
-.menu-icon.icon {
-	font-size: 25px;
-	line-height: 25px;
-	padding-left: 9px;
-}
-
-.menu-text {
-	font-size: 16px;
-	color: black;
-	font-weight: 500;
-	padding-left: 10px;
 }
 
 .user-row {
@@ -296,26 +195,6 @@ select {
 	font-size: 14px;
 	line-height: 1.4285em;
 	font-weight: 600;
-}
-
-.lift-icon {
-	width: 20px;
-	height: 20px;
-	cursor: pointer;
-	margin: 8px 0 0 0;
-	position: absolute;
-	right: 1px;
-	bottom: -17px;
-}
-
-.container-profile {
-	max-width: 400px;
-	margin: 0 auto;
-	display: flex;
-	flex-direction: column;
-	width: 100%;
-	flex-grow: 1;
-	overflow: auto;
 }
 
 .profile {
