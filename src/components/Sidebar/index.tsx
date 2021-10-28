@@ -17,7 +17,7 @@ const Sidebar: React.FC<IProps> = ({ isOpen, width, onClose, children }) => {
             setIsMounted(true);
             setTimeout(() => {
                 setIsOpened(true);
-            }, 0);
+            }, 30);
         }
         if (!isOpen && isMounted) {
             // closing actions;

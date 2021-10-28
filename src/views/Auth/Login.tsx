@@ -1,5 +1,5 @@
 import { connect, useDispatch } from 'react-redux';
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Divider, Icon, Message } from 'semantic-ui-react';
 import { externalSignIn, login } from '../../modules/auth/duck';
 import * as s from './styled';

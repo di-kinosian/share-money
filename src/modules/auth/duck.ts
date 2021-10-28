@@ -5,7 +5,6 @@ import {
     addUserToDatabaseService,
     signinService,
     signoutService,
-    signupService,
 } from './services';
 import { handleActions } from 'redux-actions';
 import { all, put, takeLatest } from 'redux-saga/effects';
@@ -25,11 +24,9 @@ const initialState = {
 const provider = new GoogleAuthProvider();
 
 const login = createAction('AUTH/LOGIN');
-const loginSuccess = createAction('AUTH/LOGIN_SUCCESS');
+export const loginSuccess = createAction('AUTH/LOGIN_SUCCESS');
 const loginFailure = createAction('AUTH/LOGIN_FAILURE');
 
-const signup = createAction('AUTH/SIGNUP');
-const signupSuccess = createAction('AUTH/SIGNUP_SUCCESS');
 const signupFailure = createAction('AUTH/SIGNUP_FAILURE');
 
 const externalSignIn = createAction('AUTH/EXTERNAL_SIGN_IN');
@@ -89,41 +86,13 @@ function* loginSaga(action) {
     }
 }
 
-function* signupSaga(action) {
-    try {
-        const data = yield signupService(
-            action.payload.email,
-            action.payload.password
-        );
-        yield put(signupSuccess(transformUser(data)));
-    } catch (err) {
-        yield put(signupFailure(err));
-    }
-}
-
 function* externalSignInSaga(action) {
     try {
         const result = yield signInWithPopup(auth, provider);
         const user = transformUser(result.user);
         yield put(loginSuccess(user));
         yield addUserToDatabaseService(user);
-        // .then((result) => {
-        // 	// This gives you a Google Access Token. You can use it to access the Google API.
-        // 	const credential = GoogleAuthProvider.credentialFromResult(result);
-        // 	const token = credential.accessToken;
-        // 	// The signed-in user info.
-        // 	const user = result.user;
-        // 	// ...
-        // }).catch((error) => {
-        // 	// Handle Errors here.
-        // 	const errorCode = error.code;
-        // 	const errorMessage = error.message;
-        // 	// The email of the user's account used.
-        // 	const email = error.email;
-        // 	// The AuthCredential type that was used.
-        // 	const credential = GoogleAuthProvider.credentialFromError(error);
-        // 	// ...
-        // });
+
     } catch (err) {
         yield put(signupFailure(err));
     }
@@ -144,7 +113,6 @@ function* logoutSaga() {
 export function* saga() {
     yield all([
         takeLatest(login, loginSaga),
-        takeLatest(signup, signupSaga),
         takeLatest([restoreUser, loginSuccess], persistUserSaga),
         takeLatest(logout, logoutSaga),
         takeLatest(externalSignIn, externalSignInSaga),
@@ -155,4 +123,4 @@ export const getUser = (state) => state.auth.user;
 
 export default reducer;
 
-export { login, signup, externalSignIn };
+export { login, externalSignIn };

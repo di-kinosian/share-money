@@ -1,130 +1,129 @@
 * {
-	box-sizing: border-box;
+    box-sizing: border-box;
 }
 
 body {
-	font-family: 'Montserrat', sans-serif;
-	height: 100vh;
-	margin: 0 auto;
-	font-size: 16px;
+    font-family: 'Montserrat', sans-serif;
+    margin: 0 auto;
+    font-size: 16px;
 }
 
 #root {
-	height: 100%;
+    height: 100%;
 }
 
 input {
-	height: 40px;
-	border-radius: 4px;
-	padding: 0 6px;
-	font-size: 16px;
-	border: 1px solid rgb(169, 169, 169);
-	width: 100%;
+    height: 40px;
+    border-radius: 4px;
+    padding: 0 6px;
+    font-size: 16px;
+    border: 1px solid rgb(169, 169, 169);
+    width: 100%;
 }
 
 select {
-	height: 40px;
-	width: 130px;
-	background: transparent;
-	border-radius: 4px;
-	font-size: 16px;
-	padding: 0 2px;
+    height: 40px;
+    width: 130px;
+    background: transparent;
+    border-radius: 4px;
+    font-size: 16px;
+    padding: 0 2px;
 }
 
 .container {
-	display: flex;
+    display: flex;
 
-	flex-direction: column;
+    flex-direction: column;
 
-	height: 100%;
+    height: 100%;
 }
 
 .header {
-	display: flex;
-	align-items: center;
-	justify-content: center;
-	width: 100%;
-	height: 50px;
-	font-weight: 700;
-	/* border-bottom: 1px solid black; */
-	font-size: 20px;
-	text-transform: uppercase;
-	flex-shrink: 0;
-	position: relative;
-	box-shadow: 0px 3px 5px rgba(34, 60, 80, 0.2);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    height: 50px;
+    font-weight: 700;
+    /* border-bottom: 1px solid black; */
+    font-size: 20px;
+    text-transform: uppercase;
+    flex-shrink: 0;
+    position: relative;
+    box-shadow: 0px 3px 5px rgba(34, 60, 80, 0.2);
 }
 
 .content {
-	max-width: 400px;
-	margin: 0 auto;
+    max-width: 400px;
+    margin: 0 auto;
 
-	display: flex;
-	flex-direction: column;
-	width: 100%;
-	flex-grow: 1;
-	overflow: auto;
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    flex-grow: 1;
+    overflow: auto;
 }
 
 .balance-amount {
-	font-size: 60px;
-	font-weight: 700;
-	line-height: 60px;
+    font-size: 60px;
+    font-weight: 700;
+    line-height: 60px;
 }
 
 .transaction-block {
-	display: flex;
-	flex-direction: column;
-	margin: 0px 16px;
-	border-radius: 8px;
-	padding: 16px 0 16px 16px;
-	position: relative;
-	box-shadow: 1px 1px 9px rgba(34, 60, 80, 0.4);
+    display: flex;
+    flex-direction: column;
+    margin: 0px 16px;
+    border-radius: 8px;
+    padding: 16px 0 16px 16px;
+    position: relative;
+    box-shadow: 1px 1px 9px rgba(34, 60, 80, 0.4);
 }
 
 .close-button {
-	position: absolute;
-	top: 10px;
-	right: 10px;
-	cursor: pointer;
-	z-index: 1;
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    cursor: pointer;
+    z-index: 1;
 }
 
 .close-icon {
-	width: 22px;
-	height: 22px;
+    width: 22px;
+    height: 22px;
 }
 
 .row {
-	display: flex;
-	justify-content: space-between;
-	border-radius: 8px;
-	padding: 16px 0px;
+    display: flex;
+    justify-content: space-between;
+    border-radius: 8px;
+    padding: 16px 0px;
 }
 
 .text {
-	opacity: 0.9;
-	font-weight: 600;
-	margin-bottom: 6px;
+    opacity: 0.9;
+    font-weight: 600;
+    margin-bottom: 6px;
 }
 
 .confirmation-button {
-	background: rgb(105, 226, 212);
-	border: none;
-	border-radius: 8px;
-	color: #fff;
-	font-size: 18px;
-	cursor: pointer;
-	padding: 0px 12px;
-	height: 40px;
-	width: 80px;
-	cursor: pointer;
-	margin-left: auto;
-	margin-right: 16px;
+    background: rgb(105, 226, 212);
+    border: none;
+    border-radius: 8px;
+    color: #fff;
+    font-size: 18px;
+    cursor: pointer;
+    padding: 0px 12px;
+    height: 40px;
+    width: 80px;
+    cursor: pointer;
+    margin-left: auto;
+    margin-right: 16px;
 }
 
 .transaction-field {
-	flex-grow: 1;
-	margin-right: 16px;
+    flex-grow: 1;
+    margin-right: 16px;
 }
 
 /* .hidden {
@@ -132,232 +131,232 @@ select {
 } */
 
 .history-info-container {
-	position: relative;
-	margin-bottom: 12px;
+    position: relative;
+    margin-bottom: 12px;
 }
 
 .history-item {
-	margin: 24px 0px;
-	border-radius: 8px;
-	/* border: 1px solid black; */
-	padding: 16px;
-	box-shadow: 2px 2px 7px rgba(34, 60, 80, 0.3);
+    margin: 24px 0px;
+    border-radius: 8px;
+    /* border: 1px solid black; */
+    padding: 16px;
+    box-shadow: 2px 2px 7px rgba(34, 60, 80, 0.3);
 }
 
 .history-item-row {
-	display: flex;
-	width: 100%;
+    display: flex;
+    width: 100%;
 }
 
 .history-full-info {
-	display: grid;
-	grid-template-columns: 1fr 60px 60px 60px;
-	grid-template-rows: 32px;
-	margin: 8px 0 0 0;
+    display: grid;
+    grid-template-columns: 1fr 60px 60px 60px;
+    grid-template-rows: 32px;
+    margin: 8px 0 0 0;
 }
 
 .cell {
-	display: flex;
-	padding: 0 8px;
-	align-items: center;
-	height: 32px;
+    display: flex;
+    padding: 0 8px;
+    align-items: center;
+    height: 32px;
 }
 
 .header-cell {
-	background-color: #f1f0f0;
-	font-weight: bold;
+    background-color: #f1f0f0;
+    font-weight: bold;
 }
 
 .table-cell {
 }
 
 .history-text {
-	opacity: 0.9;
+    opacity: 0.9;
 }
 
 .history-amount {
-	font-weight: 700;
-	margin-left: auto;
+    font-weight: 700;
+    margin-left: auto;
 }
 
 .history-amount.positive {
-	color: #1fb141;
+    color: #1fb141;
 }
 
 .history-amount.negative {
-	color: red;
+    color: red;
 }
 
 .close {
-	transform: rotate(-180deg);
+    transform: rotate(-180deg);
 }
 
 .burger-icon {
-	width: 24px;
-	height: 24px;
-	position: absolute;
-	top: 14px;
-	right: 20px;
-	cursor: pointer;
+    width: 24px;
+    height: 24px;
+    position: absolute;
+    top: 14px;
+    right: 20px;
+    cursor: pointer;
 }
 
 .logo-icon {
-	width: 30px;
-	height: 30px;
+    width: 30px;
+    height: 30px;
 }
 
 .logo {
-	position: absolute;
-	top: 10px;
-	left: 12px;
+    position: absolute;
+    top: 10px;
+    left: 12px;
 }
 
 .menu-overlay {
-	position: fixed;
-	top: 0px;
-	left: 0px;
-	width: 100vw;
-	height: 100vh;
-	background: rgba(0, 0, 0, 0.5);
+    position: fixed;
+    top: 0px;
+    left: 0px;
+    width: 100vw;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.5);
 }
 
 .menu {
-	width: 100%;
-	height: 100vh;
-	background: rgb(255, 255, 255);
-	box-shadow: 0 20px rgba(34, 36, 38, 0.15);
-	padding-top: 50px;
-	display: flex;
-	flex-direction: column;
-	justify-content: space-between;
+    width: 100%;
+    height: 100%;
+    background: rgb(255, 255, 255);
+    box-shadow: 0 20px rgba(34, 36, 38, 0.15);
+    padding-top: 50px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
 }
 
 .close-menu-icon {
-	position: absolute;
-	top: 13px;
-	right: 13px;
-	width: 24px;
-	height: 24px;
-	cursor: pointer;
+    position: absolute;
+    top: 13px;
+    right: 13px;
+    width: 24px;
+    height: 24px;
+    cursor: pointer;
 }
 
 .menu-row {
-	width: 100%;
-	height: 50px;
-	display: flex;
-	align-items: center;
-	cursor: pointer;
-	border-top: 1px solid #d8d8d8;
+    width: 100%;
+    height: 50px;
+    display: flex;
+    align-items: center;
+    cursor: pointer;
+    border-top: 1px solid #d8d8d8;
 }
 
 .menu-icon.icon {
-	font-size: 25px;
-	line-height: 25px;
-	padding-left: 9px;
+    font-size: 25px;
+    line-height: 25px;
+    padding-left: 9px;
 }
 
 .menu-text {
-	font-size: 16px;
-	color: black;
-	font-weight: 500;
-	padding-left: 10px;
+    font-size: 16px;
+    color: black;
+    font-weight: 500;
+    padding-left: 10px;
 }
 
 .user-row {
-	display: flex;
-	flex-direction: column;
+    display: flex;
+    flex-direction: column;
 }
 
 .user-block {
-	display: flex;
+    display: flex;
 }
 /* .User {
     justify-content: space-between;
 } */
 
 .user-input {
-	height: 40px;
-	border-radius: 4px;
-	padding: 0 6px;
-	font-size: 16px;
-	border: 1px solid rgb(169, 169, 169);
-	width: 100px;
-	margin-left: 30px;
+    height: 40px;
+    border-radius: 4px;
+    padding: 0 6px;
+    font-size: 16px;
+    border: 1px solid rgb(169, 169, 169);
+    width: 100px;
+    margin-left: 30px;
 }
 
 .User {
-	margin: 10px 0 5px 0;
-	font-family: 'Helvetica Neue', Arial, Helvetica, sans-serif;
-	font-size: 14px;
-	line-height: 1.4285em;
-	font-weight: 600;
+    margin: 10px 0 5px 0;
+    font-family: 'Helvetica Neue', Arial, Helvetica, sans-serif;
+    font-size: 14px;
+    line-height: 1.4285em;
+    font-weight: 600;
 }
 
 .lift-icon {
-	width: 20px;
-	height: 20px;
-	cursor: pointer;
-	margin: 8px 0 0 0;
-	position: absolute;
-	right: 1px;
-	bottom: -17px;
+    width: 20px;
+    height: 20px;
+    cursor: pointer;
+    margin: 8px 0 0 0;
+    position: absolute;
+    right: 1px;
+    bottom: -17px;
 }
 
 .container-profile {
-	max-width: 400px;
-	margin: 0 auto;
-	display: flex;
-	flex-direction: column;
-	width: 100%;
-	flex-grow: 1;
-	overflow: auto;
+    max-width: 400px;
+    margin: 0 auto;
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    flex-grow: 1;
+    overflow: auto;
 }
 
 .profile {
-	display: flex;
-	flex-direction: column;
-	margin: 30px 16px;
-	border-radius: 8px;
-	padding: 16px;
-	position: relative;
-	box-shadow: 1px 1px 9px rgb(34 60 80 / 40%);
+    display: flex;
+    flex-direction: column;
+    margin: 30px 16px;
+    border-radius: 8px;
+    padding: 16px;
+    position: relative;
+    box-shadow: 1px 1px 9px rgb(34 60 80 / 40%);
 }
 
 #input-name,
 #input-email {
-	height: 40px;
-	width: 100%;
-	border-radius: 4px;
-	font-size: 16px;
-	border: 1px solid rgb(169, 169, 169);
-	margin: 0px 0 16px 0;
-	box-sizing: border-box;
+    height: 40px;
+    width: 100%;
+    border-radius: 4px;
+    font-size: 16px;
+    border: 1px solid rgb(169, 169, 169);
+    margin: 0px 0 16px 0;
+    box-sizing: border-box;
 }
 
 .save-button {
-	background: rgb(105, 226, 212);
-	border: none;
-	border-radius: 8px;
-	color: #fff;
-	font-size: 18px;
-	cursor: pointer;
-	height: 40px;
-	width: 80px;
-	cursor: pointer;
-	margin-left: auto;
+    background: rgb(105, 226, 212);
+    border: none;
+    border-radius: 8px;
+    color: #fff;
+    font-size: 18px;
+    cursor: pointer;
+    height: 40px;
+    width: 80px;
+    cursor: pointer;
+    margin-left: auto;
 }
 
 .add-balance-button {
-	margin: 16px 0;
-	display: flex;
-	height: 40px;
-	align-items: center;
-	font-size: 18px;
-	font-weight: 600;
-	color: rgb(105, 226, 212);
-	cursor: pointer;
+    margin: 16px 0;
+    display: flex;
+    height: 40px;
+    align-items: center;
+    font-size: 18px;
+    font-weight: 600;
+    color: rgb(105, 226, 212);
+    cursor: pointer;
 }
 
 .ui.active.loader {
-	color: rgb(105, 226, 212);
+    color: rgb(105, 226, 212);
 }

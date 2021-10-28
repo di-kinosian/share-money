@@ -2,9 +2,9 @@ import {
     createUserWithEmailAndPassword,
     signInWithEmailAndPassword,
     signOut,
-} from "firebase/auth";
-import { ref, set } from "firebase/database";
-import { auth, database } from "../../firebase";
+} from 'firebase/auth';
+import { ref, set } from 'firebase/database';
+import { auth, database } from '../../firebase';
 
 export const signinService = (email, password) =>
     signInWithEmailAndPassword(auth, email, password).then(
@@ -17,7 +17,7 @@ export const signupService = (email, password) => {
     );
 };
 
-export const signoutService = () => signOut(auth).then(() => true);
+export const signoutService = () => signOut(auth);
 
 export function* addUserToDatabaseService(user) {
     yield set(ref(database, `users/${user._id}/profile`), {
