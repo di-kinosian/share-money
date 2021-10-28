@@ -4,14 +4,15 @@ import '../../App.css';
 import { useState } from 'react';
 
 import burgerIcon from '../../assets/img/burger-icon.svg';
-import { Icon } from 'semantic-ui-react';
 import { Link } from 'react-router-dom';
 import { useDispatch } from 'react-redux';
 import { logout } from '../../modules/auth/duck';
 import Sidebar from '../../components/Sidebar';
 import * as s from './styled';
+import { useAuth } from '../../firebase/auth';
 
 function HeaderProvider(props) {
+    useAuth()
 	const [isMenuVisible, setIsMenuVisible] = useState(false);
 	const dispatch = useDispatch();
 

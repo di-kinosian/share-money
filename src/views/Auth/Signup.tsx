@@ -1,18 +1,24 @@
-import { connect, useDispatch } from "react-redux";
-import React, { useEffect, useState } from "react";
-import { Divider, Icon, Message } from "semantic-ui-react";
-import { externalSignIn, signup } from "../../modules/auth/duck";
-import * as s from "./styled";
-import { useHistory } from "react-router-dom";
-import { ROUTES } from "../../routes/constants";
+import { connect, useDispatch } from 'react-redux';
+import React, { useEffect, useState } from 'react';
+import { getAuth, createUserWithEmailAndPassword } from '@firebase/auth';
+import { Divider, Icon } from 'semantic-ui-react';
+import { externalSignIn } from '../../modules/auth/duck';
+import * as s from './styled';
+import { useHistory } from 'react-router-dom';
+import { ROUTES } from '../../routes/constants';
 
-const SignupModal = (props) => {
+const errorMessageMap = {
+    'auth/weak-password': 'The password is weak',
+    'auth/invalid-email': 'Email is invalid',
+};
+
+const Signup = (props) => {
     const dispatch = useDispatch();
     const history = useHistory();
-    const [email, setEmail] = useState("");
-    const [name, setName] = useState("");
+    const [email, setEmail] = useState('');
+    const [name, setName] = useState('');
     const [error, setError] = useState();
-    const [password, setPassword] = useState("");
+    const [password, setPassword] = useState('');
 
     useEffect(() => {
         if (props.error) {
@@ -42,7 +48,18 @@ const SignupModal = (props) => {
 
     const onSubmit = (e) => {
         e.preventDefault();
-        dispatch(signup());
+        const auth = getAuth();
+        createUserWithEmailAndPassword(auth, email, password)
+            .then((userCredential) => {
+                // Signed in
+                const user = userCredential.user;
+                console.log(user);
+                // ...
+            })
+            .catch((error) => {
+                const errorCode = error.code;
+                setError(errorMessageMap[errorCode] || errorCode);
+            });
     };
 
     const handleLoginClick = () => {
@@ -76,7 +93,7 @@ const SignupModal = (props) => {
                     value={password}
                     onChange={onChangePassword}
                 />
-                <Message error content={error} />
+                {error && <s.ErrorMessage>{error}</s.ErrorMessage>}
                 <s.SumbitButton
                     color="teal"
                     type="submit"
@@ -100,4 +117,4 @@ const mapState = (state) => ({
 
 const connector = connect(mapState);
 
-export default connector(SignupModal);
+export default connector(Signup);

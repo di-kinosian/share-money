@@ -49,7 +49,7 @@ export const Logo = styled(Link)`
 
 export const Menu = styled.div`
 	width: 100%;
-	height: 100vh;
+	height: 100%;
 	background: rgb(255, 255, 255);
 	box-shadow: 0 20px rgba(34, 36, 38, 0.15);
 	padding-top: 50px;
@@ -77,9 +77,11 @@ export const MenuRow = styled.div`
 `;
 
 export const MenuIcon = styled(Icon)`
-	font-size: 25px;
-	line-height: 25px;
-	padding-left: 9px;
+	&.icon {
+		font-size: 25px;
+		line-height: 25px;
+		padding-left: 9px;
+	}
 `;
 
 export const MenuText = styled.div`

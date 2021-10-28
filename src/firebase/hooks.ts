@@ -76,7 +76,7 @@ export const useMultipleValues = <T>(
 
 	useEffect(() => {
 		try {
-			if (!keys.length) return;
+			if (!keys?.length) return;
 			Promise.all(
 				keys.map((key) =>
 					get(child(ref(database), parentPath + key + childKey))
