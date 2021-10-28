@@ -1,8 +1,8 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useMemo, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import './styles.css';
 import { getUser } from '../../modules/auth/duck';
-import { fetchBalances, deleteBalance } from '../../modules/core/duck';
+import { deleteBalance } from '../../modules/core/duck';
 import deleteIcon from '../../assets/img/delete-icon.svg';
 import { useHistory } from 'react-router-dom';
 import * as s from './styled';
@@ -15,116 +15,109 @@ import { useKeysList, useMultipleValues } from '../../firebase/hooks';
 import MoneyValue from '../../components/MoneyValue';
 
 function BalanceItem(props) {
-	const history = useHistory();
-	const dispatch = useDispatch();
+    const history = useHistory();
+    const dispatch = useDispatch();
 
-	const handelBalanceClick = () => {
-		history.push('/balance/' + props.id);
-	};
+    const handelBalanceClick = () => {
+        history.push('/balance/' + props.id);
+    };
 
-	const deleteBalanceItem = (event) => {
-		dispatch(deleteBalance(props.id));
-		event.stopPropagation();
-	};
+    const deleteBalanceItem = (event) => {
+        dispatch(deleteBalance(props.id));
+        event.stopPropagation();
+    };
 
-	const balanceAmount = props.users[props.userId];
+    const balanceAmount = props.users[props.userId];
 
-	return (
-		<s.Balance onClick={handelBalanceClick}>
-			<s.BalanceName>{props.title}</s.BalanceName>
-			<MoneyValue value={balanceAmount}/>
-			<s.BalanceDeleteIcon
-				alt=""
-				src={deleteIcon}
-				onClick={deleteBalanceItem}
-			/>
-		</s.Balance>
-	);
+    return (
+        <s.Balance onClick={handelBalanceClick}>
+            <s.BalanceName>{props.title}</s.BalanceName>
+            <MoneyValue value={balanceAmount} />
+            <s.BalanceDeleteIcon
+                alt=""
+                src={deleteIcon}
+                onClick={deleteBalanceItem}
+            />
+        </s.Balance>
+    );
 }
 // Firebase
 const addBalance = (userId: string, title: string) => {
-	const newUserBalanceRef = push(getUserBalancesRef(userId));
-	const balanceId: string = newUserBalanceRef.key as string;
-	const newBalance: IBalanceDetails = {
-		users: {
-			[userId]: 0,
-		},
-		id: balanceId,
-		title,
-	};
+    const newUserBalanceRef = push(getUserBalancesRef(userId));
+    const balanceId: string = newUserBalanceRef.key as string;
+    const newBalance: IBalanceDetails = {
+        users: {
+            [userId]: 0,
+        },
+        id: balanceId,
+        title,
+    };
 
-	set(newUserBalanceRef, true);
-	set(getBalanceDetailsRef(balanceId), newBalance);
+    set(newUserBalanceRef, true);
+    set(getBalanceDetailsRef(balanceId), newBalance);
 };
 
 function UserBalances() {
-	const user = useSelector(getUser);
-	const dispatch = useDispatch();
+    const user = useSelector(getUser);
 
-	const { list: keys } = useKeysList(getUserBalancesRef(user._id));
-	const { list } = useMultipleValues<IBalanceDetails>(
-		'balances/',
-		keys,
-		'/details'
-	);
+    const { list: keys } = useKeysList(getUserBalancesRef(user._id));
+    const { list } = useMultipleValues<IBalanceDetails>(
+        'balances/',
+        keys,
+        '/details'
+    );
 
-	const [isCreate, setIsCreate] = useState(false);
+    const [isCreate, setIsCreate] = useState(false);
 
-	const createNewBalance = (title: string) => {
-		addBalance(user._id, title);
-		// dispatch(addBalance(title));
-		setIsCreate(false);
-	};
+    const createNewBalance = (title: string) => {
+        addBalance(user._id, title);
+        // dispatch(addBalance(title));
+        setIsCreate(false);
+    };
 
-	useEffect(() => {
-		if (user) {
-			dispatch(fetchBalances());
-		}
-	}, [dispatch, user]);
+    const addBalanceInProgress = useSelector(
+        (state: any) => state.core.addBalanceInProgress
+    );
 
-	const addBalanceInProgress = useSelector(
-		(state: any) => state.core.addBalanceInProgress
-	);
+    const onAddBalance = () => {
+        setIsCreate(true);
+    };
 
-	const onAddBalance = () => {
-		setIsCreate(true);
-	};
+    const onCloseBalance = () => {
+        setIsCreate(false);
+    };
 
-	const onCloseBalance = () => {
-		setIsCreate(false);
-	};
+    const isAddButtonVisible = useMemo(
+        () => !addBalanceInProgress && !isCreate,
+        [addBalanceInProgress, isCreate]
+    );
 
-	const isAddButtonVisible = useMemo(
-		() => !addBalanceInProgress && !isCreate,
-		[addBalanceInProgress, isCreate]
-	);
-
-	return (
-		<s.ContainerHomePage>
-			<s.PageTitle>Balances</s.PageTitle>
-			{list &&
-				list.map((balance) => (
-					<BalanceItem
-						key={balance.id}
-						id={balance.id}
-						title={balance.title}
-						users={balance.users}
-						userId={user._id}
-					/>
-				))}
-			{isAddButtonVisible && (
-				<s.AddButton onClick={onAddBalance}>
-					<Button circular variant="primary" icon="add" />
-				</s.AddButton>
-			)}
-			{isCreate && (
-				<CreateBalanceModal
-					onClose={onCloseBalance}
-					onCreate={createNewBalance}
-				/>
-			)}
-		</s.ContainerHomePage>
-	);
+    return (
+        <s.ContainerHomePage>
+            <s.PageTitle>Balances</s.PageTitle>
+            {list &&
+                list.map((balance) => (
+                    <BalanceItem
+                        key={balance.id}
+                        id={balance.id}
+                        title={balance.title}
+                        users={balance.users}
+                        userId={user._id}
+                    />
+                ))}
+            {isAddButtonVisible && (
+                <s.AddButton onClick={onAddBalance}>
+                    <Button circular variant="primary" icon="add" />
+                </s.AddButton>
+            )}
+            {isCreate && (
+                <CreateBalanceModal
+                    onClose={onCloseBalance}
+                    onCreate={createNewBalance}
+                />
+            )}
+        </s.ContainerHomePage>
+    );
 }
 
 export default UserBalances;
