@@ -12,6 +12,7 @@ import { push, set } from 'firebase/database';
 import { getBalanceDetailsRef, getUserBalancesRef } from '../../firebase/refs';
 import { IBalanceDetails } from '../../firebase/types';
 import { useKeysList, useMultipleValues } from '../../firebase/hooks';
+import MoneyValue from '../../components/MoneyValue';
 
 function BalanceItem(props) {
 	const history = useHistory();
@@ -26,16 +27,18 @@ function BalanceItem(props) {
 		event.stopPropagation();
 	};
 
+	const balanceAmount = props.users[props.userId];
+
 	return (
-		<div className="balance" onClick={handelBalanceClick}>
-			<div className="balance-name">{props.title}</div>
-			<img
+		<s.Balance onClick={handelBalanceClick}>
+			<s.BalanceName>{props.title}</s.BalanceName>
+			<MoneyValue value={balanceAmount}/>
+			<s.BalanceDeleteIcon
 				alt=""
 				src={deleteIcon}
-				className="balance-delete-icon"
 				onClick={deleteBalanceItem}
 			/>
-		</div>
+		</s.Balance>
 	);
 }
 // Firebase
@@ -97,8 +100,8 @@ function UserBalances() {
 	);
 
 	return (
-		<div className="container-home-page">
-			<div className="home-page">Balances</div>
+		<s.ContainerHomePage>
+			<s.PageTitle>Balances</s.PageTitle>
 			{list &&
 				list.map((balance) => (
 					<BalanceItem
@@ -106,6 +109,7 @@ function UserBalances() {
 						id={balance.id}
 						title={balance.title}
 						users={balance.users}
+						userId={user._id}
 					/>
 				))}
 			{isAddButtonVisible && (
@@ -119,7 +123,7 @@ function UserBalances() {
 					onCreate={createNewBalance}
 				/>
 			)}
-		</div>
+		</s.ContainerHomePage>
 	);
 }
 

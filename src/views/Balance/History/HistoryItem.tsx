@@ -1,12 +1,9 @@
 import moment from 'moment';
 import { useState } from 'react';
-import {
-	formatMoney,
-	getConnatationForNumber,
-	formatDateTime,
-} from '../../../helpers/format';
-import deleteIcon from '../../../assets/img/delete-icon.svg';
+import { formatMoney, formatDateTime } from '../../../helpers/format';
 import liftIcon from '../../../assets/img/lift-icon-angle.png';
+import MoneyValue from '../../../components/MoneyValue';
+import * as s from './styled';
 
 function HistoryItem(props) {
 	const [showing, setShowing] = useState(false);
@@ -36,56 +33,41 @@ function HistoryItem(props) {
 	});
 
 	return (
-		<div className="history-item" key={props.id} onClick={showHistoryInfo}>
-			<div className="history-item-row">
+		<s.HistoryItem key={props.id} onClick={showHistoryInfo}>
+			<s.HistoryItemRow>
 				{formatDateTime(moment(props.date).toDate())}
-			</div>
-			<div className="history-item-row">
-				<div className="history-text">{props.title}</div>
-				<div
-					className={`history-amount ${getConnatationForNumber(
-						total
-					)}`}
-				>
-					{formatMoney(total)}
-				</div>
-			</div>
+			</s.HistoryItemRow>
+			<s.HistoryItemRow>
+				<s.HistoryText>{props.title}</s.HistoryText>
+				<MoneyValue value={total} />
+			</s.HistoryItemRow>
 			{showing ? (
-				<div className="history-info-container">
-					<div className="history-full-info">
-						<div className="header-cell cell">Name</div>
-						<div className="header-cell cell">Paid</div>
-						<div className="header-cell cell">Spent</div>
-						<div className="header-cell cell">Total</div>
+				<s.HistoryInfoContainer>
+					<s.HistoryFullInfo>
+						<s.HeaderCell>Name</s.HeaderCell>
+						<s.HeaderCell>Paid</s.HeaderCell>
+						<s.HeaderCell>Spent</s.HeaderCell>
+						<s.HeaderCell>Total</s.HeaderCell>
 
 						{preparedUsers.map((user) => {
 							return (
 								<>
-									<div className="table-cell cell">
-										{user.name}
-									</div>
-									<div className="table-cell cell">
-										{formatMoney(user.paid)}
-									</div>
-									<div className="table-cell cell">
-										{formatMoney(user.spent)}
-									</div>
-									<div className="table-cell cell">
-										{formatMoney(user.total)}
-									</div>
+									<s.Cell>{user.name}</s.Cell>
+									<s.Cell>{formatMoney(user.paid)}</s.Cell>
+									<s.Cell>{formatMoney(user.spent)}</s.Cell>
+									<s.Cell>{formatMoney(user.total)}</s.Cell>
 								</>
 							);
 						})}
-					</div>
-					<img
+					</s.HistoryFullInfo>
+					<s.LiftIcon
 						alt=""
 						src={liftIcon}
-						className="lift-icon"
 						onClick={unshowHistoryInfo}
 					/>
-				</div>
+				</s.HistoryInfoContainer>
 			) : null}
-		</div>
+		</s.HistoryItem>
 	);
 }
 

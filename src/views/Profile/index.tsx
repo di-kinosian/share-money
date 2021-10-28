@@ -1,5 +1,6 @@
 import '../../App.css';
 import { useState } from 'react';
+import * as s from './styled';
 
 function Profile() {
     const [nameState, setNameState] = useState('');
@@ -17,11 +18,11 @@ function Profile() {
     }
 
     return (
-        <div className="container-profile">
-            <div className="profile">
+        <s.ContainerProfile>
+            <s.Profile>
                 Profile settings
-                <div className="row-name">
-                    <div className="text">Name</div>
+                <s.RowName>
+                    <s.Text>Name</s.Text>
                     <input
                         type="text"
                         id="input-name"
@@ -29,9 +30,9 @@ function Profile() {
                         placeholder="Enter name"
                         onChange={handleNameChange}
                     />
-                </div>
-                <div className="row-email">
-                    <div className="text">Email</div>
+                </s.RowName>
+                <s.RowEmail>
+                    <s.Text>Email</s.Text>
                     <input
                         type="email"
                         id="input-email"
@@ -39,12 +40,12 @@ function Profile() {
                         placeholder="Enter email"
                         onChange={handleEmailChange}
                     />
-                </div>
-                <button className="save-button" onClick={saveButtonClick}>
+                </s.RowEmail>
+                <s.SaveButton onClick={saveButtonClick}>
                     Save
-                </button>
-            </div>
-        </div>
+                </s.SaveButton>
+            </s.Profile>
+        </s.ContainerProfile>
     );
 }
 
