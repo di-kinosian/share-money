@@ -45,9 +45,10 @@ function History(props: IProps) {
 						<Loader active />
 					) : (
 						list &&
-						list.map((historyItem) => {
+						list.map((historyItem: IHistoryItem) => {
 							return (
 								<HistoryItem
+									id={historyItem.id}
 									title={historyItem.title}
 									date={historyItem.date}
 									key={historyItem.id}
