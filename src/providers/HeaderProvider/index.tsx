@@ -1,6 +1,5 @@
 import closeIcon from '../../assets/img/close-icon.svg';
 import logo from '../../assets/img/logo.png';
-import '../../App.css';
 import { useState } from 'react';
 
 import burgerIcon from '../../assets/img/burger-icon.svg';

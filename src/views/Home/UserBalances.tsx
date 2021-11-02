@@ -1,6 +1,5 @@
 import { useMemo, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import './styles.css';
 import { getUser } from '../../modules/auth/duck';
 import { deleteBalance } from '../../modules/core/duck';
 import deleteIcon from '../../assets/img/delete-icon.svg';

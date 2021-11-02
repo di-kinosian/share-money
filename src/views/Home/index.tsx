@@ -1,5 +1,4 @@
 import { useSelector } from 'react-redux';
-import './styles.css';
 import { getUser } from '../../modules/auth/duck';
 import UserBalances from './UserBalances';
 import Button from '../../components/Button';

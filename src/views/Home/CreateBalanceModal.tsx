@@ -1,5 +1,4 @@
 import { useState } from 'react';
-import './styles.css';
 import * as s from './styled';
 import Modal from '../../components/Modal';
 import Field from '../../components/Field';

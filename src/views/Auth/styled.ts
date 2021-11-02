@@ -14,6 +14,23 @@ export const Signin = styled.div`
     justify-content: center;
 `;
 
+export const ErrorMessage = styled.div`
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #9f3a38;
+    /* border: 1px solid #9f3a38; */
+    background-color: #fff6f6;
+    box-shadow: 0 0 0 1px #e0b4b4 inset, 0 0 0 0 transparent;
+    border-radius: 4px;
+    width: 100%;
+    height: 40px;
+    padding: 0px 16px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+`;
+
 export const StyledForm = styled(Form)`
     display: flex;
     flex-direction: column;
@@ -31,6 +48,9 @@ export const StyledFormInput = styled(Form.Input)`
 export const SumbitButton = styled(Button)`
     width: 270px;
     height: 40px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
 `;
 
 export const Header = styled.div`
@@ -42,18 +62,4 @@ export const Header = styled.div`
 export const ActionText = styled.div`
     font-weight: bold;
     cursor: pointer;
-`;
-
-export const ErrorMessage = styled.div`
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    color: #9f3a38;
-    /* border: 1px solid #9f3a38; */
-    background-color: #fff6f6;
-    box-shadow: 0 0 0 1px #e0b4b4 inset, 0 0 0 0 transparent;
-    border-radius: 4px;
-    width: 100%;
-    height: 40px;
-    padding: 0px 16px;
 `;

@@ -42,3 +42,13 @@ export const SaveButton = styled.div`
 	cursor: pointer;
 	margin-left: auto;
 `;
+
+export const ProfileInput = styled.div`
+	height: 40px;
+	width: 100%;
+	border-radius: 4px;
+	font-size: 16px;
+	border: 1px solid rgb(169, 169, 169);
+	margin: 0px 0 16px 0;
+	box-sizing: border-box;
+`;
