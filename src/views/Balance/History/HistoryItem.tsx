@@ -17,7 +17,6 @@ interface IProps {
 }
 
 const HistoryItem: FC<IProps> = (props) => {
-    console.log('ItemProps', props);
     const [showing, setShowing] = useState(false);
 
     const showHistoryInfo = () => {
