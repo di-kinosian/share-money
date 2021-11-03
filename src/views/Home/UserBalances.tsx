@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react';
+import { useMemo, useState, FC } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { getUser } from '../../modules/auth/duck';
 import { deleteBalance } from '../../modules/core/duck';
@@ -13,7 +13,14 @@ import { IBalanceDetails } from '../../firebase/types';
 import { useKeysList, useMultipleValues } from '../../firebase/hooks';
 import MoneyValue from '../../components/MoneyValue';
 
-function BalanceItem(props) {
+interface IProps {
+    id: string;
+    users: Record<string, number>;
+    userId: string;
+    title: string;
+}
+
+const BalanceItem: FC<IProps> = (props) => {
     const history = useHistory();
     const dispatch = useDispatch();
 

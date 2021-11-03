@@ -1,10 +1,11 @@
-import React, { useEffect } from 'react';
+import { useEffect, FC } from 'react';
 import { useSelector } from 'react-redux';
-import { Route, useHistory } from 'react-router-dom';
+import { Route, RouteProps, useHistory } from 'react-router-dom';
 import { getUser } from '../modules/auth/duck';
 import { ROUTES } from './constants';
 
-function AuthenticatedRoute(props) {
+
+const AuthenticatedRoute: FC<RouteProps> = (props) => {
 	const history = useHistory();
 	const user = useSelector(getUser);
 

@@ -41,6 +41,9 @@ export const SaveButton = styled.div`
 	width: 80px;
 	cursor: pointer;
 	margin-left: auto;
+	display: flex;
+	justify-content: center;
+	align-items: center;
 `;
 
 export const ProfileInput = styled.div`
