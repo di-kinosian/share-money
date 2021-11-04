@@ -185,6 +185,7 @@ function NewTransactionWidget(props: IProps) {
 							min={0}
 							type="number"
 							id="amount-input"
+							onFocus={onFocusMoneyInput}
 						/>
 					</Field>
 				</s.TracsactionField>
