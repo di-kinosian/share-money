@@ -99,6 +99,14 @@ function NewTransactionWidget(props: IProps) {
     const [uploadError, setUploadError] = useState('');
     const [downloadLink, setDownloadLink] = useState('');
 
+    const previewImage = () => {
+        window.open(downloadLink);
+    };
+
+    const deleteFile = () => {
+        setFile(null);
+    };
+
     const handleUpload: React.ChangeEventHandler<HTMLInputElement> = (e) => {
         const attachment = e.target.files?.[0];
         if ((attachment?.size as number) > MAX_FILE_SIZE) {
@@ -185,91 +193,92 @@ function NewTransactionWidget(props: IProps) {
             <s.CloseButton onClick={props.onClose}>
                 <s.CloseIcon alt="" src={closeIcon} />
             </s.CloseButton>
-            <s.TracsactionField>
-                <Field label="Title:">
-                    <s.TracsactionInput
-                        placeholder="Enter title"
-                        value={title}
-                        onChange={changeTitle}
+            <Field label="Title:">
+                <s.TracsactionInput
+                    placeholder="Enter title"
+                    value={title}
+                    onChange={changeTitle}
+                />
+            </Field>
+            <s.RowFields>
+                <Field label="Amount:" style={{ marginRight: '16px' }}>
+                    <s.AmountInput
+                        value={amount}
+                        onChange={changeAmount}
+                        min={0}
+                        type="number"
+                        id="amount-input"
+                        onFocus={onFocusMoneyInput}
                     />
                 </Field>
-            </s.TracsactionField>
-            <s.RowFields>
-                <s.TracsactionField>
-                    <Field label="Amount:">
-                        <s.AmountInput
-                            value={amount}
-                            onChange={changeAmount}
-                            min={0}
-                            type="number"
-                            id="amount-input"
-                            onFocus={onFocusMoneyInput}
-                        />
-                    </Field>
-                </s.TracsactionField>
-                <s.TracsactionField>
-                    <Field label="Date:">
-                        <DateTimeInput
-                            placeholder="Date"
-                            popupPosition="bottom right"
-                            name="date"
-                            closable
-                            clearIcon={<Icon name="remove" color="red" />}
-                            dateFormat={DATE_FORMAT}
-                            animation="scale"
-                            duration={200}
-                            hideMobileKeyboard
-                            value={date}
-                            iconPosition="left"
-                            preserveViewMode={false}
-                            autoComplete="off"
-                            onChange={changeDate}
-                        />
-                    </Field>
-                </s.TracsactionField>
+                <Field label="Date:">
+                    <DateTimeInput
+                        placeholder="Date"
+                        popupPosition="bottom right"
+                        name="date"
+                        closable
+                        clearIcon={<Icon name="remove" color="red" />}
+                        dateFormat={DATE_FORMAT}
+                        animation="scale"
+                        duration={200}
+                        hideMobileKeyboard
+                        value={date}
+                        iconPosition="left"
+                        preserveViewMode={false}
+                        autoComplete="off"
+                        onChange={changeDate}
+                    />
+                </Field>
             </s.RowFields>
             <Field label="Paid:">
-                <s.TracsactionField>
-                    {props.users.map((user) => (
-                        <s.UserAmountRow key={user.id}>
-                            <s.UserName>{user.name}</s.UserName>
-                            <s.PayerInput
-                                min={0}
-                                value={paidUsers[user.id]}
-                                type="number"
-                                id="amount-input"
-                                onChange={changePaidAmount}
-                                onBlur={formatPaidAmount}
-                                data-id={user.id}
-                                onFocus={onFocusMoneyInput}
-                            />
-                        </s.UserAmountRow>
-                    ))}
-                </s.TracsactionField>
+                {props.users.map((user) => (
+                    <s.UserAmountRow key={user.id}>
+                        <s.UserName>{user.name}</s.UserName>
+                        <s.PayerInput
+                            min={0}
+                            value={paidUsers[user.id]}
+                            type="number"
+                            id="amount-input"
+                            onChange={changePaidAmount}
+                            onBlur={formatPaidAmount}
+                            data-id={user.id}
+                            onFocus={onFocusMoneyInput}
+                        />
+                    </s.UserAmountRow>
+                ))}
             </Field>
             <Field label="Spent:">
-                <s.TracsactionField>
-                    {props.users.map((user) => (
-                        <s.UserAmountRow key={user.id}>
-                            <s.UserName>{user.name}</s.UserName>
-                            <s.PayerInput
-                                min={0}
-                                value={spentUsers[user.id]}
-                                type="number"
-                                id="amount-input"
-                                data-id={user.id}
-                                onChange={changeSpentAmount}
-                                onBlur={formatSpentAmount}
-                                onFocus={onFocusMoneyInput}
-                            />
-                        </s.UserAmountRow>
-                    ))}
-                </s.TracsactionField>
+                {props.users.map((user) => (
+                    <s.UserAmountRow key={user.id}>
+                        <s.UserName>{user.name}</s.UserName>
+                        <s.PayerInput
+                            min={0}
+                            value={spentUsers[user.id]}
+                            type="number"
+                            id="amount-input"
+                            data-id={user.id}
+                            onChange={changeSpentAmount}
+                            onBlur={formatSpentAmount}
+                            onFocus={onFocusMoneyInput}
+                        />
+                    </s.UserAmountRow>
+                ))}
             </Field>
-
             {!isEdit && <s.ErrorText>{error}</s.ErrorText>}
+			{uploadError && <s.ErrorText>{uploadError}</s.ErrorText>}
 
-            {file && <div><img src={downloadLink} alt=''/>{file.name}</div>}
+            {file && (
+                <s.FileCard>
+                    <s.FileImg src={downloadLink} alt="" />
+                    <s.FileName onClick={previewImage}>{file.name}</s.FileName>
+                    <Icon
+                        name="trash"
+                        size="large"
+                        color="grey"
+                        onClick={deleteFile}
+                    ></Icon>
+                </s.FileCard>
+            )}
             <s.ButtonsContainer>
                 <s.UploadButton htmlFor="upload-photo">
                     <Icon name="attach" size="large"></Icon>
@@ -279,6 +288,7 @@ function NewTransactionWidget(props: IProps) {
                     accept=".jpg, .jpeg, .png"
                     id="upload-photo"
                     onChange={handleUpload}
+                    value=""
                 />
                 <Button onClick={props.onClose}>Cancel</Button>
                 <Button
