@@ -5,7 +5,7 @@ export const NewTransactionBlock = styled.div`
     flex-direction: column;
     margin: 16px;
     border-radius: 8px;
-    padding: 16px 0 16px 16px;
+    padding: 16px;
     position: relative;
     box-shadow: 1px 1px 9px rgb(34 60 80 / 40%);
 `;
@@ -110,9 +110,54 @@ export const AddButton = styled(Button)`
 export const ButtonsContainer = styled.div`
     display: flex;
     justify-content: flex-end;
-    margin: 16px 16px 0;
+    margin-top: 16px;
 `;
 
 export const ErrorText = styled.div`
     color: red;
+`;
+
+export const UploadButton = styled.label`
+    cursor: pointer;
+    border-radius: 4px;
+    background: #e0e1e2 none;
+    color: rgba(0, 0, 0, 0.6);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-right: auto;
+    width: 41.13px;
+    &:hover {
+        background-color: rgb(202, 203, 205);
+    }
+`;
+
+export const UploadInput = styled.input`
+    opacity: 0;
+    position: absolute;
+    z-index: -1;
+`;
+
+export const FileCard = styled.div`
+    height: 48px;
+    border-radius: 4px;
+    /* border: 1px solid rgb(169, 169, 169); */
+    margin-top: 16px;
+    display: flex;
+    align-items: center;
+    padding: 8px;
+    background: rgba(224, 225, 226, 0.8);
+    &:hover {
+        background-color: rgb(202, 203, 205);
+    }
+`;
+
+export const FileImg = styled.img`
+    width: 32px;
+    height: 32px;
+    margin-right: 16px;
+`;
+
+export const FileName = styled.div`
+    margin-right: auto;
 `;
