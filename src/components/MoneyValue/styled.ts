@@ -5,7 +5,7 @@ export const BalanceAmount = styled.div`
 	font-weight: 700;
     margin-left: auto;
 	&.positive {
-		color: green;
+		color: #006400;
 	}
 	&.negative {
 		color: red;

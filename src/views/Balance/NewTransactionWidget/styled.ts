@@ -110,9 +110,32 @@ export const AddButton = styled(Button)`
 export const ButtonsContainer = styled.div`
     display: flex;
     justify-content: flex-end;
-    margin: 16px 16px 0;
+    margin: 16px 16px 0 0;
 `;
 
 export const ErrorText = styled.div`
     color: red;
 `;
+
+export const UploadButton = styled.label`
+    cursor: pointer;
+    border-radius: 4px;
+    background: #e0e1e2 none;
+    color: rgba(0,0,0,.6);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-right: auto;
+    width: 41.13px;
+    &:hover {
+        color: rgba(0,0,0,.87)
+    }
+`;
+
+export const UploadInput = styled.input`
+    opacity: 0;
+    position: absolute;
+    z-index: -1;
+
+`;
+
