@@ -8,7 +8,6 @@ interface IProps {
 }
 
 const BalanceCard: FC<IProps> = (props) => {
-    console.log('PROPS', props.balance);
     return (
         <s.BalanceBlock>
             <s.BalanceRow>

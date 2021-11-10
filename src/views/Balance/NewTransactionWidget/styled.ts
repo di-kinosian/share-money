@@ -141,7 +141,6 @@ export const UploadInput = styled.input`
 export const FileCard = styled.div`
     height: 48px;
     border-radius: 4px;
-    /* border: 1px solid rgb(169, 169, 169); */
     margin-top: 16px;
     display: flex;
     align-items: center;

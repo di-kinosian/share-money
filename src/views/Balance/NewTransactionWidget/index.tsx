@@ -12,6 +12,7 @@ import Field from '../../../components/Field';
 import { ITransaction } from '../types';
 import { Map } from '../../../firebase/types';
 import { MAX_FILE_SIZE } from './constans';
+import imageCompression from 'browser-image-compression';
 
 const getInitialAmountFromUsers = (users) =>
     users.reduce((acc, user) => ({ ...acc, [user.id]: formatMoney(0) }), {});
@@ -107,17 +108,25 @@ function NewTransactionWidget(props: IProps) {
         setFile(null);
     };
 
-    const handleUpload: React.ChangeEventHandler<HTMLInputElement> = (e) => {
-        const attachment = e.target.files?.[0];
-        if ((attachment?.size as number) > MAX_FILE_SIZE) {
-            setUploadError('Something went wrong uploading file');
-        } else {
-            setFile(attachment);
-            const fileURL = URL.createObjectURL(attachment);
+    async function handleImageUpload(event) {
+        const imageFile = event.target.files[0];
+
+        const options = {
+            maxSizeMB: 1,
+            maxWidthOrHeight: 1920,
+            useWebWorker: true,
+        };
+        try {
+            const compressedFile = await imageCompression(imageFile, options);
+
+            setFile(compressedFile);
+            const fileURL = URL.createObjectURL(compressedFile);
             setDownloadLink(fileURL);
             setUploadError('');
+        } catch (error) {
+            setUploadError(error);
         }
-    };
+    }
 
     const onFocusMoneyInput = (e) => {
         e.target.select();
@@ -185,8 +194,6 @@ function NewTransactionWidget(props: IProps) {
             [userId]: formatMoney(spentUsers[userId]),
         });
     };
-
-    console.log(file);
 
     return (
         <s.NewTransactionBlock>
@@ -265,7 +272,7 @@ function NewTransactionWidget(props: IProps) {
                 ))}
             </Field>
             {!isEdit && <s.ErrorText>{error}</s.ErrorText>}
-			{uploadError && <s.ErrorText>{uploadError}</s.ErrorText>}
+            {uploadError && <s.ErrorText>{uploadError}</s.ErrorText>}
 
             {file && (
                 <s.FileCard>
@@ -287,7 +294,7 @@ function NewTransactionWidget(props: IProps) {
                     type="file"
                     accept=".jpg, .jpeg, .png"
                     id="upload-photo"
-                    onChange={handleUpload}
+                    onChange={handleImageUpload}
                     value=""
                 />
                 <Button onClick={props.onClose}>Cancel</Button>
