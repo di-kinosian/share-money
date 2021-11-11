@@ -46,6 +46,7 @@ export const ModalButton = styled.div`
 	margin-top: 24px;
 	display: flex;
 	justify-content: flex-end;
+	
 `;
 export const Balance = styled.div`
 	max-width: 700px;
@@ -64,10 +65,10 @@ export const BalanceName = styled.div`
 	font-weight: 600;
 `;
 
-export const BalanceDeleteIcon = styled.div`
-	width: 20px;
-	height: 20px;
-	margin-left: 8px;
-	bottom: 0px;
-	cursor: pointer;
-`;
+// export const BalanceDeleteIcon = styled.div`
+// 	width: 20px;
+// 	height: 20px;
+// 	margin-left: 8px;
+// 	bottom: 0px;
+// 	cursor: pointer;
+// `;

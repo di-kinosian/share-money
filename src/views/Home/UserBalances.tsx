@@ -39,11 +39,11 @@ const BalanceItem: FC<IProps> = (props) => {
         <s.Balance onClick={handelBalanceClick}>
             <s.BalanceName>{props.title}</s.BalanceName>
             <MoneyValue value={balanceAmount} />
-            <s.BalanceDeleteIcon
+            {/* <s.BalanceDeleteIcon
                 alt=""
                 src={deleteIcon}
                 onClick={deleteBalanceItem}
-            />
+            /> */}
         </s.Balance>
     );
 }
