@@ -13,16 +13,6 @@ export const ContainerProfile = styled.div`
     font-size: 20px;
 `;
 
-// export const Profile = styled.div`
-// 	display: flex;
-// 	flex-direction: column;
-// 	margin: 30px 16px;
-// 	border-radius: 8px;
-// 	padding: 16px;
-// 	position: relative;
-// 	box-shadow: 1px 1px 9px rgb(34 60 80 / 40%);
-// `;
-
 export const RowName = styled.div`
     margin-top: 8px;
 `;

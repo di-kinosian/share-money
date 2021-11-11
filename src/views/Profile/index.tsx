@@ -26,10 +26,8 @@ function Profile() {
 
     return (
         <s.ContainerProfile>
-            {/* <s.Profile> */}
             <s.Title>Profile settings</s.Title>
             <Field label="Name">
-                {/* <s.Text>Name</s.Text> */}
                 <s.ProfileInput
                     type="text"
                     value={name}
@@ -38,7 +36,6 @@ function Profile() {
                 />
             </Field>
             <Field label="Email">
-                {/* <s.Text>Email</s.Text> */}
                 <s.ProfileInput
                     type="email"
                     value={email}
@@ -47,7 +44,6 @@ function Profile() {
                 />
             </Field>
             <s.SaveButton onClick={saveButtonClick}>Save</s.SaveButton>
-            {/* </s.Profile> */}
         </s.ContainerProfile>
     );
 }

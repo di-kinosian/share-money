@@ -59,8 +59,6 @@ export const Balance = styled.div`
 	border-radius: 8px;
 	box-shadow: 1px 1px 9px rgb(34 60 80 / 40%);
 	flex-shrink: 0;
-	/* height: 40px;
-    width: 100%; */
 `;
 
 export const BalanceName = styled.div`
