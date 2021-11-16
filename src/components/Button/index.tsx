@@ -4,6 +4,7 @@ import { StyledButton } from './styled';
 
 interface IButtonProps extends ButtonProps {
     variant?: 'primary';
+    width?: number;
 }
 
 const Button: React.FC<IButtonProps> = ({ width, variant, color, ...rest }) => {
