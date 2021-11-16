@@ -88,25 +88,6 @@ export const UserName = styled.div`
     margin-bottom: 6px;
 `;
 
-export const Button = styled.button`
-    border: none;
-    border-radius: 4px;
-    color: #fff;
-    font-size: 16px;
-    cursor: pointer;
-    padding: 8px 24px;
-    cursor: pointer;
-`;
-
-export const CancelButton = styled(Button)`
-    background: grey;
-    margin-right: 8px;
-`;
-
-export const AddButton = styled(Button)`
-    background: rgb(105, 226, 212);
-`;
-
 export const ButtonsContainer = styled.div`
     display: flex;
     justify-content: flex-end;

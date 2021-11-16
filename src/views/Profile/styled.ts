@@ -1,4 +1,5 @@
 import styled from 'styled-components';
+import Button from '../../components/Button';
 
 export const ContainerProfile = styled.div`
     max-width: 400px;
@@ -9,7 +10,7 @@ export const ContainerProfile = styled.div`
     flex-grow: 1;
     overflow: auto;
     padding-top: 30px;
-	padding: 18px 16px 0px 16px;
+    padding: 18px 16px 0px 16px;
     font-size: 20px;
 `;
 
@@ -25,20 +26,9 @@ export const Text = styled.div`
 
 export const RowEmail = styled.div``;
 
-export const SaveButton = styled.div`
-    background: rgb(105, 226, 212);
-    border: none;
-    border-radius: 8px;
-    color: #fff;
-    font-size: 18px;
-    cursor: pointer;
-    height: 40px;
-    width: 80px;
-    cursor: pointer;
-    margin-left: auto;
+export const ButtonsContainer = styled.div`
     display: flex;
-    justify-content: center;
-    align-items: center;
+    justify-content: flex-end;
 `;
 
 export const ProfileInput = styled.input`
