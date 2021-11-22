@@ -4,6 +4,7 @@ import HeaderProvider from './providers/HeaderProvider';
 import { Provider } from 'react-redux';
 import store from './config/store';
 import Routes from './routes';
+import VersionModal from './components/VersionModal';
 
 function App() {
     return (
@@ -13,6 +14,7 @@ function App() {
                     <Routes />
                 </HeaderProvider>
             </Router>
+            <VersionModal></VersionModal>
         </Provider>
     );
 }
