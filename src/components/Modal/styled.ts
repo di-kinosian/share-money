@@ -11,7 +11,7 @@ export const ModalOverlay = styled.div`
 
 export const Modal = styled.div`
     border-radius: 8px;
-    padding: 20px 40px;
+    padding: 16px 16px;
     background: #fff;
     position: absolute;
     top: 0;
@@ -29,8 +29,8 @@ export const CloseIcon = styled.div`
     align-items: center;
     justify-content: center;
     position: absolute;
-    top: 10px;
-    right: 10px;
+    top: 0px;
+    right: 2px;
     height: 40px;
     width: 40px;
     border-radius: 20px;
@@ -40,8 +40,8 @@ export const CloseIcon = styled.div`
         line-height: 16px;
     }
 
-    &:hover {
+    /* &:hover {
         background: rgba(0, 0, 0, 0.07);
-    }
+    } */
     cursor: pointer;
 `;
