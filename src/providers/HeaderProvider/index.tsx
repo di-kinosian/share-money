@@ -12,6 +12,7 @@ import { useAuth } from '../../firebase/auth';
 
 const HeaderProvider: FC = (props) => {
     useAuth();
+    
     const [isMenuVisible, setIsMenuVisible] = useState(false);
     const dispatch = useDispatch();
 
