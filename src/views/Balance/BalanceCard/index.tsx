@@ -1,10 +1,10 @@
 import { FC } from 'react';
-import { formatDate, getConnatationForNumber } from '../../../helpers/format';
+import { getConnatationForNumber } from '../../../helpers/format';
 import * as s from './styled';
+import { Icon } from 'semantic-ui-react';
 
 interface IProps {
     balance: string;
-    onAddClick: () => void;
 }
 
 const BalanceCard: FC<IProps> = (props) => {
@@ -12,10 +12,9 @@ const BalanceCard: FC<IProps> = (props) => {
         <s.BalanceBlock>
             <s.BalanceRow>
                 <s.BalanceInfo>
-                    <s.BalanceLabel>Balance</s.BalanceLabel>
-                    <s.BalanceDate>{formatDate(new Date())}</s.BalanceDate>
+                    <s.BalanceLabel>Balance name</s.BalanceLabel>
                 </s.BalanceInfo>
-                <s.AddButton onClick={props.onAddClick}>+ Add</s.AddButton>
+                <Icon name="ellipsis vertical" />
             </s.BalanceRow>
             <s.BalanceAmount
                 className={`${getConnatationForNumber(props.balance)}`}
