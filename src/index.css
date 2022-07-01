@@ -29,6 +29,11 @@ input {
     width: 100%;
 }
 
+input:focus {
+    border-color: #85b7d9;
+    outline: none;
+}
+
 select {
     height: 40px;
     width: 130px;

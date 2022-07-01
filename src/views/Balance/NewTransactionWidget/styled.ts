@@ -1,4 +1,6 @@
 import styled from 'styled-components';
+import { ShadowContainer } from '../../../components/styled';
+import Field from '../../../components/Field';
 
 export const NewTransactionBlock = styled.div`
     display: flex;
@@ -9,6 +11,7 @@ export const NewTransactionBlock = styled.div`
     position: relative;
     box-shadow: 1px 1px 9px rgb(34 60 80 / 40%);
 `;
+
 export const CloseButton = styled.div`
     position: absolute;
     top: 10px;
@@ -46,6 +49,21 @@ export const RowFields = styled.div`
     align-items: center;
     border-radius: 8px;
     padding: 16px 0px;
+`;
+
+export const UsersRow = styled.div`
+    margin-top: 16px;
+    display: grid;
+    grid-template-columns: 44% 12% 44%;
+`;
+
+export const ExchangeBtn = styled.div`
+    display: flex;
+    justify-content: center;
+    padding-top: 36px;
+    i {
+        margin: 0;
+    }
 `;
 
 export const AmountInput = styled.input`
@@ -140,4 +158,39 @@ export const FileImg = styled.img`
 
 export const FileName = styled.div`
     margin-right: auto;
+`;
+
+export const Label = styled.span`
+    margin-left: 8px;
+    font-weight: 600;
+    line-height: 16px;
+    font-size: 16px;
+`;
+
+export const NewTransaction = styled(ShadowContainer)`
+    margin: 0 16px;
+    padding: 8px 16px;
+`;
+
+export const NewTransactionRow = styled.div`
+    padding: 8px 0px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    &:not(:first-child) {
+        border-top: 1px solid #e8e8e8;
+    }
+    i.icons {
+        width: 20px;
+    }
+`;
+
+export const NewTransactionForm = styled(ShadowContainer)`
+    margin: 0 16px;
+    position: relative;
+`;
+
+export const UserField = styled(Field)`
+    flex-grow: 1;
+    margin-bottom: 8px;
 `;

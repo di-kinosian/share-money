@@ -5,6 +5,7 @@ import { Icon } from 'semantic-ui-react';
 
 interface IProps {
     balance: string;
+    title: string;
 }
 
 const BalanceCard: FC<IProps> = (props) => {
@@ -12,7 +13,7 @@ const BalanceCard: FC<IProps> = (props) => {
         <s.BalanceBlock>
             <s.BalanceRow>
                 <s.BalanceInfo>
-                    <s.BalanceLabel>Balance name</s.BalanceLabel>
+                    <s.BalanceLabel>{props.title}</s.BalanceLabel>
                 </s.BalanceInfo>
                 <Icon name="ellipsis vertical" />
             </s.BalanceRow>

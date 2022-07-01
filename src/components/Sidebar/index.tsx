@@ -26,6 +26,7 @@ const Sidebar: React.FC<IProps> = ({ isOpen, width, onClose, children }) => {
                 setIsMounted(false);
             }, 300);
         }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [isOpen]);
 
     return (

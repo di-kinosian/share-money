@@ -1,9 +1,8 @@
-import { useMemo, useState } from 'react';
+import { useMemo } from 'react';
 import 'semantic-ui-css/semantic.min.css';
 import { useParams } from 'react-router-dom';
-import { Icon, Loader } from 'semantic-ui-react';
+import { Loader } from 'semantic-ui-react';
 import { PageContent } from './styled';
-// import MultipleTransaction from './NewTransactionWidget/MultipleTransaction';
 import BalanceCard from './BalanceCard';
 import { auth, database } from '../../firebase';
 import EmptyState from './EmptyState';
@@ -54,19 +53,12 @@ const addTransaction = (
 function Balance() {
     const params = useParams<{ balanceId: string }>();
     const user = auth.currentUser;
-    // const [step, setStep] = useState<string>('initial');
-
-    // const addNewTransaction = () => {
-    //     setStep('chooseOption');
-    // };
-
-    // const selectMultipleTransaction = () => {
-    //     setStep('multipleTransaction');
-    // };
 
     const { value: balance, loading } = useValue<IBalanceDetails>(
         getBalanceDetailsRef(params.balanceId)
     );
+
+    console.log({ balance });
 
     const userIds = useMemo(
         () => (balance ? Object.keys(balance?.users) : []),
@@ -93,11 +85,8 @@ function Balance() {
         joinToBalance(balance.id, user.uid);
     };
 
-    // const onCloseClick = () => {
-    //     setStep('initial');
-    // };
-
-    const onAddTransaction = (transaction) => {
+    const onAddTransaction = (transaction: ITransaction) => {
+        console.log(transaction);
         addTransaction(balance, transaction);
     };
 
@@ -122,40 +111,17 @@ function Balance() {
         return <EmptyState />;
     }
 
+    console.log(users);
+
     return (
         <PageContent>
-            <BalanceCard balance={formatMoney(userAmount)} />
-            {/* {step === 'initial' ? (
-                <s.AddNewTransaction>
-                    <Icon color="grey" name="plus" size="small" />
-                    <s.NameFromTransaction onClick={addNewTransaction}>
-                        New transaction
-                    </s.NameFromTransaction>
-                </s.AddNewTransaction>
-            ) : null}
-
-            {step === 'chooseOption' ? (
-                <s.TracsactionOptions>
-                    <s.CaseTransaction>Single transaction</s.CaseTransaction>
-                    <s.CaseTransaction onClick={selectMultipleTransaction}>
-                        Multiple transaction
-                    </s.CaseTransaction>
-                </s.TracsactionOptions>
-            ) : null}
-
-            {step === 'multipleTransaction' ? (
-                <MultipleTransaction
-                    users={users.map((user) => ({
-                        id: user.id,
-                        name: user.displayName || user.email,
-                    }))}
-                    onClose={onCloseClick}
-                    onAdd={onAddTransaction}
-                />
-            ) : null} */}
-            <NewTransactionWidget 
+            <BalanceCard
+                title={balance?.title}
+                balance={formatMoney(userAmount)}
+            />
+            <NewTransactionWidget
                 onAdd={onAddTransaction}
-                users={users.map((user) => ({
+                users={users?.map((user) => ({
                     id: user.id,
                     name: user.displayName || user.email,
                 }))}

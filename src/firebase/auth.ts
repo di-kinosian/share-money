@@ -14,7 +14,6 @@ export const useAuth = () => {
             if (user) {
                 onValue(getUserProfileRef(user.uid), (snapshot) => {
                     const dbUserProfile = snapshot.val();
-                    console.log(dbUserProfile);
                     if (!dbUserProfile) {
                         set(getUserProfileRef(user.uid), {
                             id: user.uid,
@@ -32,5 +31,6 @@ export const useAuth = () => {
                 // ...
             }
         });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
 };

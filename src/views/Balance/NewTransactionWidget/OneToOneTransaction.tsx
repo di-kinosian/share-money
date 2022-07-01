@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { useState } from 'react';
 import * as s from './styled';
 import closeIcon from '../../../assets/img/close-icon.svg';
@@ -12,6 +12,7 @@ import Field from '../../../components/Field';
 import { ITransaction } from '../types';
 import { Map } from '../../../firebase/types';
 import imageCompression from 'browser-image-compression';
+import Dropdown from './Dropdown/Dropdown';
 
 const getInitialAmountFromUsers = (users) =>
     users.reduce((acc, user) => ({ ...acc, [user.id]: formatMoney(0) }), {});
@@ -25,51 +26,10 @@ interface IProps {
     }[];
 }
 
-const getAmountError = (
-    amount: string,
-    paidUsers: Map<string>,
-    spentUsers: Map<string>
-): string => {
-    let errorKey = '';
-    const spentAmount = Object.values(spentUsers).reduce(
-        (acc, cur) => acc + parseFloat(cur),
-        0
-    );
-    const paidAmount = Object.values(paidUsers).reduce(
-        (acc, cur) => acc + parseFloat(cur),
-        0
-    );
-
-    const preparedAmount = parseFloat(amount);
-
-    if (preparedAmount !== spentAmount || preparedAmount !== paidAmount) {
-        errorKey = 'not_equal';
-    }
-    if (paidAmount > spentAmount) {
-        errorKey = 'paid_more_then_spent';
-    }
-    if (paidAmount < spentAmount) {
-        errorKey = 'paid_less_then_spent';
-    }
-
-    switch (errorKey) {
-        case 'not_equal': {
-            return 'Total amount are not equal to spent amount or paid amount. Please check amount fields';
-        }
-        case 'paid_more_then_spent': {
-            return 'Paid amount more then spent amount. Please check spent amount fields';
-        }
-        case 'paid_less_then_spent': {
-            return 'Paid amount less then spent amount. Please check spent amount fields';
-        }
-        default: {
-            return '';
-        }
-    }
-};
-
-const transformStringMapToNumberMap = (stringMap: Map<string>): Map<number> => {
-    const resultMap: Map<number> = {};
+const transformStringMapToNumberMap = (
+    stringMap: Record<string, string>
+): Record<string, number> => {
+    const resultMap: Record<string, number> = {};
 
     for (let key in stringMap) {
         resultMap[key] = parseFloat(stringMap[key]);
@@ -81,10 +41,8 @@ const transformStringMapToNumberMap = (stringMap: Map<string>): Map<number> => {
 const INITIAL_AMOUNT = '0.00';
 const INITIAL_TITLE_INPUT = '';
 
-function MultipalTransaction(props: IProps) {
+function OneToOneTransaction(props: IProps) {
     const [isEdit, setIsEdit] = useState<boolean>(false);
-
-    const [error, setError] = useState<string>('');
 
     const [spentUsers, setSpentUsers] = useState<Map<string>>(
         getInitialAmountFromUsers(props.users)
@@ -98,14 +56,34 @@ function MultipalTransaction(props: IProps) {
     const [file, setFile] = useState<File>(null);
     const [uploadError, setUploadError] = useState('');
     const [downloadLink, setDownloadLink] = useState('');
+    const [paidUserId, setPaidUserId] = useState(null);
+    const [spentUserId, setSpentUserId] = useState(null);
+
+    useEffect(() => {
+        if (props.users.length) {
+            console.log('here');
+
+            setPaidUserId(props.users[0].id);
+            setSpentUserId(props.users[1].id);
+        }
+    }, [props.users]);
 
     const previewImage = () => {
         window.open(downloadLink);
     };
 
+    const userOptions = props.users.map((item) => {
+        return {
+            value: item.id,
+            label: item.name,
+        };
+    });
+
     const deleteFile = () => {
         setFile(null);
     };
+
+    console.log('render');
 
     async function handleImageUpload(event) {
         const imageFile = event.target.files[0];
@@ -132,23 +110,26 @@ function MultipalTransaction(props: IProps) {
     };
 
     const onAddTransaction = () => {
-        setIsEdit(false);
-        const amountError = getAmountError(amount, paidUsers, spentUsers);
-        setError(amountError);
+        const prepearedAmound = parseFloat(amount);
 
-        if (!amountError) {
-            props.onAdd({
-                title: title,
-                amount: amount,
-                date: date,
-                paidUsers: transformStringMapToNumberMap(paidUsers),
-                spentUsers: transformStringMapToNumberMap(spentUsers),
-            });
-            setAmountInput(INITIAL_AMOUNT);
-            setTitleInput(INITIAL_TITLE_INPUT);
-            setSpentUsers(getInitialAmountFromUsers(props.users));
-            setPaidUsers(getInitialAmountFromUsers(props.users));
-        }
+        setIsEdit(false);
+        props.onAdd({
+            title,
+            amount,
+            date,
+            paidUsers: {
+                ...transformStringMapToNumberMap(paidUsers),
+                [paidUserId]: prepearedAmound,
+            },
+            spentUsers: { 
+                ...transformStringMapToNumberMap(spentUsers),
+                [spentUserId]: prepearedAmound,
+            },
+        });
+        setAmountInput(INITIAL_AMOUNT);
+        setTitleInput(INITIAL_TITLE_INPUT);
+        setSpentUsers(getInitialAmountFromUsers(props.users));
+        setPaidUsers(getInitialAmountFromUsers(props.users));
     };
 
     const changeTitle = (event) => {
@@ -166,32 +147,11 @@ function MultipalTransaction(props: IProps) {
         setDataInput(data.value);
     };
 
-    const changePaidAmount = (event) => {
-        setIsEdit(true);
-        let userId = event.target.dataset.id;
-        setPaidUsers({ ...paidUsers, [userId]: event.target.value });
-    };
-
-    const formatPaidAmount = (event) => {
-        let userId = event.target.dataset.id;
-        setPaidUsers({
-            ...paidUsers,
-            [userId]: formatMoney(paidUsers[userId]),
-        });
-    };
-
-    const changeSpentAmount = (event) => {
-        setIsEdit(true);
-        let userId = event.target.dataset.id;
-        setSpentUsers({ ...spentUsers, [userId]: event.target.value });
-    };
-
-    const formatSpentAmount = (event) => {
-        let userId = event.target.dataset.id;
-        setSpentUsers({
-            ...spentUsers,
-            [userId]: formatMoney(spentUsers[userId]),
-        });
+    const switchUsers = () => {
+        const newPaidUser = spentUserId;
+        const newSpentUser = paidUserId;
+        setPaidUserId(newPaidUser);
+        setSpentUserId(newSpentUser);
     };
 
     return (
@@ -200,15 +160,15 @@ function MultipalTransaction(props: IProps) {
                 <s.CloseIcon alt="" src={closeIcon} />
             </s.CloseButton>
             <Field label="Title:">
-                <s.TracsactionInput
+                <input
                     placeholder="Enter title"
                     value={title}
                     onChange={changeTitle}
                 />
             </Field>
-            <s.RowFields>
-                <Field label="Amount:" style={{ marginRight: '16px' }}>
-                    <s.AmountInput
+            <s.UsersRow>
+                <Field label="Amount:">
+                    <input
                         value={amount}
                         onChange={changeAmount}
                         min={0}
@@ -217,6 +177,7 @@ function MultipalTransaction(props: IProps) {
                         onFocus={onFocusMoneyInput}
                     />
                 </Field>
+                <div />
                 <Field label="Date:">
                     <DateTimeInput
                         placeholder="Date"
@@ -235,42 +196,35 @@ function MultipalTransaction(props: IProps) {
                         onChange={changeDate}
                     />
                 </Field>
-            </s.RowFields>
-            <Field label="Paid:">
-                {props.users.map((user) => (
-                    <s.UserAmountRow key={user.id}>
-                        <s.UserName>{user.name}</s.UserName>
-                        <s.PayerInput
-                            min={0}
-                            value={paidUsers[user.id]}
-                            type="number"
-                            id="amount-input"
-                            onChange={changePaidAmount}
-                            onBlur={formatPaidAmount}
-                            data-id={user.id}
-                            onFocus={onFocusMoneyInput}
-                        />
-                    </s.UserAmountRow>
-                ))}
-            </Field>
-            <Field label="Spent:">
-                {props.users.map((user) => (
-                    <s.UserAmountRow key={user.id}>
-                        <s.UserName>{user.name}</s.UserName>
-                        <s.PayerInput
-                            min={0}
-                            value={spentUsers[user.id]}
-                            type="number"
-                            id="amount-input"
-                            data-id={user.id}
-                            onChange={changeSpentAmount}
-                            onBlur={formatSpentAmount}
-                            onFocus={onFocusMoneyInput}
-                        />
-                    </s.UserAmountRow>
-                ))}
-            </Field>
-            {!isEdit && <s.ErrorText>{error}</s.ErrorText>}
+            </s.UsersRow>
+            <s.UsersRow>
+                <s.UserField label="Paid:">
+                    <Dropdown
+                        value={paidUserId}
+                        onSelect={(value) => {
+                            setPaidUserId(value);
+                        }}
+                        options={userOptions}
+                        placeholder={'Select user'}
+                    />
+                </s.UserField>
+                <s.ExchangeBtn onClick={switchUsers}>
+                    <Icon name="exchange" />
+                </s.ExchangeBtn>
+
+                <s.UserField label="Spent:">
+                    <Dropdown
+                        value={spentUserId}
+                        onSelect={(value) => {
+                            console.log('I will call setState');
+
+                            setSpentUserId(value);
+                        }}
+                        options={userOptions}
+                        placeholder={'Select user'}
+                    />
+                </s.UserField>
+            </s.UsersRow>
             {uploadError && <s.ErrorText>{uploadError}</s.ErrorText>}
 
             {file && (
@@ -309,4 +263,4 @@ function MultipalTransaction(props: IProps) {
     );
 }
 
-export default MultipalTransaction;
+export default OneToOneTransaction;

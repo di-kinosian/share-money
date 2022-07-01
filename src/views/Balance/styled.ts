@@ -38,23 +38,31 @@ export const JoinButton = styled.div`
 export const AddNewTransaction = styled(ShadowContainer)`
     display: flex;
     align-items: center;
+    margin: 0 16px;
+    span {
+        margin-left: 8px;
+        font-weight: 600;
+        line-height: 16px;
+        font-size: 16px;
+    }
+    i.icon {
+        font-size: 16px;
+    }
 `;
 
-export const NameFromTransaction = styled.div`
-    margin-left: 8px;
-    font-size: 17px;
-    font-weight: 600;
-    color: #777;
+export const TracsactionOptions = styled(ShadowContainer)`
+    margin: 0 16px;
 `;
-
-export const TracsactionOptions = styled(ShadowContainer)``;
 
 export const CaseTransaction = styled.div`
-    margin-left: 8px;
-    font-size: 17px;
+    font-size: 16px;
     font-weight: 600;
-    color: #777;
     &:first-child {
         margin-bottom: 8px;
+    }
+    .icons {
+        width: 25px;
+        font-size: 16px;
+        line-height: 16px;
     }
 `;
