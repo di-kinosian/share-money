@@ -94,7 +94,6 @@ export const PayerInput = styled.input`
 
 export const UserAmountRow = styled.div`
     display: flex;
-    justify-content: space-between;
     align-items: center;
     border-radius: 8px;
     padding: 8px 0px;
@@ -104,6 +103,7 @@ export const UserName = styled.div`
     opacity: 0.9;
     font-weight: 500;
     margin-bottom: 6px;
+    margin-right: auto;
 `;
 
 export const ButtonsContainer = styled.div`

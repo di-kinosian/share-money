@@ -12,6 +12,7 @@ import Field from '../../../components/Field';
 import { ITransaction } from '../types';
 import { Map } from '../../../firebase/types';
 import imageCompression from 'browser-image-compression';
+import AmountMenu from './AmountMenu/AmountMenu';
 
 const getInitialAmountFromUsers = (users) =>
     users.reduce((acc, user) => ({ ...acc, [user.id]: formatMoney(0) }), {});
@@ -194,6 +195,57 @@ function MultipalTransaction(props: IProps) {
         });
     };
 
+    const handleAmountSelect = (id: string, type: string, value: string) => {
+        let computedAmount = 0;
+
+        switch (value) {
+            case '100%': {
+                computedAmount = parseFloat(amount);
+                break;
+            }
+            case '50%': {
+                computedAmount = parseFloat(amount) / 2;
+                break;
+            }
+            case '0%': {
+                computedAmount = 0;
+                break;
+            }
+            case 'Rest': {
+                computedAmount =
+                    parseFloat(amount) -
+                    Object.entries(
+                        type === 'paid' ? paidUsers : spentUsers
+                    ).reduce(
+                        (acc, [userId, userAmount]) =>
+                            userId === id ? acc : acc + parseFloat(userAmount),
+                        0
+                    );
+                break;
+            }
+            default: {
+                computedAmount = 0;
+                break;
+            }
+        }
+
+        if (type === 'paid') {
+            setPaidUsers({
+                ...paidUsers,
+                [id]: formatMoney(computedAmount)
+            })
+        } else {
+            setSpentUsers({
+                ...spentUsers,
+                [id]: formatMoney(computedAmount)
+            })
+        }
+
+        console.log(computedAmount);
+
+        // console.log(id, type, value);
+    };
+
     return (
         <s.NewTransactionForm>
             <s.CloseButton onClick={props.onClose}>
@@ -250,6 +302,11 @@ function MultipalTransaction(props: IProps) {
                             data-id={user.id}
                             onFocus={onFocusMoneyInput}
                         />
+                        <AmountMenu
+                            type="paid"
+                            id={user.id}
+                            onSelect={handleAmountSelect}
+                        />
                     </s.UserAmountRow>
                 ))}
             </Field>
@@ -266,6 +323,11 @@ function MultipalTransaction(props: IProps) {
                             onChange={changeSpentAmount}
                             onBlur={formatSpentAmount}
                             onFocus={onFocusMoneyInput}
+                        />
+                        <AmountMenu
+                            type="spent"
+                            id={user.id}
+                            onSelect={handleAmountSelect}
                         />
                     </s.UserAmountRow>
                 ))}
