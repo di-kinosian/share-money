@@ -1,14 +1,6 @@
-import { get, ref, remove, set } from 'firebase/database';
+import { get, ref, set } from 'firebase/database';
 import { all } from 'redux-saga/effects';
 import { database } from '../../firebase';
-
-export function* deleteBalanceService(balanceId, userId) {
-    yield remove(ref(database, 'userBalances/' + userId + '/' + balanceId));
-
-    yield remove(
-        ref(database, 'balanceDetails/' + balanceId + '/users/' + userId)
-    );
-}
 
 export function* addBalanceService(balanceId, userId, newBalance) {
     yield set(ref(database, `userBalances/${userId}/${balanceId}`), true);

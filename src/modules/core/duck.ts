@@ -9,7 +9,6 @@ import {
     addBalanceService,
     addBalanceTransactionService,
     addUserToBalanceService,
-    deleteBalanceService,
     getBalanceDetailsService,
 } from './services';
 import { get, ref, set } from 'firebase/database';
@@ -44,7 +43,6 @@ export const fetchHistory = createAction('CORE/FETCH_HISTORY');
 export const fetchHistorySuccess = createAction('CORE/FETCH_HISTORY_SUCCESS');
 export const addBalance = createAction('CORE/ADD_BALANCE');
 export const addBalaceSuccess = createAction('CORE/ADD_BALANCE_SUCCESS');
-export const deleteBalance = createAction('CORE/DELETE_BALANCE');
 
 export const joinToBalance = createAction('CORE/JOIN_TO_BALANCE');
 
@@ -107,12 +105,6 @@ const reducer = handleActions(
             ...state,
             isUserBalanceLoading: false,
             balanceDetails: action.payload,
-        }),
-        [deleteBalance]: (state, action) => ({
-            ...state,
-            userBalances: state.userBalances.filter(
-                (item) => item.id !== action.payload
-            ),
         }),
     },
     initialState
@@ -206,15 +198,6 @@ function* refetchBalanceSaga() {
     }
 }
 
-function* deleteBalanceSaga(action) {
-    try {
-        const user = yield select(getUser);
-        yield deleteBalanceService(action.payload, user._id);
-    } catch (err) {
-        console.error(err);
-    }
-}
-
 function* joinToBalanceSaga(action) {
     try {
         const balance = yield select(getBalanceDetails);
@@ -244,7 +227,6 @@ export function* saga() {
         takeLatest(addBalance, addBalaceSaga),
         takeLatest(fetchBalances, fetchUserBalances),
         takeLatest(fetchBalanceById, fetchBalanceByIdSaga),
-        takeEvery(deleteBalance, deleteBalanceSaga),
         takeLatest(joinToBalance, joinToBalanceSaga),
         takeEvery(addBalanceTransaction, addBalanceTransactionSaga),
     ]);

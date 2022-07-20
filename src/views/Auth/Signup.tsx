@@ -52,6 +52,7 @@ const Signup = (props) => {
         createUserWithEmailAndPassword(auth, email, password)
             .then((userCredential) => {
                 // Signed in
+                // eslint-disable-next-line @typescript-eslint/no-unused-vars
                 const user = userCredential.user;
                 // ...
             })

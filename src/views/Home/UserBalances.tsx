@@ -1,8 +1,6 @@
 import { useMemo, useState, FC } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
+import { useSelector } from 'react-redux';
 import { getUser } from '../../modules/auth/duck';
-import { deleteBalance } from '../../modules/core/duck';
-import deleteIcon from '../../assets/img/delete-icon.svg';
 import { useHistory } from 'react-router-dom';
 import * as s from './styled';
 import CreateBalanceModal from './CreateBalanceModal';
@@ -22,15 +20,9 @@ interface IProps {
 
 const BalanceItem: FC<IProps> = (props) => {
     const history = useHistory();
-    const dispatch = useDispatch();
 
     const handelBalanceClick = () => {
         history.push('/balance/' + props.id);
-    };
-
-    const deleteBalanceItem = (event) => {
-        dispatch(deleteBalance(props.id));
-        event.stopPropagation();
     };
 
     const balanceAmount = props.users[props.userId];
@@ -39,11 +31,6 @@ const BalanceItem: FC<IProps> = (props) => {
         <s.Balance onClick={handelBalanceClick}>
             <s.BalanceName>{props.title}</s.BalanceName>
             <MoneyValue value={balanceAmount} />
-            {/* <s.BalanceDeleteIcon
-                alt=""
-                src={deleteIcon}
-                onClick={deleteBalanceItem}
-            /> */}
         </s.Balance>
     );
 }
