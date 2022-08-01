@@ -19,7 +19,6 @@ const Button: React.FC<IButtonProps> = ({ width, variant, color, ...rest }) => {
 
     return (
         <StyledButton
-            size="large"
             width={width}
             color={preparedColor}
             {...rest}

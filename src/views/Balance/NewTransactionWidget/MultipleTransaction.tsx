@@ -12,7 +12,7 @@ import Field from '../../../components/Field';
 import { ITransaction } from '../types';
 import { Map } from '../../../firebase/types';
 import imageCompression from 'browser-image-compression';
-import AmountMenu from './AmountMenu/AmountMenu';
+import AmountMenu from '../../../components/AmountMenu/AmountMenu';
 
 const getInitialAmountFromUsers = (users) =>
     users.reduce((acc, user) => ({ ...acc, [user.id]: formatMoney(0) }), {});

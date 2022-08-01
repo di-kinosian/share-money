@@ -1,5 +1,5 @@
 import styled from 'styled-components';
-import OptionsMenu from '../../../../components/OptionsMenu';
+import OptionsMenu from '../OptionsMenu';
 
 export const Container = styled.div`
     position: relative;

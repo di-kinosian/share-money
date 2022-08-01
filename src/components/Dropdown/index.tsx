@@ -1,7 +1,7 @@
 import React from 'react';
 import { useState, useMemo, useEffect, useRef } from 'react';
 import * as s from './styled';
-import arrowIcon from '../../../../assets/img/arrow-icon.svg';
+import arrowIcon from '../../assets/img/arrow-icon.svg';
 
 interface IProps {
     className?: string;

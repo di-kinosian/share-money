@@ -21,7 +21,7 @@ import {
 } from '../../firebase/types';
 import { push, ref, set, update } from 'firebase/database';
 import { ITransaction } from './types';
-import NewTransactionWidget from './NewTransactionWidget';
+import TransactionWidget from './TransactionWidget';
 
 // Firebase
 const joinToBalance = (balanceId, userId) => {
@@ -119,13 +119,18 @@ function Balance() {
                 title={balance?.title}
                 balance={formatMoney(userAmount)}
             />
-            <NewTransactionWidget
-                onAdd={onAddTransaction}
-                users={users?.map((user) => ({
-                    id: user.id,
-                    name: user.displayName || user.email,
-                }))}
-            />
+            {
+                users && (
+                    <TransactionWidget
+                        onAdd={onAddTransaction}
+                        users={users.map((user) => ({
+                            id: user.id,
+                            name: user.displayName || user.email,
+                        }))}
+                    />
+                )
+            }
+
             <History
                 balanceId={params.balanceId}
                 userId={user?.uid}
