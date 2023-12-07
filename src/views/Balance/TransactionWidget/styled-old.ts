@@ -36,7 +36,7 @@ export const PayerInput = so.input`
     padding: 0 6px;
     font-size: 16px;
     border: 1px solid rgb(169, 169, 169);
-    width: 30%;
+    width: 86px;
     margin-left: auto;
 `;
 

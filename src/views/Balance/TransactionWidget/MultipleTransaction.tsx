@@ -8,6 +8,7 @@ import AmountMenu from '../../../components/AmountMenu/AmountMenu';
 import { IAmountDetails, IAmountStepProps } from './types';
 import { BodyText } from '../../../components/styled';
 import { getAmountError } from './helpers';
+import { Icon } from 'semantic-ui-react';
 
 
 
@@ -182,6 +183,7 @@ function MultipalTransaction(props: IAmountStepProps) {
               onBlur={formatSpentAmount}
               onFocus={onFocusMoneyInput}
             />
+            <s.Ellipsis />
           </so.UserAmountRow>
         ))}
       </Field>

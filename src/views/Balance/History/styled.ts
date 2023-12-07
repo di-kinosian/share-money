@@ -8,17 +8,25 @@ export const HistoryContainer = styled.section`
 `;
 
 export const HistoryHeader = styled.div`
-	display: flex;
-	height: 20px;
-`;
-
-export const ArowIcon = styled.img`
-	width: 24px;
-	cursor: pointer;
+	height: 40px;
 `;
 
 export const HistoryTitle = styled.div`
-	font-weight: 600;
+	display: flex;
+	height: 40px;
+	width: fit-content;
+	padding: 0 16px;
+	align-items: center;
+	position: relative;
+
+	&:after {
+		content: '';
+		position: absolute;
+		bottom: -1px;
+		left: 0px;
+		right: 0px;
+		border-bottom: 2px solid rgb(105,226,212);
+	}
 `;
 
 export const HistoryContent = styled.div``;

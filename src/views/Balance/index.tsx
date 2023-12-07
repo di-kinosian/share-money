@@ -28,7 +28,7 @@ import copyToClipboard from '../../helpers/copyToClipboard';
 import Button from '../../components/Button';
 import { deleteBalance } from '../../firebase/balance';
 import { ROUTES } from '../../routes/constants';
-import { useModalState } from '../../helpers/hooks';
+import { useDisableScroll, useModalState } from '../../helpers/hooks';
 
 // Firebase
 const joinToBalance = (balanceId, userId) => {
@@ -66,6 +66,8 @@ function Balance() {
   const params = useParams<{ balanceId: string }>();
   const user = auth.currentUser;
 
+  useDisableScroll(isTransactionOpen || isActionsOpen || isShareOpen || isDeleteConfirmation)
+
   const { value: balance, loading } = useValue<IBalanceDetails>(
     getBalanceDetailsRef(params.balanceId)
   );
@@ -99,6 +101,7 @@ function Balance() {
     addTransaction(balance, transaction);
     closeTransaction()
   };
+
 
   if (loading) {
     return <Loader active />;
@@ -164,7 +167,6 @@ function Balance() {
         <TransactionWidget
           onAdd={onAddTransaction}
           users={usersLite}
-          isOpen={isTransactionOpen}
           userId={user?.uid}
         />
       </Modal>

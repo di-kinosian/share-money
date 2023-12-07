@@ -49,6 +49,14 @@ export const H4 = styled.h4`
   line-height: 24px;
 `
 
+export const H5 = styled.h4`
+  margin: 0px;
+  font-size: 18px;
+  font-style: normal;
+  font-weight: 700;
+  line-height: 20px;
+`
+
 export const NoteText = styled.span`
   font-size: 14px;
   font-style: normal;

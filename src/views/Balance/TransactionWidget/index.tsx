@@ -7,21 +7,30 @@ import dayjs from 'dayjs';
 import Field from '../../../components/Field';
 import { formatMoney } from '../../../helpers/format';
 import DatePicker from '../../../components/DatePicker';
-import { BodyText, Flex } from '../../../components/styled';
+import { BodyText, Flex, H4, HorisontalSeparator } from '../../../components/styled';
 import Dropdown from '../../../components/Dropdown';
 import { useModalState } from '../../../helpers/hooks';
 import { Map } from '../../../firebase/types';
 import Button from '../../../components/Button';
 import { getAmountError } from './helpers';
 import { IUser } from './types';
+import Modal from '../../../components/Modal';
+
+
+const getInitialAmountFromUsers = (users: IUser[]): Record<string, string> =>
+  users.reduce((acc, user) => ({ ...acc, [user.id]: formatMoney(0) }), {});
 
 interface IUsersInputGroupProps {
   users: IUser[];
   onChange: (data: Map<string>) => void
   value: Map<string>
+  amount: string
 }
 
-const UsersInputGroup = ({ users, value, onChange }: IUsersInputGroupProps) => {
+const UsersInputGroup = ({ users, value, onChange, amount }: IUsersInputGroupProps) => {
+  const { isOpen: isOptionsOpen, open: openOptions, close: closeOptions } = useModalState()
+  const [selectedUserId, setSelectedUserId] = useState<string | null>(null)
+
   const onFocusMoneyInput = (e) => {
     e.target.select();
   };
@@ -34,7 +43,7 @@ const UsersInputGroup = ({ users, value, onChange }: IUsersInputGroupProps) => {
     })
   };
 
-  const changePaidAmount = (event) => {
+  const changeAmount = (event) => {
     let userId = event.target.dataset.id;
     onChange({
       ...value,
@@ -42,6 +51,56 @@ const UsersInputGroup = ({ users, value, onChange }: IUsersInputGroupProps) => {
     })
   };
 
+  const handleAmountSelect = (option: string) => () => {
+    const id = selectedUserId
+
+    switch (option) {
+      case '100%': {
+        onChange({
+          ...getInitialAmountFromUsers(users),
+          [id]: amount
+        })
+        break;
+      }
+      case '50%': {
+        const computedAmount = parseFloat(amount) / 2;
+        if (users.length === 2) {
+          onChange(users.reduce((acc, user) => ({
+            ...acc,
+            [user.id]: formatMoney(computedAmount)
+          }), {}))
+        }
+        break;
+      }
+      case '0%': {
+        onChange({
+          ...value,
+          [id]: '0.00'
+        })
+        break;
+      }
+      case 'Rest': {
+        const computedAmount =
+          parseFloat(amount) -
+          Object.entries(
+            value
+          ).reduce(
+            (acc, [userId, userAmount]) =>
+              userId === id ? acc : acc + parseFloat(userAmount),
+            0
+          );
+        onChange({
+          ...value,
+          [id]: formatMoney(computedAmount)
+        })
+        break;
+      }
+      default: {
+        break;
+      }
+    }
+    closeOptions()
+  };
 
   return (
     <div>
@@ -53,13 +112,34 @@ const UsersInputGroup = ({ users, value, onChange }: IUsersInputGroupProps) => {
             value={value[user.id]}
             type="number"
             id="amount-input"
-            onChange={changePaidAmount}
+            onChange={changeAmount}
             onBlur={onBlur}
             data-id={user.id}
             onFocus={onFocusMoneyInput}
           />
+          <s.Ellipsis onClick={() => { setSelectedUserId(user.id); openOptions() }} />
         </so.UserAmountRow>
       ))}
+      <Modal isOpen={isOptionsOpen} onClose={closeOptions}>
+        <s.Actions>
+          <H4>Please select part of total amount</H4>
+          <s.Action onClick={handleAmountSelect('100%')}>
+            <BodyText>100%</BodyText>
+          </s.Action>
+          <HorisontalSeparator />
+          <s.Action onClick={handleAmountSelect('50%')}>
+            <BodyText>50%</BodyText>
+          </s.Action>
+          <HorisontalSeparator />
+          <s.Action onClick={handleAmountSelect('0%')}>
+            <BodyText>0%</BodyText>
+          </s.Action>
+          <HorisontalSeparator />
+          <s.Action onClick={handleAmountSelect('Rest')}>
+            <BodyText>Rest</BodyText>
+          </s.Action>
+        </s.Actions>
+      </Modal>
     </div>)
 
 }
@@ -75,13 +155,11 @@ const transformStringMapToNumberMap = (stringMap: Record<string, string>): Recor
   return resultMap;
 };
 
-const getInitialAmountFromUsers = (users: IUser[]): Record<string, string> =>
-  users.reduce((acc, user) => ({ ...acc, [user.id]: formatMoney(0) }), {});
+
 
 interface IProps {
   onAdd: (transaction: ITransaction) => void;
   users: IUser[];
-  isOpen: boolean
   userId: string
 }
 
@@ -214,7 +292,7 @@ function TransactionWidget(props: IProps) {
         </Flex>
         {
           isConfigurable ? (
-            <UsersInputGroup value={paidUsers} users={props.users} onChange={onChangeUserAmount('paid')} />
+            <UsersInputGroup value={paidUsers} users={props.users} onChange={onChangeUserAmount('paid')} amount={totalAmount} />
           ) : (
             <Dropdown
               value={paidUserId}
@@ -232,6 +310,7 @@ function TransactionWidget(props: IProps) {
           users={props.users}
           onChange={onChangeUserAmount('spent')}
           value={spentUsers}
+          amount={totalAmount}
         />
       </Field>
       <Button variant='primary' onClick={onSubmit} disabled={isSubmitted}>Add</Button>

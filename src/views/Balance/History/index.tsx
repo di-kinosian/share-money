@@ -1,4 +1,3 @@
-import arrowIcon from '../../../assets/img/arrow-icon.svg';
 import { useState, useMemo } from 'react';
 import HistoryItem from './HistoryItem';
 import { Icon, Loader } from 'semantic-ui-react';
@@ -8,10 +7,12 @@ import { IHistoryItem, IUserProfile } from '../../../firebase/types';
 import * as s from './styled';
 import { useModalState } from '../../../helpers/hooks';
 import Modal from '../../../components/Modal';
-import { BodyText, BodyTextHighlight, Flex, HorisontalSeparator, VerticalSeparator } from '../../../components/styled';
+import { BodyText, BodyTextHighlight, Flex, H4, H5, HorisontalSeparator, VerticalSeparator } from '../../../components/styled';
 import MoneyValue from '../../../components/MoneyValue';
 import Button from '../../../components/Button';
 import { formatMoney, formatToLocalDateString } from '../../../helpers/format';
+import { groupBy } from '../../../helpers/data';
+import moment from 'moment';
 
 interface IProps {
   balanceId: string;
@@ -24,84 +25,66 @@ function History(props: IProps) {
     getBalanceHistoryRef(props.balanceId)
   );
 
-  const { isOpen, open, close } = useModalState()
+  const { isOpen: isTransactionOpen, open: openTransaction, close: closeTransaction } = useModalState()
   const { isOpen: isSoonOpen, open: openSoon, close: closeSoon } = useModalState()
-  
+
   const { isOpen: isDeleteOpen, open: openDelete, close: closeDelete } = useModalState()
   const [selectedTransaction, setSelectedTransaction] = useState<IHistoryItem | null>(null)
-
-  const [isHistoryVisible, setIsHistoryVisible] = useState(true);
-
-  const toggleHistory = () => {
-    setIsHistoryVisible(!isHistoryVisible);
-  };
 
   const sorted = useMemo<IHistoryItem[]>(
     () =>
       list
-        ? list.sort(
+        ? [...list.sort(
           (a, b) =>
             new Date(b.date).valueOf() -
             new Date(a.date).valueOf()
-        )
+        )]
         : [],
     [list]
   );
 
+  const grouped = useMemo(() => groupBy(sorted, (i) => formatToLocalDateString(moment(i.date).toDate())),[sorted])
+
   const onSelectTransaction = (data: IHistoryItem) => {
-    open()
+    openTransaction()
     setSelectedTransaction(data)
-    console.log(data);
   }
 
   const onConfirmDelete = () => {
     const newArray = list.filter(i => i.id !== selectedTransaction.id)
-    console.log(newArray, 'newArray');
-    
   }
+
+  console.log(grouped);
 
   return (
     <s.HistoryContainer>
       <s.HistoryHeader>
-        <s.ArowIcon
-          alt=""
-          src={arrowIcon}
-          onClick={toggleHistory}
-          style={{
-            transform: isHistoryVisible
-              ? 'rotate(-90deg)'
-              : 'rotate(180deg)',
-          }}
-        />
-        <s.HistoryTitle>History</s.HistoryTitle>
+        <s.HistoryTitle ><H5>History</H5></s.HistoryTitle>
+      <HorisontalSeparator />
       </s.HistoryHeader>
-      {isHistoryVisible && (
-        <>
-          {loading ? (
-            <Loader active />
-          ) : (
-            sorted.map((historyItem: IHistoryItem) => {
-              return (
-                <HistoryItem
-                  id={historyItem.id}
-                  title={historyItem.title}
-                  date={historyItem.date}
-                  key={historyItem.id}
-                  data={historyItem}
-                  users={props.users}
-                  userId={props.userId}
-                  onSelect={onSelectTransaction}
-                />
-              );
-            })
-          )}
-        </>
+      {loading ? (
+        <Loader active />
+      ) : (
+        sorted.map((historyItem: IHistoryItem) => {
+          return (
+            <HistoryItem
+              id={historyItem.id}
+              title={historyItem.title}
+              date={historyItem.date}
+              key={historyItem.id}
+              data={historyItem}
+              users={props.users}
+              userId={props.userId}
+              onSelect={onSelectTransaction}
+            />
+          );
+        })
       )}
-      <Modal isOpen={isOpen} onClose={close} header="Transaction details">
+      <Modal isOpen={isTransactionOpen} onClose={closeTransaction} header="Transaction details">
         <Flex padding="16px" justify="space-around">
           {/* TODO: implement delete f-ty */}
-          {/* <Flex gap="4px" onClick={openDelete}> */}
-          <Flex gap="4px" onClick={openSoon}>
+          <Flex gap="4px" onClick={openDelete}>
+          {/* <Flex gap="4px" onClick={openSoon}> */}
             <Icon name="trash alternate outline" />
             <BodyTextHighlight>Delete</BodyTextHighlight>
           </Flex>
@@ -147,7 +130,7 @@ function History(props: IProps) {
             </s.Balances>
 
           </s.TransactionDetailsRow>
-          <Button onClick={close}>
+          <Button onClick={closeTransaction}>
             Close
           </Button>
 

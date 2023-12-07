@@ -22,9 +22,6 @@ const Modal: FC<IProps> = ({ isOpen, onClose, children, onCloseEnd, zIndex, head
     if (isOpen) {
       setModalOpen(true);
     }
-
-    const { body } = document;
-    body.style.overflow = isOpen ? 'hidden' : 'auto';
   }, [isOpen]);
 
   const handleAnimationEnd = () => {
