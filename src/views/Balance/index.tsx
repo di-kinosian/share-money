@@ -11,6 +11,7 @@ import History from './History';
 import { useMultipleValues, useValue } from '../../firebase/hooks';
 import {
   getBalanceDetailsRef,
+  getBalanceHistoryItemRef,
   getBalanceHistoryRef,
 } from '../../firebase/refs';
 import {
@@ -18,7 +19,7 @@ import {
   IHistoryItem,
   IUserProfile,
 } from '../../firebase/types';
-import { push, ref, set, update, } from 'firebase/database';
+import { push, ref, remove, set, update, } from 'firebase/database';
 import { ITransaction } from './types';
 import TransactionWidget from './TransactionWidget';
 import Modal from '../../components/Modal';
@@ -29,6 +30,7 @@ import Button from '../../components/Button';
 import { deleteBalance } from '../../firebase/balance';
 import { ROUTES } from '../../routes/constants';
 import { useDisableScroll, useModalState } from '../../helpers/hooks';
+import { AddButton } from '../../components/AddButton';
 
 // Firebase
 const joinToBalance = (balanceId, userId) => {
@@ -56,6 +58,22 @@ const addTransaction = (
   });
   update(ref(database), updates);
 };
+
+const deleteTransaction = (balance: IBalanceDetails, transaction: IHistoryItem) => {
+  const newBalanceUsers = Object.entries(balance.users).reduce((acc, [userId, userBalance]) => ({
+    ...acc,
+    [userId]: userBalance - (transaction.paidUsers[userId] || 0) + (transaction.spentUsers[userId] || 0)
+  }), {})
+
+  const updates = {};
+
+  Object.entries(newBalanceUsers).forEach(([id, amount]) => {
+    updates[`balances/${balance.id}/details/users/${id}`] = amount;
+  });
+
+  remove(getBalanceHistoryItemRef(balance.id, transaction.id))
+  update(ref(database), updates);
+}
 
 function Balance() {
   const { isOpen: isTransactionOpen, open: openTransaction, close: closeTransaction } = useModalState()
@@ -102,6 +120,10 @@ function Balance() {
     closeTransaction()
   };
 
+  const onDeleteTransaction = (transaction: IHistoryItem) => {
+    deleteTransaction(balance, transaction)
+  }
+
 
   if (loading) {
     return <Loader active />;
@@ -139,7 +161,9 @@ function Balance() {
         balanceId={params.balanceId}
         userId={user?.uid}
         users={users}
+        onDeleteTransaction={onDeleteTransaction}
       />
+      <AddButton onClick={openTransactionModal}/>
       <Modal isOpen={isActionsOpen} onClose={closeActions} header="Balance Operations">
         <s.Actions>
           <s.Action onClick={openTransactionModal}>

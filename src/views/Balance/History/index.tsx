@@ -18,6 +18,7 @@ interface IProps {
   balanceId: string;
   userId: string;
   users: IUserProfile[];
+  onDeleteTransaction: (transaction: IHistoryItem) => void
 }
 
 function History(props: IProps) {
@@ -43,7 +44,7 @@ function History(props: IProps) {
     [list]
   );
 
-  const grouped = useMemo(() => groupBy(sorted, (i) => formatToLocalDateString(moment(i.date).toDate())),[sorted])
+  const grouped = useMemo(() => groupBy(sorted, (i) => formatToLocalDateString(moment(i.date).toDate())), [sorted])
 
   const onSelectTransaction = (data: IHistoryItem) => {
     openTransaction()
@@ -51,40 +52,47 @@ function History(props: IProps) {
   }
 
   const onConfirmDelete = () => {
-    const newArray = list.filter(i => i.id !== selectedTransaction.id)
+    props.onDeleteTransaction(selectedTransaction)
+    closeDelete()
+    closeTransaction()
   }
 
   console.log(grouped);
+
+  const renderHistoryContent = () => sorted.length ? sorted.map((historyItem: IHistoryItem) => (
+    <HistoryItem
+      id={historyItem.id}
+      title={historyItem.title}
+      date={historyItem.date}
+      key={historyItem.id}
+      data={historyItem}
+      users={props.users}
+      userId={props.userId}
+      onSelect={onSelectTransaction}
+    />
+  )) : <>
+    <H5>
+      No Transactions Yet
+    </H5>
+    <BodyText>
+      It looks like there are no transactions recorded here. Start tracking shared expenses and managing your balances by adding transactions. Simply tap the "+" button to get started!
+    </BodyText>
+  </>
 
   return (
     <s.HistoryContainer>
       <s.HistoryHeader>
         <s.HistoryTitle ><H5>History</H5></s.HistoryTitle>
-      <HorisontalSeparator />
+        <HorisontalSeparator />
       </s.HistoryHeader>
       {loading ? (
         <Loader active />
-      ) : (
-        sorted.map((historyItem: IHistoryItem) => {
-          return (
-            <HistoryItem
-              id={historyItem.id}
-              title={historyItem.title}
-              date={historyItem.date}
-              key={historyItem.id}
-              data={historyItem}
-              users={props.users}
-              userId={props.userId}
-              onSelect={onSelectTransaction}
-            />
-          );
-        })
-      )}
+      ) : renderHistoryContent()}
       <Modal isOpen={isTransactionOpen} onClose={closeTransaction} header="Transaction details">
         <Flex padding="16px" justify="space-around">
           {/* TODO: implement delete f-ty */}
           <Flex gap="4px" onClick={openDelete}>
-          {/* <Flex gap="4px" onClick={openSoon}> */}
+            {/* <Flex gap="4px" onClick={openSoon}> */}
             <Icon name="trash alternate outline" />
             <BodyTextHighlight>Delete</BodyTextHighlight>
           </Flex>

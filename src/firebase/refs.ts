@@ -9,6 +9,9 @@ export const getBalanceDetailsRef = (id: string) =>
 export const getBalanceHistoryRef = (id: string) =>
     ref(database, 'balances/' + id + '/history');
 
+    export const getBalanceHistoryItemRef = (balanceId: string, historyItemId: string) =>
+    ref(database, 'balances/' + balanceId + '/history/' + historyItemId);
+
 // Users
 
 export const getUserBalancesRef = (userId: string) =>

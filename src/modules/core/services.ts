@@ -13,17 +13,6 @@ export function* addUserToBalanceService(balanceId, userId) {
     yield set(ref(database, `balanceDetails/${balanceId}/users/${userId}`), 0);
 }
 
-export function* addTransactionService(balance, transaction) {
-    const amounts = { ...balance.users };
-    Object.entries(transaction).forEach(([key, value]) => {
-        amounts[key] = amounts[key] + value;
-    });
-    yield set(ref(database, `balanceDetails/${balance.id}/users`), amounts);
-    yield set(
-        ref(database, `balanceHistories/${balance.id}/${transaction.id}`),
-        transaction
-    );
-}
 
 export function* getBalanceHistoryService(balanceId) {
     const result = yield get(ref(database, `balanceHistories/${balanceId}`));
