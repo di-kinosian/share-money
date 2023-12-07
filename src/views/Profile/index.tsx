@@ -54,7 +54,7 @@ function Profile() {
                     variant="primary"
                     onClick={saveButtonClick}
                     disabled={!(isEdit && nameState && emailState)}
-                    width={80}
+                    width="80px"
                 >
                     Save
                 </Button>

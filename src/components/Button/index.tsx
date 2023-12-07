@@ -3,27 +3,29 @@ import { ButtonProps } from 'semantic-ui-react';
 import { StyledButton } from './styled';
 
 interface IButtonProps extends ButtonProps {
-    variant?: 'primary';
-    width?: number;
+  variant?: 'primary' | 'negative';
+  width?: string;
 }
 
 const Button: React.FC<IButtonProps> = ({ width, variant, color, ...rest }) => {
-    const preparedColor = useMemo(() => {
-        if (variant === 'primary') {
-            return 'teal';
-        }
-        if (color) {
-            return color;
-        }
-    }, [color, variant]);
+  const preparedColor = useMemo(() => {
+    if (variant === 'primary') {
+      return 'teal';
+    }
+    if (color) {
+      return color;
+    }
+  }, [color, variant]);
 
-    return (
-        <StyledButton
-            width={width}
-            color={preparedColor}
-            {...rest}
-        />
-    );
+  return (
+    <StyledButton
+      width={width}
+      color={preparedColor}
+      negative={variant === 'negative'}
+      size="big"
+      {...rest}
+    />
+  );
 };
 
 export default Button;

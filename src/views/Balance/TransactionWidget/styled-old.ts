@@ -1,54 +1,10 @@
 import so from 'styled-components';
 import { ShadowContainer } from '../../../components/styled';
 import Field from '../../../components/Field';
+import { Input } from 'semantic-ui-react';
 
-export const NewTransactionBlock = so.div`
-    display: flex;
-    flex-direction: column;
-    margin: 16px;
-    border-radius: 8px;
-    padding: 16px;
-    position: relative;
-    box-shadow: 1px 1px 9px rgb(34 60 80 / 40%);
-`;
-
-export const CloseButton = so.div`
-    position: absolute;
-    top: 10px;
-    right: 10px;
-    cursor: pointer;
-    z-index: 1;
-`;
-
-export const CloseIcon = so.img`
-    width: 22px;
-    height: 22px;
-`;
-
-export const TracsactionField = so.div`
-    flex-grow: 1;
-    margin-right: 16px;
-`;
-
-export const Text = so.div`
-    opacity: 0.9;
-    font-weight: 600;
-    margin-bottom: 6px;
-`;
-
-export const TracsactionInput = so.input`
-    font-family: sans-serif;
-    font-size: 100%;
-    line-height: 1.15;
-    margin: 0;
-`;
-
-export const RowFields = so.div`
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    border-radius: 8px;
-    padding: 16px 0px;
+export const TracsactionInput = so(Input)`
+    width: 100%;
 `;
 
 export const UsersRow = so.div`
@@ -66,16 +22,7 @@ export const ExchangeBtn = so.div`
     }
 `;
 
-export const AmountInput = so.input`
-    font-family: sans-serif;
-    font-size: 100%;
-    line-height: 1.15;
-    margin: 0;
-    height: 40px;
-    border-radius: 4px;
-    padding: 0 6px;
-    font-size: 16px;
-    border: 1px solid rgb(169, 169, 169);
+export const AmountInput = so(Input)`
     width: 100%;
 `;
 
@@ -90,13 +37,13 @@ export const PayerInput = so.input`
     font-size: 16px;
     border: 1px solid rgb(169, 169, 169);
     width: 30%;
+    margin-left: auto;
 `;
 
 export const UserAmountRow = so.div`
     display: flex;
     align-items: center;
-    border-radius: 8px;
-    padding: 8px 0px;
+    padding: 4px 0px;
 `;
 
 export const UserName = so.div`

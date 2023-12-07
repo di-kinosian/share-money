@@ -1,6 +1,7 @@
 import { Step as so } from 'semantic-ui-react';
 import styled from 'styled-components';
-import { DateTimeInput as _DateTimeInput} from 'semantic-ui-calendar-react';
+import { DateTimeInput as _DateTimeInput } from 'semantic-ui-calendar-react';
+import { BodyText } from '../../../components/styled';
 
 
 export const StyledStep = styled(so)`
@@ -8,9 +9,9 @@ export const StyledStep = styled(so)`
 `
 
 export const Buttons = styled.div`
-    margin-top: 16px;
-    display: flex;
-    justify-content: space-between;
+  button {
+    width: 100%;
+  }
 `
 
 export const Content = styled.div`
@@ -36,4 +37,16 @@ export const RadioLabel = styled.span`
 
 export const DateTimeInput = styled(_DateTimeInput)`
     width: 100%;
+`
+
+export const Container = styled.div`
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+`
+
+export const Link = styled(BodyText)`
+	color: #1a8a7d;
+	text-decoration: underline;
 `

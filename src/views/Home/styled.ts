@@ -10,8 +10,10 @@ export const AddButton = styled.div`
 `;
 
 export const ModalContent = styled.div`
+	padding: 24px;
 	display: flex;
 	flex-direction: column;
+	gap: 16px;
 `;
 
 export const Header = styled.div`
@@ -29,7 +31,7 @@ export const ContainerHomePage = styled.div`
 	overflow: auto;
 	display: flex;
 	flex-direction: column;
-	align-items: center;
+	gap: 24px;
 	padding-bottom: 64px;
 `;
 
@@ -49,26 +51,16 @@ export const ModalButton = styled.div`
 	
 `;
 export const Balance = styled.div`
-	max-width: 700px;
 	width: 100%;
-	height: 48px;
-	margin: 16px 0;
-	padding: 8px;
+	height: 52px;
+	padding: 16px;
 	display: flex;
 	align-items: center;
 	border-radius: 8px;
-	box-shadow: 1px 1px 9px rgb(34 60 80 / 40%);
+	border: 1px solid #d8d8d8;
 	flex-shrink: 0;
 `;
 
 export const BalanceName = styled.div`
 	font-weight: 600;
 `;
-
-// export const BalanceDeleteIcon = styled.div`
-// 	width: 20px;
-// 	height: 20px;
-// 	margin-left: 8px;
-// 	bottom: 0px;
-// 	cursor: pointer;
-// `;

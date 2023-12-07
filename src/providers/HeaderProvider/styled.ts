@@ -12,41 +12,41 @@ export const Header = styled.header`
     align-items: center;
     justify-content: center;
     width: 100%;
-    height: 50px;
+    height: 64px;
     font-weight: 700;
     font-size: 20px;
     text-transform: uppercase;
     flex-shrink: 0;
     background-color: #fff;
-    box-shadow: 0px 3px 5px rgba(34, 60, 80, 0.2);
+    border-bottom: 1px solid #d8d8d8;
 `;
 
 export const PageWrapper = styled.main`
     display: flex;
     flex-direction: column;
-    padding-top: 50px;
-    max-width: 400px;
+    padding-top: 64px;
+    max-width: 450px;
     margin: 0 auto;
 `;
 
 export const LogoIcon = styled.img`
-    width: 30px;
-    height: 30px;
+    width: 32px;
+    height: 32px;
 `;
 
 export const BurgerIcon = styled.img`
     width: 24px;
     height: 24px;
     position: absolute;
-    top: 14px;
-    right: 20px;
+    top: 20px;
+    right: 16px;
     cursor: pointer;
 `;
 
 export const Logo = styled(Link)`
     position: absolute;
-    top: 10px;
-    left: 12px;
+    top: 16px;
+    left: 16px;
 `;
 
 export const Menu = styled.div`

@@ -2,23 +2,17 @@ import styled from 'styled-components';
 import { ShadowContainer } from '../../components/styled';
 
 export const PageContent = styled.div`
-    max-width: 400px;
-    margin: 0 auto;
-    display: flex;
-    flex-direction: column;
-    width: 100%;
-    flex-grow: 1;
-    overflow: auto;
 `;
 
-export const PageContainer = styled.div`
-    padding: 24px;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    .input {
-        display: -webkit-box;
-    }
+export const ShareContent = styled.div`
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+
+  svg {
+    align-self: center;
+  }
 `;
 
 export const JoinButton = styled.div`
@@ -66,3 +60,17 @@ export const CaseTransaction = styled.div`
         line-height: 16px;
     }
 `;
+
+export const Actions = styled.div`
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+`
+
+export const Action = styled.div`
+  padding: 8px 0;
+  display: flex;
+  align-items: baseline;
+  gap: 4px;
+`

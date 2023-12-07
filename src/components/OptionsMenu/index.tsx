@@ -34,6 +34,7 @@ function OptionsMenu(props: IProps) {
 
     const selectOption = (event) => {
         props.onSelect(event.target.dataset.value);
+        props.onClose()
     };
 
     return (

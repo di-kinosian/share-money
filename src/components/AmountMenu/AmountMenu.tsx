@@ -39,6 +39,7 @@ function AmountMenu(props: IProps) {
 
     const handleSelect = (value: string) => {
         props.onSelect(props.id, props.type, value)
+        setIsOpen(false)
     };
 
     return (

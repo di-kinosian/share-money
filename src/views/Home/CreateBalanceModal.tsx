@@ -1,47 +1,63 @@
-import { useState } from 'react';
+import { FC, useState } from 'react';
 import * as s from './styled';
 import Modal from '../../components/Modal';
 import Field from '../../components/Field';
 import Button from '../../components/Button';
+import { H4 } from '../../components/styled';
 
 interface ICreateBalanceModalProps {
-    onClose: () => void;
-    onCreate: (title: string) => void;
+  onClose: () => void;
+  onCreate: (title: string) => void;
+  isOpen: boolean
 }
 
-function CreateBalanceModal({ onClose, onCreate }: ICreateBalanceModalProps) {
-    const [title, setTitle] = useState('');
+const CreateBalanceModal: FC<ICreateBalanceModalProps> = ({ onClose, onCreate, isOpen })=> {
+  const [title, setTitle] = useState('');
+  const [titleError, setTitleError] = useState('')
 
-    const changeTitle = (event) => {
-        setTitle(event.target.value);
-    };
+  const changeTitle = (event) => {
+    setTitle(event.target.value);
+    setTitleError('')
+  };
 
-    const createNewBalance = () => {
-        onCreate(title);
-    };
+  const reset = () => {
+    setTitleError('')
+    setTitle('');
+  }
 
-    return (
-        <Modal onClose={onClose}>
-            <s.ModalContent>
-                <s.Header>Create new balance</s.Header>
-                <Field label="Title">
-                    <s.TitleInput
-                        type="text"
-                        placeholder="Enter title"
-                        value={title}
-                        onChange={changeTitle}
-                    />
-                </Field>
+  const createNewBalance = () => {
+    if (title) {
+      onCreate(title);
+      reset()
+    setTitle('');
+    } else {
+      setTitleError('Name is required')
+    }
+  };
 
-                <s.ModalButton>
-                    <Button onClick={onClose}>Cancel</Button>
-                    <Button variant="primary" onClick={createNewBalance}>
-                        Create
-                    </Button>
-                </s.ModalButton>
-            </s.ModalContent>
-        </Modal>
-    );
+  const onCloseModal = () => {
+    onClose()
+    reset()
+  }
+
+  return (
+    <Modal onClose={onCloseModal} isOpen={isOpen} header="Create new balance">
+      <s.ModalContent>
+        <Field label='Balance name' error={titleError}>
+          <s.TitleInput
+            type="text"
+            placeholder="Enter balance name"
+            value={title}
+            onChange={changeTitle}
+            error={Boolean(titleError)}
+          />
+        </Field>
+        <Button variant="primary" onClick={createNewBalance} width="100%">
+          Create
+        </Button>
+      </s.ModalContent>
+    </Modal>
+  );
 }
 
 export default CreateBalanceModal;

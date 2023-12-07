@@ -11,7 +11,6 @@ interface IUser {
 
 interface IAmountStepProps {
     onSubmit: (amountDetails: IAmountDetails) => void;
-    onBack: () => void;
     users: IUser[];
     amountDetails: IAmountDetails;
     onChangeAmountDetails: (amountDetails: IAmountDetails) => void;

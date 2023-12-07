@@ -56,6 +56,10 @@ function formatDateTime(date) {
 	return `${formatDate(date)} (${formatTime(date)})`;
 }
 
+const formatToLocalDateString = (date: Date, locale: string = 'en-GB') => {
+	return date.toLocaleDateString(locale, {weekday: 'long', day: 'numeric', month: 'short' })
+}
+
 export {
 	formatDate,
 	formatMoney,
@@ -63,4 +67,5 @@ export {
 	formatDateForDatepicker,
 	formatTime,
 	formatDateTime,
+	formatToLocalDateString,
 };

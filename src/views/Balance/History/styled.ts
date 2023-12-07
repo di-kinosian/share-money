@@ -1,9 +1,10 @@
 import styled from 'styled-components';
 
 export const HistoryContainer = styled.section`
-	margin: 24px 16px;
-	font-family: 'Montserrat', sans-serif;
-	font-size: 15px;
+	padding: 0 16px;
+	display: flex;
+	flex-direction: column;
+	gap: 24px;
 `;
 
 export const HistoryHeader = styled.div`
@@ -25,10 +26,9 @@ export const HistoryContent = styled.div``;
 // By HistoryItems
 
 export const HistoryItem = styled.div`
-	margin: 24px 0px;
-	border-radius: 8px;
+	border-radius: 4px;
 	padding: 16px;
-	box-shadow: 2px 2px 7px rgba(34, 60, 80, 0.3);
+	border: 1px solid #d8d8d8;
 `;
 
 export const HistoryItemRow = styled.div`
@@ -72,3 +72,37 @@ export const LiftIcon = styled.img`
 	right: 1px;
 	bottom: -17px;
 `;
+
+export const Date = styled.div`
+	margin-left: auto;
+`
+
+export const TransactionDetails = styled.div`
+	padding: 16px;
+	display: flex;
+	flex-direction: column;
+	gap: 16px;
+`
+
+export const TransactionDetailsRow = styled.div`
+	display: flex;
+	justify-content: space-between;
+`
+
+export const TransactionDetailsHeader = styled.div`
+	padding: 16px;
+`
+
+export const Balances = styled.div`
+	display: flex;
+	flex-direction: column;
+	gap: 8px;
+`
+
+export const UserBalance = styled.div`
+	display: flex;
+	flex-direction: column;
+	gap: 4px;
+	align-items: flex-end;
+`
+

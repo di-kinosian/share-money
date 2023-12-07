@@ -13,7 +13,7 @@ export const DropdownControl = styled.div<{ isOpen: boolean }>`
     font-family: sans-serif;
     font-size: 100%;
     height: 40px;
-    padding: 0 6px;
+    padding: 0 8px;
     font-size: 16px;
     background-color: #ffff;
     border: 1px solid;
@@ -52,7 +52,7 @@ export const DropdownOptions = styled.div`
     text-overflow: ellipsis;
 `;
 export const Option = styled.div<{ isActive: boolean }>`
-    padding: 0 6px;
+    padding: 0 8px;
     font-size: 16px;
     line-height: 40px;
     height: 40px;

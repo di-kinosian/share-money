@@ -1,267 +1,242 @@
 import { useState } from 'react';
-import { Checkbox, Icon, Step } from 'semantic-ui-react';
-import Button from '../../../components/Button';
 
 import { ITransaction } from '../types';
-import { Label, NewTransaction, NewTransactionRow } from '../NewTransactionWidget/styled';
-import { ShadowContainer } from '../../../components/styled';
 import * as s from './styled';
 import * as so from './styled-old';
-import Timeline from '../../../components/Timeline';
-import dayjs, { Dayjs } from 'dayjs';
-import MultipleTransaction from './MultipleTransaction';
-import OneToOneTransaction from './OneToOneTransaction';
+import dayjs from 'dayjs';
 import Field from '../../../components/Field';
-import { IAmountDetails, IUser } from './types';
 import { formatMoney } from '../../../helpers/format';
+import DatePicker from '../../../components/DatePicker';
+import { BodyText, Flex } from '../../../components/styled';
+import Dropdown from '../../../components/Dropdown';
+import { useModalState } from '../../../helpers/hooks';
+import { Map } from '../../../firebase/types';
+import Button from '../../../components/Button';
+import { getAmountError } from './helpers';
+import { IUser } from './types';
+
+interface IUsersInputGroupProps {
+  users: IUser[];
+  onChange: (data: Map<string>) => void
+  value: Map<string>
+}
+
+const UsersInputGroup = ({ users, value, onChange }: IUsersInputGroupProps) => {
+  const onFocusMoneyInput = (e) => {
+    e.target.select();
+  };
+
+  const onBlur = (event) => {
+    let userId = event.target.dataset.id;
+    onChange({
+      ...value,
+      [userId]: formatMoney(value[userId]),
+    })
+  };
+
+  const changePaidAmount = (event) => {
+    let userId = event.target.dataset.id;
+    onChange({
+      ...value,
+      [userId]: event.target.value
+    })
+  };
+
+
+  return (
+    <div>
+      {users.map((user) => (
+        <so.UserAmountRow key={user.id}>
+          <BodyText>{user.name}</BodyText>
+          <so.PayerInput
+            min={0}
+            value={value[user.id]}
+            type="number"
+            id="amount-input"
+            onChange={changePaidAmount}
+            onBlur={onBlur}
+            data-id={user.id}
+            onFocus={onFocusMoneyInput}
+          />
+        </so.UserAmountRow>
+      ))}
+    </div>)
+
+}
 
 
 const transformStringMapToNumberMap = (stringMap: Record<string, string>): Record<string, number> => {
-    const resultMap: Record<string, number> = {};
+  const resultMap: Record<string, number> = {};
 
-    for (let key in stringMap) {
-        resultMap[key] = parseFloat(stringMap[key]);
-    }
+  for (let key in stringMap) {
+    resultMap[key] = parseFloat(stringMap[key]);
+  }
 
-    return resultMap;
+  return resultMap;
 };
 
-const getInitialAmountFromUsers = (users:IUser[]): Record<string, string> =>
-    users.reduce((acc, user) => ({ ...acc, [user.id]: formatMoney(0) }), {});
-
-const getInitialAmountDetails = (users: IUser[]) => ({
-    amount: '0.00',
-        paidUsers: getInitialAmountFromUsers(users),
-        spentUsers: getInitialAmountFromUsers(users),
-})
-
-
+const getInitialAmountFromUsers = (users: IUser[]): Record<string, string> =>
+  users.reduce((acc, user) => ({ ...acc, [user.id]: formatMoney(0) }), {});
 
 interface IProps {
-    onAdd: (transaction: ITransaction) => void;
-    users: IUser[];
-}
-
-type StepType = 'info' | 'date' | 'amount';
-type TransactionType = 'oneToOne' | 'multiple';
-
-const backNavigationMap: Record<StepType, StepType> = {
-    date: 'info',
-    amount: 'date',
-    info: 'info'
-}
-
-const nextNavigationMap: Record<StepType, StepType> = {
-    info: 'date',
-    date: 'amount',
-    amount: 'amount',
-}
-
-const isEqual = (str1: string, str2: string): boolean => {
-    return str1 === str2
+  onAdd: (transaction: ITransaction) => void;
+  users: IUser[];
+  isOpen: boolean
+  userId: string
 }
 
 const DATE_FORMAT = "DD-MMM-YYYY HH:mm";
 const INITIAL_DATE = dayjs().format(DATE_FORMAT);
 
+const getPaidUserAmount = (paidUsers: Map<string>, paidUserId: string, users: IUser[], totalAmount: string, isConfigurable: boolean) => isConfigurable ? paidUsers : {
+  ...getInitialAmountFromUsers(users),
+  [paidUserId]: totalAmount,
+}
+
 function TransactionWidget(props: IProps) {
-    const [step, setStep] = useState<StepType>('info');
-    const [type, setType] = useState<TransactionType>('multiple');
-    const [date, setDate] = useState<string>(INITIAL_DATE);
-    const [creationMode, setCreationMode] = useState<boolean>(false);
-    const [title, setTitle] = useState<string>('');
-    const [amountDetails, setAmountDetails] = useState<IAmountDetails>(getInitialAmountDetails(props.users))
+  const { isOpen: isConfigurable, open: openConfigurable, close: closeConfigurable } = useModalState()
+  const [date, setDate] = useState<string>(INITIAL_DATE);
+  const [title, setTitle] = useState<string>('');
+  const [errors, setErrors] = useState([]);
+  const [amountError, setAmountError] = useState('')
+  const [paidUsers, setPaidUsers] = useState(getInitialAmountFromUsers(props.users))
+  const [spentUsers, setSpentUsers] = useState(getInitialAmountFromUsers(props.users))
+  const [totalAmount, setTotalAmount] = useState('0.00')
+  const [paidUserId, setPaidUserId] = useState(props.userId)
+  const [isSubmitted, setIsSubmitted] = useState(false)
 
+  const removeError = (err: 'title' | 'totalAmount') => {
+    if (errors.includes(err)) {
+      setErrors(errors.filter(e => e !== err))
+    }
+  }
 
-    const addNewTransaction = () => {
-        setCreationMode(true);
-    };
+  const changeTitle = (event) => {
+    setTitle(event.target.value);
+    removeError('title')
+  };
 
-    const selectMultipleTransaction = () => {
-        setType('multiple');
-    };
+  const changeDate = (value: Date) => {
+    setDate(dayjs(value).format(DATE_FORMAT));
+  };
 
-    const selectOneToOneTransaction = () => {
-        setType('oneToOne');
-    };
-
-    const onCloseClick = () => {
-        setCreationMode(false);
-    };
-
-    const onBack = () => {
-        setStep(backNavigationMap[step])
+  const onSubmit = () => {
+    if (isSubmitted) return
+    const errors = []
+    if (!title) {
+      errors.push('title')
+    }
+    if (!parseFloat(totalAmount)) {
+      errors.push('totalAmount')
+    }
+    const err = getAmountError({
+      amount: totalAmount,
+      paidUsers: getPaidUserAmount(paidUsers, paidUserId, props.users, totalAmount, isConfigurable),
+      spentUsers
+    });
+    if (err) {
+      setAmountError(err)
     }
 
-    const onNext = () => {
-        setStep(nextNavigationMap[step])
+    if (errors.length) {
+      setErrors(errors)
     }
 
-    const changeTitle = (event) => {
-        setTitle(event.target.value);
-    };
-
-    const changeDate = (_, data) => {
-        console.log(data);
-
-        setDate(dayjs(data.value).format(DATE_FORMAT));
-    };
-
-    const onChangeDateByTimeline = (value: Dayjs) => {
-        setDate(value.format(DATE_FORMAT))
-
+    if (!errors.length && !err) {
+      setIsSubmitted(true)
+      props.onAdd({
+        title,
+        date,
+        amount: totalAmount,
+        spentUsers: transformStringMapToNumberMap(spentUsers),
+        paidUsers: transformStringMapToNumberMap(
+          getPaidUserAmount(paidUsers, paidUserId, props.users, totalAmount, isConfigurable)
+        )
+      })
     }
+  }
 
-    const onSubmitAmount = (amountDetails: IAmountDetails) => {
-        props.onAdd({
-            title,
-            date,
-            amount: amountDetails.amount,
-            spentUsers: transformStringMapToNumberMap(amountDetails.spentUsers),
-            paidUsers: transformStringMapToNumberMap(amountDetails.paidUsers)
-        })
-        setCreationMode(false);
-        setAmountDetails(getInitialAmountDetails(props.users));
-        setDate(INITIAL_DATE);
-        setTitle('');
-        setStep('info')
+  const onChangeTotalAmount = (e) => {
+    setTotalAmount(e.target.value)
+    removeError('totalAmount')
+  }
+
+  const onFocusMoneyInput = (e) => {
+    e.target.select();
+  };
+
+  const onChangeUserAmount = (type: 'spent' | 'paid') => (data: Map<string>) => {
+    if (type === 'spent') {
+      setSpentUsers(data)
+    } else {
+      setPaidUsers(data)
     }
+    setAmountError('')
+  }
 
-    console.log(date);
-    
+  const onTotalAmountBlur = () => {
+    setTotalAmount(formatMoney(totalAmount))
+  }
 
-    return creationMode ? (
-        <ShadowContainer>
-            <Step.Group fluid size='mini' unstackable>
-                <s.StyledStep active={step === 'info'}>
-                    <Icon name='info' />
-                    <Step.Content>
-                        <Step.Title>Info</Step.Title>
-                    </Step.Content>
-                </s.StyledStep>
-                <s.StyledStep active={step === 'date'}>
-                    <Icon name='calendar alternate outline' />
-                    <Step.Content>
-                        <Step.Title>Date</Step.Title>
-                    </Step.Content>
-                </s.StyledStep>
-                <s.StyledStep active={step === 'amount'}>
-                    <Icon name='dollar' />
-                    <Step.Content>
-                        <Step.Title>Amount</Step.Title>
-                    </Step.Content>
-                </s.StyledStep>
-            </Step.Group>
+  return (
+    <s.Container>
+      <Field label="Name">
+        <so.TracsactionInput
+          placeholder="Enter title"
+          value={title}
+          onChange={changeTitle}
+          error={errors.includes('title')}
+        />
+      </Field>
+      <Field label="Date">
+        <DatePicker
+          onChange={changeDate}
+          value={new Date(date)}
+        />
+      </Field>
+      <Field label="Total amount">
+        <so.AmountInput
+          value={totalAmount}
+          onChange={onChangeTotalAmount}
+          min={0}
+          type="number"
+          id="amount-input"
+          onFocus={onFocusMoneyInput}
+          onBlur={onTotalAmountBlur}
+          error={errors.includes('totalAmount')}
+        />
+      </Field>
 
-            {
-                step === 'info' && (
-                    <s.Content>
-                        <Field label="Title:">
-                            <so.TracsactionInput
-                                placeholder="Enter title"
-                                value={title}
-                                onChange={changeTitle}
-                            />
-                        </Field>
-                        <Field label="Transaction type:" style={{ marginTop: '16px' }}>
-                            <s.RadioRow onClick={selectMultipleTransaction}>
-                                <Checkbox radio checked={isEqual(type, 'multiple')} />
-                                <Icon.Group>
-                                    <Icon name="users" />
-                                    <Icon corner name="dollar" />
-                                </Icon.Group>
-                                <s.RadioLabel>Shared transaction</s.RadioLabel>
-                            </s.RadioRow>
-                            <s.RadioRow onClick={selectOneToOneTransaction}>
-                                <Checkbox radio checked={isEqual(type, 'oneToOne')} />
-                                <Icon.Group>
-                                    <Icon name="user" />
-                                    <Icon corner name="dollar" />
-                                </Icon.Group>
-                                <s.RadioLabel>One-to-one transaction</s.RadioLabel>
-                            </s.RadioRow>
-                        </Field>
-
-
-                    </s.Content>
-                )
-            }
-
-            {
-                step === 'date' && (
-                    <s.Content>
-                        <Field label="Date:" >
-                            <s.DateTimeInput
-                                placeholder="Date"
-                                popupPosition="bottom left"
-                                name="date"
-                                closable
-                                clearIcon={<Icon name="remove" color="red" />}
-                                animation="scale"
-                                duration={200}
-                                dateFormat={'YYYY-MM-DD'}
-                                hideMobileKeyboard
-                                value={date}
-                                iconPosition="left"
-                                preserveViewMode={false}
-                                autoComplete="off"
-                                onChange={changeDate}
-                            />
-                            <Timeline
-                                onChange={onChangeDateByTimeline}
-                            />
-                        </Field>
-                    </s.Content>
-                )
-            }
-
-            {
-                step === 'amount' && (
-                    <s.Content>
-                        {type === 'multiple' ? (
-                            <MultipleTransaction
-                                users={props.users}
-                                onBack={onBack}
-                                onSubmit={onSubmitAmount}
-                                amountDetails={amountDetails}
-                                onChangeAmountDetails={setAmountDetails}
-                            />
-                        ) : null}
-                        {type === 'oneToOne' ? (
-                            <OneToOneTransaction
-                                users={props.users}
-                                onBack={onBack}
-                                onSubmit={onSubmitAmount}
-                                amountDetails={amountDetails}
-                                onChangeAmountDetails={setAmountDetails}
-                            />
-                        ) : null}
-                    </s.Content>
-                )
-            }
-            {
-                step === 'info' && <s.Buttons>
-                    <Button onClick={onCloseClick}>Close</Button>
-                    <Button variant="primary" onClick={onNext} disabled={!title}>Next</Button>
-                </s.Buttons>
-            }
-            {
-                step === 'date' && <s.Buttons>
-                    <Button onClick={onBack}>Back</Button>
-                    <Button onClick={onNext} variant="primary">Next</Button>
-                </s.Buttons>
-            }
-        </ShadowContainer>) : (
-        <NewTransaction onClick={addNewTransaction}>
-            <NewTransactionRow>
-                <Icon.Group>
-                    <Icon name="plus" />
-                </Icon.Group>
-                <Label>New transaction</Label>
-            </NewTransactionRow>
-        </NewTransaction>
-    )
-        ;
+      <div>
+        <Flex margin="0 0 4px" justify="space-between">
+          <BodyText>Who Paid</BodyText>
+          <s.Link onClick={isConfigurable ? closeConfigurable : openConfigurable}>{isConfigurable ? 'Standard' : 'Configurable'}</s.Link>
+        </Flex>
+        {
+          isConfigurable ? (
+            <UsersInputGroup value={paidUsers} users={props.users} onChange={onChangeUserAmount('paid')} />
+          ) : (
+            <Dropdown
+              value={paidUserId}
+              options={props.users.map((u) => ({
+                label: u.name,
+                value: u.id,
+              }))}
+              onSelect={setPaidUserId}
+            />
+          )
+        }
+      </div>
+      <Field label='Who Spent' error={amountError}>
+        <UsersInputGroup
+          users={props.users}
+          onChange={onChangeUserAmount('spent')}
+          value={spentUsers}
+        />
+      </Field>
+      <Button variant='primary' onClick={onSubmit} disabled={isSubmitted}>Add</Button>
+    </s.Container>
+  )
 }
 
 export default TransactionWidget;

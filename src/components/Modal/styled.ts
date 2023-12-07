@@ -1,4 +1,4 @@
-import styled from 'styled-components';
+import styled, { keyframes } from 'styled-components';
 
 export const ModalOverlay = styled.div`
     position: fixed;
@@ -9,18 +9,41 @@ export const ModalOverlay = styled.div`
     z-index: 100;
 `;
 
-export const Modal = styled.div`
-    border-radius: 8px;
-    padding: 16px 16px;
-    background: #fff;
-    position: absolute;
-    top: 0;
-    bottom: 0;
-    left: 0;
-    right: 0;
-    margin: auto;
-    height: fit-content;
-    width: fit-content;
+const modalShowAnimation = keyframes`
+  from {
+    transform: translateY(100%);
+  }
+  to {
+    transform: translateY(0);
+  }
+`;
+
+const modalHideAnimation = keyframes`
+  from {
+    transform: translateY(0);
+  }
+  to {
+    transform: translateY(100%);
+  }
+`;
+
+export const Modal = styled.div<{ isOpeningAnimation: boolean; zIndex?: number}>`
+	position: fixed;
+  display: flex;
+  flex-direction: column;
+  z-index: ${({ zIndex }) => zIndex || 5};
+  background-color: #fff;
+  animation-duration: 0.2s;
+  animation-timing-function: linear;
+  animation-fill-mode: forwards;
+
+	bottom: 0;
+	left: 0;
+	width: 100%;
+	height: fit-content;
+	max-height: calc(100% - 30px );
+	border-radius: 8px 8px 0 0;
+	animation-name: ${({ isOpeningAnimation }) => isOpeningAnimation ? modalShowAnimation : modalHideAnimation};
 `;
 
 export const CloseIcon = styled.div`
@@ -40,8 +63,10 @@ export const CloseIcon = styled.div`
         line-height: 16px;
     }
 
-    /* &:hover {
-        background: rgba(0, 0, 0, 0.07);
-    } */
     cursor: pointer;
 `;
+
+export const ModalHeader = styled.div`
+  padding: 16px;
+  border-bottom: 1px solid #d8d8d8;
+`
