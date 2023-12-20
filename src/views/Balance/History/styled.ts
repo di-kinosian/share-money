@@ -1,7 +1,7 @@
 import styled from 'styled-components';
 
 export const HistoryContainer = styled.section`
-	padding: 0 16px;
+	padding: 16px;
 	display: flex;
 	flex-direction: column;
 	gap: 24px;
@@ -9,6 +9,9 @@ export const HistoryContainer = styled.section`
 
 export const HistoryHeader = styled.div`
 	height: 40px;
+	background: white;
+	position: sticky;
+	top: 64px;
 `;
 
 export const HistoryTitle = styled.div`

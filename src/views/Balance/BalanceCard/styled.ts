@@ -1,12 +1,9 @@
 import styled from 'styled-components';
 
 export const BalanceBlock = styled.div`
-    margin: 24px 16px;
     background: rgb(105, 226, 212);
     color: #fff;
-    border-radius: 8px;
     padding: 16px;
-    box-shadow: 2px 2px 7px rgba(34, 60, 80, 0.2);
 `;
 
 export const BalanceRow = styled.div`

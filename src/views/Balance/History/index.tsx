@@ -7,7 +7,7 @@ import { IHistoryItem, IUserProfile } from '../../../firebase/types';
 import * as s from './styled';
 import { useModalState } from '../../../helpers/hooks';
 import Modal from '../../../components/Modal';
-import { BodyText, BodyTextHighlight, Flex, H4, H5, HorisontalSeparator, VerticalSeparator } from '../../../components/styled';
+import { BodyText, BodyTextHighlight, Flex, H5, HorisontalSeparator, VerticalSeparator } from '../../../components/styled';
 import MoneyValue from '../../../components/MoneyValue';
 import Button from '../../../components/Button';
 import { formatMoney, formatToLocalDateString } from '../../../helpers/format';
@@ -57,8 +57,6 @@ function History(props: IProps) {
     closeTransaction()
   }
 
-  console.log(grouped);
-
   const renderHistoryContent = () => sorted.length ? sorted.map((historyItem: IHistoryItem) => (
     <HistoryItem
       id={historyItem.id}
@@ -90,9 +88,7 @@ function History(props: IProps) {
       ) : renderHistoryContent()}
       <Modal isOpen={isTransactionOpen} onClose={closeTransaction} header="Transaction details">
         <Flex padding="16px" justify="space-around">
-          {/* TODO: implement delete f-ty */}
           <Flex gap="4px" onClick={openDelete}>
-            {/* <Flex gap="4px" onClick={openSoon}> */}
             <Icon name="trash alternate outline" />
             <BodyTextHighlight>Delete</BodyTextHighlight>
           </Flex>

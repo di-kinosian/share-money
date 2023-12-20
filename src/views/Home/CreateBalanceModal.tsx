@@ -3,7 +3,6 @@ import * as s from './styled';
 import Modal from '../../components/Modal';
 import Field from '../../components/Field';
 import Button from '../../components/Button';
-import { H4 } from '../../components/styled';
 
 interface ICreateBalanceModalProps {
   onClose: () => void;

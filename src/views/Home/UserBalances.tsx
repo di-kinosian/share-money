@@ -4,7 +4,6 @@ import { getUser } from '../../modules/auth/duck';
 import { useHistory } from 'react-router-dom';
 import * as s from './styled';
 import CreateBalanceModal from './CreateBalanceModal';
-import Button from '../../components/Button';
 import { push, set } from 'firebase/database';
 import { getBalanceDetailsRef, getUserBalancesRef } from '../../firebase/refs';
 import { IBalanceDetails } from '../../firebase/types';
@@ -36,6 +35,7 @@ const BalanceItem: FC<IProps> = (props) => {
 		</s.Balance>
 	);
 }
+
 // Firebase
 const addNewBalance = (userId: string, title: string) => {
 	const newUserBalanceRef = push(getUserBalancesRef(userId));

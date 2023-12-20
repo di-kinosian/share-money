@@ -6,23 +6,21 @@ const Button = styled.button`
   position: fixed;
   right: 20px;
   bottom: 20px;
-  width: 40px;
-  height: 40px;
-  min-width: 40px;
-  min-height: 40px;
-  max-width: 40px;
-  max-height: 40px;
+  width: 52px;
+  height: 52px;
+  min-width: 52px;
+  min-height: 52px;
   border-radius: 50%;
   background-color: rgb(105,226,212);
   color: #fff;
   display: flex;
   align-items: center;
   justify-content: center;
-  border: 1px solid white;
+  border: 2px solid white;
 
   img {
-    width: 32px;
-    height: 32px;
+    width: 36px;
+    height: 36px;
   }
 `
 
