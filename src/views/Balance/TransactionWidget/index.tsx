@@ -256,6 +256,37 @@ function TransactionWidget(props: IProps) {
     setTotalAmount(formatMoney(totalAmount))
   }
 
+  const isSpentUsersNotEqual = (usersMap: Record<string, string>) => {
+    const usersAmountMap = transformStringMapToNumberMap(usersMap)
+
+    const usersAmounts = Object.values(usersAmountMap)
+
+    const maxAmount = Math.max(...usersAmounts)
+    const minAmount = Math.min(...usersAmounts)
+
+    return maxAmount !== minAmount
+  }
+
+  const isZeroAmount = (amount: string) => Number.isNaN(parseFloat(amount)) || parseFloat(amount) === 0
+
+  const isSpentUsersHasZeroAmount = (usersMap: Record<string, string>) => {
+    const usersAmounts = Object.values(usersMap)
+
+    return usersAmounts.some(isZeroAmount)
+  }
+
+  const isHalfOptionVisible = Boolean(parseFloat(totalAmount)) && (isSpentUsersNotEqual(spentUsers) || isSpentUsersHasZeroAmount(spentUsers))
+
+  const onHalfSpentClick = () => {
+    const computedAmount = parseFloat(totalAmount) / props.users.length;
+    onChangeUserAmount('spent')(
+      props.users.reduce((acc, user) => ({
+        ...acc,
+        [user.id]: formatMoney(computedAmount)
+      }), {})
+    )
+  }
+
   return (
     <s.Container>
       <Field label="Name">
@@ -305,14 +336,18 @@ function TransactionWidget(props: IProps) {
           )
         }
       </div>
-      <Field label='Who Spent' error={amountError}>
-        <UsersInputGroup
-          users={props.users}
-          onChange={onChangeUserAmount('spent')}
-          value={spentUsers}
-          amount={totalAmount}
-        />
-      </Field>
+      <s.SpentContainer>
+        <Field label='Who Spent' error={amountError}>
+          <UsersInputGroup
+            users={props.users}
+            onChange={onChangeUserAmount('spent')}
+            value={spentUsers}
+            amount={totalAmount}
+          />
+        </Field>
+        {isHalfOptionVisible && <s.HalfSpentButton><s.Link onClick={onHalfSpentClick}>50/50</s.Link></s.HalfSpentButton>}
+      </s.SpentContainer>
+
       <Button variant='primary' onClick={onSubmit} disabled={isSubmitted}>Add</Button>
     </s.Container>
   )

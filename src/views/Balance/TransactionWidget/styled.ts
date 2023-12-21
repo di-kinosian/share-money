@@ -34,3 +34,13 @@ export const Action = styled.div`
   align-items: baseline;
   gap: 4px;
 `
+
+export const SpentContainer = styled.div`
+  position: relative;
+`
+
+export const HalfSpentButton = styled.div`
+  position: absolute;
+  top: 0;
+  right: 0;
+`
