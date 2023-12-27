@@ -1,24 +1,22 @@
 import styled from 'styled-components';
 
 export const HistoryContainer = styled.section`
-	padding: 16px;
-	display: flex;
-	flex-direction: column;
-	gap: 24px;
 `;
 
 export const HistoryHeader = styled.div`
-	height: 40px;
+	height: 48px;
 	background: white;
 	position: sticky;
 	top: 64px;
+	z-index: 2;
 `;
 
 export const HistoryTitle = styled.div`
 	display: flex;
-	height: 40px;
+	height: 48px;
 	width: fit-content;
 	padding: 0 16px;
+	margin: 0 16px;
 	align-items: center;
 	position: relative;
 
@@ -35,6 +33,29 @@ export const HistoryTitle = styled.div`
 export const HistoryContent = styled.div``;
 
 // By HistoryItems
+
+export const Group = styled.div`
+	padding: 0 16px;
+	margin-bottom: 16px;
+`
+
+export const Transactions = styled.div`
+	display: flex;
+	flex-direction: column;
+	gap: 16px;
+`
+
+export const DateLabel = styled.div`
+	height: 48px;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	background-color: #fff;
+	padding: 0 16px;
+	position: sticky;
+	top: 112px;
+	z-index: 1;
+`
 
 export const HistoryItem = styled.div`
 	border-radius: 4px;
@@ -116,4 +137,5 @@ export const UserBalance = styled.div`
 	gap: 4px;
 	align-items: flex-end;
 `
+
 

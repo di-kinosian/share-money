@@ -1,4 +1,4 @@
-import { useState, useMemo } from 'react';
+import { useState, useMemo, Fragment } from 'react';
 import HistoryItem from './HistoryItem';
 import { Icon, Loader } from 'semantic-ui-react';
 import { useList } from '../../../firebase/hooks';
@@ -10,7 +10,7 @@ import Modal from '../../../components/Modal';
 import { BodyText, BodyTextHighlight, Flex, H5, HorisontalSeparator, VerticalSeparator } from '../../../components/styled';
 import MoneyValue from '../../../components/MoneyValue';
 import Button from '../../../components/Button';
-import { formatMoney, formatToLocalDateString } from '../../../helpers/format';
+import { formatMoney, formatToLocalDateString, formatTransactionDate } from '../../../helpers/format';
 import { groupBy } from '../../../helpers/data';
 import moment from 'moment';
 
@@ -19,6 +19,22 @@ interface IProps {
   userId: string;
   users: IUserProfile[];
   onDeleteTransaction: (transaction: IHistoryItem) => void
+}
+
+const prepareGroups = (items: IHistoryItem[]) => {
+  if (!items || items.length === 0) return []
+  const groupsMap = groupBy(items, (i) => moment(i.date).format('YYYY/MM/DD'))
+
+  const groupPairs = Object.entries(groupsMap)
+
+  const sortedGroupPairs = groupPairs.sort((a, b) => a === b ? 0 : a > b ? -1 : 1)
+  console.log(moment().year());
+
+
+  return sortedGroupPairs.map(pair => ({
+    date: formatTransactionDate(pair[0]),
+    transactions: pair[1]
+  }))
 }
 
 function History(props: IProps) {
@@ -32,19 +48,9 @@ function History(props: IProps) {
   const { isOpen: isDeleteOpen, open: openDelete, close: closeDelete } = useModalState()
   const [selectedTransaction, setSelectedTransaction] = useState<IHistoryItem | null>(null)
 
-  const sorted = useMemo<IHistoryItem[]>(
-    () =>
-      list
-        ? [...list.sort(
-          (a, b) =>
-            new Date(b.date).valueOf() -
-            new Date(a.date).valueOf()
-        )]
-        : [],
-    [list]
-  );
+  const transactionGroups = useMemo(() => prepareGroups(list), [list])
 
-  const grouped = useMemo(() => groupBy(sorted, (i) => formatToLocalDateString(moment(i.date).toDate())), [sorted])
+  console.log(prepareGroups(list));
 
   const onSelectTransaction = (data: IHistoryItem) => {
     openTransaction()
@@ -57,17 +63,24 @@ function History(props: IProps) {
     closeTransaction()
   }
 
-  const renderHistoryContent = () => sorted.length ? sorted.map((historyItem: IHistoryItem) => (
-    <HistoryItem
-      id={historyItem.id}
-      title={historyItem.title}
-      date={historyItem.date}
-      key={historyItem.id}
-      data={historyItem}
-      users={props.users}
-      userId={props.userId}
-      onSelect={onSelectTransaction}
-    />
+  const renderHistoryContent = () => transactionGroups.length ? transactionGroups.map((group) => (
+    <s.Group key={group.date}>
+      <s.DateLabel><BodyTextHighlight>{group.date}</BodyTextHighlight></s.DateLabel>
+      <s.Transactions>
+        {group.transactions.map((transaction) =>
+          <HistoryItem
+            id={transaction.id}
+            title={transaction.title}
+            date={transaction.date}
+            key={transaction.id}
+            data={transaction}
+            users={props.users}
+            userId={props.userId}
+            onSelect={onSelectTransaction}
+          />
+        )}
+      </s.Transactions>
+    </s.Group>
   )) : <>
     <H5>
       No Transactions Yet
@@ -80,8 +93,8 @@ function History(props: IProps) {
   return (
     <s.HistoryContainer>
       <s.HistoryHeader>
-        <s.HistoryTitle ><H5>History</H5></s.HistoryTitle>
-        <HorisontalSeparator />
+        <s.HistoryTitle><H5>History</H5></s.HistoryTitle>
+      <HorisontalSeparator />
       </s.HistoryHeader>
       {loading ? (
         <Loader active />

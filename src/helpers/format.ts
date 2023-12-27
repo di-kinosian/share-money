@@ -1,3 +1,5 @@
+import moment from "moment";
+
 function formatMoney(amount) {
 	let number = Number(amount);
 	if (isNaN(number)) {
@@ -60,6 +62,8 @@ const formatToLocalDateString = (date: Date, locale: string = 'en-GB') => {
 	return date.toLocaleDateString(locale, {weekday: 'long', day: 'numeric', month: 'short' })
 }
 
+const formatTransactionDate = (date: string) => moment(date).format('dddd, DD MMM YYYY').replace(` ${moment().year()}`, '')
+
 export {
 	formatDate,
 	formatMoney,
@@ -68,4 +72,5 @@ export {
 	formatTime,
 	formatDateTime,
 	formatToLocalDateString,
+	formatTransactionDate
 };

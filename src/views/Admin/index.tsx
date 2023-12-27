@@ -1,6 +1,4 @@
 import * as s from './styled';
-import Field from '../../components/Field';
-import Button from '../../components/Button';
 import { useState } from 'react';
 import { useList, useValue } from '../../firebase/hooks';
 import { IBalanceDetails, IHistoryItem } from '../../firebase/types';
