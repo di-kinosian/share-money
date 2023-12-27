@@ -28,13 +28,22 @@ const prepareGroups = (items: IHistoryItem[]) => {
   const groupPairs = Object.entries(groupsMap)
 
   const sortedGroupPairs = groupPairs.sort((a, b) => a === b ? 0 : a > b ? -1 : 1)
-  console.log(moment().year());
-
 
   return sortedGroupPairs.map(pair => ({
     date: formatTransactionDate(pair[0]),
     transactions: pair[1]
   }))
+}
+
+const EmptyHistory = () => {
+  return <s.EmptyHistoryContainer>
+    <H5>
+      No Transactions Yet
+    </H5>
+    <BodyText>
+      It looks like there are no transactions recorded here. Start tracking shared expenses and managing your balances by adding transactions. Simply tap the "+" button to get started!
+    </BodyText>
+  </s.EmptyHistoryContainer>
 }
 
 function History(props: IProps) {
@@ -49,8 +58,6 @@ function History(props: IProps) {
   const [selectedTransaction, setSelectedTransaction] = useState<IHistoryItem | null>(null)
 
   const transactionGroups = useMemo(() => prepareGroups(list), [list])
-
-  console.log(prepareGroups(list));
 
   const onSelectTransaction = (data: IHistoryItem) => {
     openTransaction()
@@ -81,20 +88,13 @@ function History(props: IProps) {
         )}
       </s.Transactions>
     </s.Group>
-  )) : <>
-    <H5>
-      No Transactions Yet
-    </H5>
-    <BodyText>
-      It looks like there are no transactions recorded here. Start tracking shared expenses and managing your balances by adding transactions. Simply tap the "+" button to get started!
-    </BodyText>
-  </>
+  )) : <EmptyHistory />
 
   return (
     <s.HistoryContainer>
       <s.HistoryHeader>
         <s.HistoryTitle><H5>History</H5></s.HistoryTitle>
-      <HorisontalSeparator />
+        <HorisontalSeparator />
       </s.HistoryHeader>
       {loading ? (
         <Loader active />

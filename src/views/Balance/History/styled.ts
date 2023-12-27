@@ -138,4 +138,9 @@ export const UserBalance = styled.div`
 	align-items: flex-end;
 `
 
-
+export const EmptyHistoryContainer = styled.div`
+	display: flex;
+	flex-direction: column;
+	padding: 16px;
+	gap: 16px;
+`
