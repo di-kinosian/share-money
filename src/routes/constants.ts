@@ -3,6 +3,7 @@ const ROUTES = {
     SIGNUP: "/signup",
     SPECIAL: "/special",
     PROFILE: "/profile",
+    ADMIN: '/admin',
     HOME: "/",
 };
 

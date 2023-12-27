@@ -3,6 +3,11 @@ import { Input } from 'semantic-ui-react';
 
 export const TracsactionInput = so(Input)`
     width: 100%;
+    
+    &.ui.input>input {
+      padding-left: 8px;
+      font-size: 16px;
+    }
 `;
 
 export const AmountInput = so(Input)`

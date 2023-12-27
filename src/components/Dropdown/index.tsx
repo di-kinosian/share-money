@@ -78,6 +78,7 @@ function Dropdown(props: IProps) {
         <s.DropdownOptions onClick={closeOptions}>
           {props.options.map((item) => (
             <s.Option
+              key={item.value}
               onClick={selectOption}
               data-value={item.value}
               isActive={item.value === props.value}
