@@ -16,7 +16,6 @@ import { getAmountError } from './helpers';
 import { IUser } from './types';
 import Modal from '../../../components/Modal';
 
-
 const getInitialAmountFromUsers = (users: IUser[]): Record<string, string> =>
   users.reduce((acc, user) => ({ ...acc, [user.id]: formatMoney(0) }), {});
 
@@ -154,8 +153,6 @@ const transformStringMapToNumberMap = (stringMap: Record<string, string>): Recor
 
   return resultMap;
 };
-
-
 
 interface IProps {
   onAdd: (transaction: ITransaction) => void;
