@@ -19,7 +19,7 @@ import Button from '../../../components/Button';
 import { getAmountError } from './helpers';
 import { IUser } from './types';
 import Modal from '../../../components/Modal';
-import rotateIcon from '../../../assets/img/rotate-icon.svg';
+import { Icon } from 'semantic-ui-react';
 
 const getInitialAmountFromUsers = (users: IUser[]): Record<string, string> =>
   users.reduce((acc, user) => ({ ...acc, [user.id]: formatMoney(0) }), {});
@@ -406,7 +406,7 @@ function TransactionWidget(props: IProps) {
               }))}
               onSelect={setPaidUserId}
             />
-            <s.RotateIcon alt="" src={rotateIcon} onClick={onSwichUser} />
+            <s.RotateIcon name="sync" onClick={onSwichUser} />
           </s.DropdownWrapper>
         )}
       </div>

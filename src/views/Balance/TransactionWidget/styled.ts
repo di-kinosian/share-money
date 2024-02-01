@@ -53,8 +53,10 @@ export const DropdownWrapper = styled.div`
   gap: 8px;
   align-items: center;
 `;
-export const RotateIcon = styled.img`
-  width: 32px;
-  height: 32px;
-  cursor: pointer;
+
+export const RotateIcon = styled(Icon)`
+  &.icon {
+    font-size: 20px;
+    cursor: pointer;
+  }
 `;
