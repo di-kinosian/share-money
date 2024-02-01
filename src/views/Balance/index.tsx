@@ -19,11 +19,16 @@ import {
   IHistoryItem,
   IUserProfile,
 } from '../../firebase/types';
-import { push, ref, remove, set, update, } from 'firebase/database';
+import { push, ref, remove, set, update } from 'firebase/database';
 import { ITransaction } from './types';
 import TransactionWidget from './TransactionWidget';
 import Modal from '../../components/Modal';
-import { BodyText, Flex, H4, HorisontalSeparator } from '../../components/styled';
+import {
+  BodyText,
+  Flex,
+  H4,
+  HorisontalSeparator,
+} from '../../components/styled';
 import QRCode from 'react-qr-code';
 import copyToClipboard from '../../helpers/copyToClipboard';
 import Button from '../../components/Button';
@@ -59,11 +64,20 @@ const addTransaction = (
   update(ref(database), updates);
 };
 
-const deleteTransaction = (balance: IBalanceDetails, transaction: IHistoryItem) => {
-  const newBalanceUsers = Object.entries(balance.users).reduce((acc, [userId, userBalance]) => ({
-    ...acc,
-    [userId]: userBalance - (transaction.paidUsers[userId] || 0) + (transaction.spentUsers[userId] || 0)
-  }), {})
+const deleteTransaction = (
+  balance: IBalanceDetails,
+  transaction: IHistoryItem
+) => {
+  const newBalanceUsers = Object.entries(balance.users).reduce(
+    (acc, [userId, userBalance]) => ({
+      ...acc,
+      [userId]:
+        userBalance -
+        (transaction.paidUsers[userId] || 0) +
+        (transaction.spentUsers[userId] || 0),
+    }),
+    {}
+  );
 
   const updates = {};
 
@@ -71,20 +85,38 @@ const deleteTransaction = (balance: IBalanceDetails, transaction: IHistoryItem) 
     updates[`balances/${balance.id}/details/users/${id}`] = amount;
   });
 
-  remove(getBalanceHistoryItemRef(balance.id, transaction.id))
+  remove(getBalanceHistoryItemRef(balance.id, transaction.id));
   update(ref(database), updates);
-}
+};
 
 function Balance() {
-  const { isOpen: isTransactionOpen, open: openTransaction, close: closeTransaction } = useModalState()
-  const { isOpen: isActionsOpen, open: openActions, close: closeActions } = useModalState()
-  const { isOpen: isShareOpen, open: openShare, close: closeShare } = useModalState()
-  const { isOpen: isDeleteConfirmation, open: openDeleteConfirmation, close: closeDeleteConfirmation } = useModalState()
-  const history = useHistory()
+  const {
+    isOpen: isTransactionOpen,
+    open: openTransaction,
+    close: closeTransaction,
+  } = useModalState();
+  const {
+    isOpen: isActionsOpen,
+    open: openActions,
+    close: closeActions,
+  } = useModalState();
+  const {
+    isOpen: isShareOpen,
+    open: openShare,
+    close: closeShare,
+  } = useModalState();
+  const {
+    isOpen: isDeleteConfirmation,
+    open: openDeleteConfirmation,
+    close: closeDeleteConfirmation,
+  } = useModalState();
+  const history = useHistory();
   const params = useParams<{ balanceId: string }>();
   const user = auth.currentUser;
 
-  useDisableScroll(isTransactionOpen || isActionsOpen || isShareOpen || isDeleteConfirmation)
+  useDisableScroll(
+    isTransactionOpen || isActionsOpen || isShareOpen || isDeleteConfirmation
+  );
 
   const { value: balance, loading } = useValue<IBalanceDetails>(
     getBalanceDetailsRef(params.balanceId)
@@ -106,9 +138,7 @@ function Balance() {
   }, [balance, user]);
 
   const needToJoin = useMemo(() => {
-    return (
-      balance && user && !Object.keys(balance?.users).includes(user?.uid)
-    );
+    return balance && user && !Object.keys(balance?.users).includes(user?.uid);
   }, [user, balance]);
 
   const onJoinClick = () => {
@@ -117,38 +147,37 @@ function Balance() {
 
   const onAddTransaction = (transaction: ITransaction) => {
     addTransaction(balance, transaction);
-    closeTransaction()
+    closeTransaction();
   };
 
   const onDeleteTransaction = (transaction: IHistoryItem) => {
-    deleteTransaction(balance, transaction)
-  }
-
+    deleteTransaction(balance, transaction);
+  };
 
   if (loading) {
     return <Loader active />;
   }
 
   if (needToJoin) {
-    return (
-      <s.JoinButton onClick={onJoinClick}>+ JOIN</s.JoinButton>
-    );
+    return <s.JoinButton onClick={onJoinClick}>+ JOIN</s.JoinButton>;
   }
 
   const onDelete = async () => {
-    await deleteBalance(balance)
-    history.push(ROUTES.HOME)
-  }
+    await deleteBalance(balance);
+    history.push(ROUTES.HOME);
+  };
 
   const openTransactionModal = () => {
-    openTransaction()
-    closeActions()
-  }
+    openTransaction();
+    closeActions();
+  };
 
-  const usersLite = users ? users.map((user) => ({
-    id: user?.id,
-    name: user?.displayName || user?.email,
-  })) : []
+  const usersLite = users
+    ? users.map((user) => ({
+        id: user?.id,
+        name: user?.displayName || user?.email,
+      }))
+    : [];
 
   return (
     <PageContent>
@@ -163,8 +192,12 @@ function Balance() {
         users={users}
         onDeleteTransaction={onDeleteTransaction}
       />
-      <AddButton onClick={openTransactionModal}/>
-      <Modal isOpen={isActionsOpen} onClose={closeActions} header="Balance Operations">
+      <AddButton onClick={openTransactionModal} />
+      <Modal
+        isOpen={isActionsOpen}
+        onClose={closeActions}
+        header="Balance Operations"
+      >
         <s.Actions>
           <s.Action onClick={openTransactionModal}>
             <Icon name="plus square outline" />
@@ -176,7 +209,12 @@ function Balance() {
             <BodyText>Edit</BodyText>
           </s.Action>
           <HorisontalSeparator />
-          <s.Action onClick={() => { openShare(); closeActions() }}>
+          <s.Action
+            onClick={() => {
+              openShare();
+              closeActions();
+            }}
+          >
             <Icon name="share square outline" />
             <BodyText>Share</BodyText>
           </s.Action>
@@ -198,17 +236,30 @@ function Balance() {
         <s.ShareContent>
           <H4>Share Link</H4>
           <QRCode value={window.location.href} width="fit-content" />
-          <Button width='100%' variant="primary" onClick={() => { copyToClipboard(window.location.href); closeShare() }}>Copy link</Button>
+          <Button
+            width="100%"
+            variant="primary"
+            onClick={() => {
+              copyToClipboard(window.location.href);
+              closeShare();
+            }}
+          >
+            Copy link
+          </Button>
         </s.ShareContent>
       </Modal>
       <Modal isOpen={isDeleteConfirmation} onClose={closeDeleteConfirmation}>
-        <Flex padding="16px" gap="16px" direction='column'>
+        <Flex padding="16px" gap="16px" direction="column">
           <H4>Confirm Balance Deletion</H4>
           <BodyText>
-            You are about to delete a balance that involves other users. This action will remove the shared transaction history associated with this balance.
+            You are about to delete a balance that involves other users. This
+            action will remove the shared transaction history associated with
+            this balance.
           </BodyText>
           <Flex direction="column" gap="8px">
-            <Button onClick={onDelete} negative>Delete</Button>
+            <Button onClick={onDelete} negative>
+              Delete
+            </Button>
             <Button onClick={closeDeleteConfirmation}>Cancel</Button>
           </Flex>
         </Flex>
