@@ -154,6 +154,17 @@ function Balance() {
     deleteTransaction(balance, transaction);
   };
 
+  const usersLite = useMemo(
+    () =>
+      users
+        ? users.map((user) => ({
+            id: user?.id,
+            name: user?.displayName || user?.email,
+          }))
+        : [],
+    [users]
+  );
+
   if (loading) {
     return <Loader active />;
   }
@@ -171,13 +182,6 @@ function Balance() {
     openTransaction();
     closeActions();
   };
-
-  const usersLite = users
-    ? users.map((user) => ({
-        id: user?.id,
-        name: user?.displayName || user?.email,
-      }))
-    : [];
 
   return (
     <PageContent>
