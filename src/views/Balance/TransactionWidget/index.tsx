@@ -1,5 +1,4 @@
 import { useState } from 'react';
-
 import { ITransaction } from '../types';
 import * as s from './styled';
 import * as so from './styled-old';
@@ -7,7 +6,12 @@ import dayjs from 'dayjs';
 import Field from '../../../components/Field';
 import { formatMoney } from '../../../helpers/format';
 import DatePicker from '../../../components/DatePicker';
-import { BodyText, Flex, H4, HorisontalSeparator } from '../../../components/styled';
+import {
+  BodyText,
+  Flex,
+  H4,
+  HorisontalSeparator,
+} from '../../../components/styled';
 import Dropdown from '../../../components/Dropdown';
 import { useModalState } from '../../../helpers/hooks';
 import { Map } from '../../../firebase/types';
@@ -15,20 +19,30 @@ import Button from '../../../components/Button';
 import { getAmountError } from './helpers';
 import { IUser } from './types';
 import Modal from '../../../components/Modal';
+import { Icon } from 'semantic-ui-react';
 
 const getInitialAmountFromUsers = (users: IUser[]): Record<string, string> =>
   users.reduce((acc, user) => ({ ...acc, [user.id]: formatMoney(0) }), {});
 
 interface IUsersInputGroupProps {
   users: IUser[];
-  onChange: (data: Map<string>) => void
-  value: Map<string>
-  amount: string
+  onChange: (data: Map<string>) => void;
+  value: Map<string>;
+  amount: string;
 }
 
-const UsersInputGroup = ({ users, value, onChange, amount }: IUsersInputGroupProps) => {
-  const { isOpen: isOptionsOpen, open: openOptions, close: closeOptions } = useModalState()
-  const [selectedUserId, setSelectedUserId] = useState<string | null>(null)
+const UsersInputGroup = ({
+  users,
+  value,
+  onChange,
+  amount,
+}: IUsersInputGroupProps) => {
+  const {
+    isOpen: isOptionsOpen,
+    open: openOptions,
+    close: closeOptions,
+  } = useModalState();
+  const [selectedUserId, setSelectedUserId] = useState<string | null>(null);
 
   const onFocusMoneyInput = (e) => {
     e.target.select();
@@ -39,66 +53,69 @@ const UsersInputGroup = ({ users, value, onChange, amount }: IUsersInputGroupPro
     onChange({
       ...value,
       [userId]: formatMoney(value[userId]),
-    })
+    });
   };
 
   const changeAmount = (event) => {
     let userId = event.target.dataset.id;
     onChange({
       ...value,
-      [userId]: event.target.value
-    })
+      [userId]: event.target.value,
+    });
   };
 
   const handleAmountSelect = (option: string) => () => {
-    const id = selectedUserId
+    const id = selectedUserId;
 
     switch (option) {
       case '100%': {
         onChange({
           ...getInitialAmountFromUsers(users),
-          [id]: amount
-        })
+          [id]: amount,
+        });
         break;
       }
       case '50%': {
         const computedAmount = parseFloat(amount) / 2;
         if (users.length === 2) {
-          onChange(users.reduce((acc, user) => ({
-            ...acc,
-            [user.id]: formatMoney(computedAmount)
-          }), {}))
+          onChange(
+            users.reduce(
+              (acc, user) => ({
+                ...acc,
+                [user.id]: formatMoney(computedAmount),
+              }),
+              {}
+            )
+          );
         }
         break;
       }
       case '0%': {
         onChange({
           ...value,
-          [id]: '0.00'
-        })
+          [id]: '0.00',
+        });
         break;
       }
       case 'Rest': {
         const computedAmount =
           parseFloat(amount) -
-          Object.entries(
-            value
-          ).reduce(
+          Object.entries(value).reduce(
             (acc, [userId, userAmount]) =>
               userId === id ? acc : acc + parseFloat(userAmount),
             0
           );
         onChange({
           ...value,
-          [id]: formatMoney(computedAmount)
-        })
+          [id]: formatMoney(computedAmount),
+        });
         break;
       }
       default: {
         break;
       }
     }
-    closeOptions()
+    closeOptions();
   };
 
   return (
@@ -116,7 +133,12 @@ const UsersInputGroup = ({ users, value, onChange, amount }: IUsersInputGroupPro
             data-id={user.id}
             onFocus={onFocusMoneyInput}
           />
-          <s.Ellipsis onClick={() => { setSelectedUserId(user.id); openOptions() }} />
+          <s.Ellipsis
+            onClick={() => {
+              setSelectedUserId(user.id);
+              openOptions();
+            }}
+          />
         </so.UserAmountRow>
       ))}
       <Modal isOpen={isOptionsOpen} onClose={closeOptions}>
@@ -139,12 +161,13 @@ const UsersInputGroup = ({ users, value, onChange, amount }: IUsersInputGroupPro
           </s.Action>
         </s.Actions>
       </Modal>
-    </div>)
+    </div>
+  );
+};
 
-}
-
-
-const transformStringMapToNumberMap = (stringMap: Record<string, string>): Record<string, number> => {
+const transformStringMapToNumberMap = (
+  stringMap: Record<string, string>
+): Record<string, number> => {
   const resultMap: Record<string, number> = {};
 
   for (let key in stringMap) {
@@ -157,38 +180,55 @@ const transformStringMapToNumberMap = (stringMap: Record<string, string>): Recor
 interface IProps {
   onAdd: (transaction: ITransaction) => void;
   users: IUser[];
-  userId: string
+  userId: string;
 }
 
-const DATE_FORMAT = "DD-MMM-YYYY HH:mm";
+const DATE_FORMAT = 'DD-MMM-YYYY HH:mm';
 const INITIAL_DATE = dayjs().format(DATE_FORMAT);
 
-const getPaidUserAmount = (paidUsers: Map<string>, paidUserId: string, users: IUser[], totalAmount: string, isConfigurable: boolean) => isConfigurable ? paidUsers : {
-  ...getInitialAmountFromUsers(users),
-  [paidUserId]: totalAmount,
-}
+const getPaidUserAmount = (
+  paidUsers: Map<string>,
+  paidUserId: string,
+  users: IUser[],
+  totalAmount: string,
+  isConfigurable: boolean
+) =>
+  isConfigurable
+    ? paidUsers
+    : {
+        ...getInitialAmountFromUsers(users),
+        [paidUserId]: totalAmount,
+      };
 
 function TransactionWidget(props: IProps) {
-  const { isOpen: isConfigurable, open: openConfigurable, close: closeConfigurable } = useModalState()
+  const {
+    isOpen: isConfigurable,
+    open: openConfigurable,
+    close: closeConfigurable,
+  } = useModalState();
   const [date, setDate] = useState<string>(INITIAL_DATE);
   const [title, setTitle] = useState<string>('');
   const [errors, setErrors] = useState([]);
-  const [amountError, setAmountError] = useState('')
-  const [paidUsers, setPaidUsers] = useState(getInitialAmountFromUsers(props.users))
-  const [spentUsers, setSpentUsers] = useState(getInitialAmountFromUsers(props.users))
-  const [totalAmount, setTotalAmount] = useState('0.00')
-  const [paidUserId, setPaidUserId] = useState(props.userId)
-  const [isSubmitted, setIsSubmitted] = useState(false)
+  const [amountError, setAmountError] = useState('');
+  const [paidUsers, setPaidUsers] = useState(
+    getInitialAmountFromUsers(props.users)
+  );
+  const [spentUsers, setSpentUsers] = useState(
+    getInitialAmountFromUsers(props.users)
+  );
+  const [totalAmount, setTotalAmount] = useState('0.00');
+  const [paidUserId, setPaidUserId] = useState(props.userId);
+  const [isSubmitted, setIsSubmitted] = useState(false);
 
   const removeError = (err: 'title' | 'totalAmount') => {
     if (errors.includes(err)) {
-      setErrors(errors.filter(e => e !== err))
+      setErrors(errors.filter((e) => e !== err));
     }
-  }
+  };
 
   const changeTitle = (event) => {
     setTitle(event.target.value);
-    removeError('title')
+    removeError('title');
   };
 
   const changeDate = (value: Date) => {
@@ -196,93 +236,123 @@ function TransactionWidget(props: IProps) {
   };
 
   const onSubmit = () => {
-    if (isSubmitted) return
-    const errors = []
+    if (isSubmitted) return;
+    const errors = [];
     if (!title) {
-      errors.push('title')
+      errors.push('title');
     }
     if (!parseFloat(totalAmount)) {
-      errors.push('totalAmount')
+      errors.push('totalAmount');
     }
     const err = getAmountError({
       amount: totalAmount,
-      paidUsers: getPaidUserAmount(paidUsers, paidUserId, props.users, totalAmount, isConfigurable),
-      spentUsers
+      paidUsers: getPaidUserAmount(
+        paidUsers,
+        paidUserId,
+        props.users,
+        totalAmount,
+        isConfigurable
+      ),
+      spentUsers,
     });
     if (err) {
-      setAmountError(err)
+      setAmountError(err);
     }
 
     if (errors.length) {
-      setErrors(errors)
+      setErrors(errors);
     }
 
     if (!errors.length && !err) {
-      setIsSubmitted(true)
+      setIsSubmitted(true);
       props.onAdd({
         title,
         date,
         amount: totalAmount,
         spentUsers: transformStringMapToNumberMap(spentUsers),
         paidUsers: transformStringMapToNumberMap(
-          getPaidUserAmount(paidUsers, paidUserId, props.users, totalAmount, isConfigurable)
-        )
-      })
+          getPaidUserAmount(
+            paidUsers,
+            paidUserId,
+            props.users,
+            totalAmount,
+            isConfigurable
+          )
+        ),
+      });
     }
-  }
+  };
 
   const onChangeTotalAmount = (e) => {
-    setTotalAmount(e.target.value)
-    removeError('totalAmount')
-  }
+    setTotalAmount(e.target.value);
+    removeError('totalAmount');
+  };
 
   const onFocusMoneyInput = (e) => {
     e.target.select();
   };
 
-  const onChangeUserAmount = (type: 'spent' | 'paid') => (data: Map<string>) => {
-    if (type === 'spent') {
-      setSpentUsers(data)
-    } else {
-      setPaidUsers(data)
-    }
-    setAmountError('')
-  }
+  const onChangeUserAmount =
+    (type: 'spent' | 'paid') => (data: Map<string>) => {
+      if (type === 'spent') {
+        setSpentUsers(data);
+      } else {
+        setPaidUsers(data);
+      }
+      setAmountError('');
+    };
 
   const onTotalAmountBlur = () => {
-    setTotalAmount(formatMoney(totalAmount))
-  }
+    setTotalAmount(formatMoney(totalAmount));
+  };
 
   const isSpentUsersNotEqual = (usersMap: Record<string, string>) => {
-    const usersAmountMap = transformStringMapToNumberMap(usersMap)
+    const usersAmountMap = transformStringMapToNumberMap(usersMap);
 
-    const usersAmounts = Object.values(usersAmountMap)
+    const usersAmounts = Object.values(usersAmountMap);
 
-    const maxAmount = Math.max(...usersAmounts)
-    const minAmount = Math.min(...usersAmounts)
+    const maxAmount = Math.max(...usersAmounts);
+    const minAmount = Math.min(...usersAmounts);
 
-    return maxAmount !== minAmount
-  }
+    return maxAmount !== minAmount;
+  };
 
-  const isZeroAmount = (amount: string) => Number.isNaN(parseFloat(amount)) || parseFloat(amount) === 0
+  const isZeroAmount = (amount: string) =>
+    Number.isNaN(parseFloat(amount)) || parseFloat(amount) === 0;
 
   const isSpentUsersHasZeroAmount = (usersMap: Record<string, string>) => {
-    const usersAmounts = Object.values(usersMap)
+    const usersAmounts = Object.values(usersMap);
 
-    return usersAmounts.some(isZeroAmount)
-  }
+    return usersAmounts.some(isZeroAmount);
+  };
 
-  const isHalfOptionVisible = Boolean(parseFloat(totalAmount)) && (isSpentUsersNotEqual(spentUsers) || isSpentUsersHasZeroAmount(spentUsers))
+  const isHalfOptionVisible =
+    Boolean(parseFloat(totalAmount)) &&
+    (isSpentUsersNotEqual(spentUsers) || isSpentUsersHasZeroAmount(spentUsers));
 
   const onHalfSpentClick = () => {
     const computedAmount = parseFloat(totalAmount) / props.users.length;
     onChangeUserAmount('spent')(
-      props.users.reduce((acc, user) => ({
-        ...acc,
-        [user.id]: formatMoney(computedAmount)
-      }), {})
-    )
-  }
+      props.users.reduce(
+        (acc, user) => ({
+          ...acc,
+          [user.id]: formatMoney(computedAmount),
+        }),
+        {}
+      )
+    );
+  };
+
+  const onSwichUser = () => {
+    const currentIndex = props.users.findIndex((u) => u.id === paidUserId);
+    if (currentIndex !== -1) {
+      const nextIndex = (currentIndex + 1) % props.users.length;
+      const nextUserId = props.users[nextIndex].id;
+      setPaidUserId(nextUserId);
+    } else if (props.users.length > 0) {
+      setPaidUserId(props.users[0].id);
+    }
+  };
 
   return (
     <s.Container>
@@ -295,10 +365,7 @@ function TransactionWidget(props: IProps) {
         />
       </Field>
       <Field label="Date">
-        <DatePicker
-          onChange={changeDate}
-          value={new Date(date)}
-        />
+        <DatePicker onChange={changeDate} value={new Date(date)} />
       </Field>
       <Field label="Total amount">
         <so.AmountInput
@@ -316,12 +383,21 @@ function TransactionWidget(props: IProps) {
       <div>
         <Flex margin="0 0 4px" justify="space-between">
           <BodyText>Who Paid</BodyText>
-          <s.Link onClick={isConfigurable ? closeConfigurable : openConfigurable}>{isConfigurable ? 'Standard' : 'Configurable'}</s.Link>
+          <s.Link
+            onClick={isConfigurable ? closeConfigurable : openConfigurable}
+          >
+            {isConfigurable ? 'Standard' : 'Configurable'}
+          </s.Link>
         </Flex>
-        {
-          isConfigurable ? (
-            <UsersInputGroup value={paidUsers} users={props.users} onChange={onChangeUserAmount('paid')} amount={totalAmount} />
-          ) : (
+        {isConfigurable ? (
+          <UsersInputGroup
+            value={paidUsers}
+            users={props.users}
+            onChange={onChangeUserAmount('paid')}
+            amount={totalAmount}
+          />
+        ) : (
+          <s.DropdownWrapper>
             <Dropdown
               value={paidUserId}
               options={props.users.map((u) => ({
@@ -330,11 +406,12 @@ function TransactionWidget(props: IProps) {
               }))}
               onSelect={setPaidUserId}
             />
-          )
-        }
+            <s.RotateIcon name="sync" onClick={onSwichUser} />
+          </s.DropdownWrapper>
+        )}
       </div>
       <s.SpentContainer>
-        <Field label='Who Spent' error={amountError}>
+        <Field label="Who Spent" error={amountError}>
           <UsersInputGroup
             users={props.users}
             onChange={onChangeUserAmount('spent')}
@@ -342,12 +419,18 @@ function TransactionWidget(props: IProps) {
             amount={totalAmount}
           />
         </Field>
-        {isHalfOptionVisible && <s.HalfSpentButton><s.Link onClick={onHalfSpentClick}>50/50</s.Link></s.HalfSpentButton>}
+        {isHalfOptionVisible && (
+          <s.HalfSpentButton>
+            <s.Link onClick={onHalfSpentClick}>50/50</s.Link>
+          </s.HalfSpentButton>
+        )}
       </s.SpentContainer>
 
-      <Button variant='primary' onClick={onSubmit} disabled={isSubmitted}>Add</Button>
+      <Button variant="primary" onClick={onSubmit} disabled={isSubmitted}>
+        Add
+      </Button>
     </s.Container>
-  )
+  );
 }
 
 export default TransactionWidget;
