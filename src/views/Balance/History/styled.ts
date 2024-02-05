@@ -104,7 +104,7 @@ export const LiftIcon = styled.img`
   bottom: -17px;
 `;
 
-export const Date = styled.div`
+export const TotalAmound = styled.div`
   margin-left: auto;
 `;
 
