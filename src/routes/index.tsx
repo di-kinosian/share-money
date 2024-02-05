@@ -10,30 +10,30 @@ import AuthRoute from './AuthRoute';
 // import Admin from '../views/Admin';
 
 function Routes() {
-	return (
-		<Switch>
-			<Route exact={true} path={ROUTES.HOME}>
-				<Home />
-			</Route>
-			<AuthRoute exact={true} path={ROUTES.LOGIN}>
-				<Login />
-			</AuthRoute>
-			<AuthRoute exact={true} path={ROUTES.SIGNUP}>
-				<Signup />
-			</AuthRoute>
-			<AuthenticatedRoute exact={true} path={'/balance/:balanceId'}>
-				<Balance />
-			</AuthenticatedRoute>
-			<AuthenticatedRoute
-				exact={true}
-				path={ROUTES.PROFILE}
-				component={Profile}
-			/>
-			{/* <AuthenticatedRoute exact={true} path={ROUTES.ADMIN}>
+  return (
+    <Switch>
+      <Route exact={true} path={ROUTES.HOME}>
+        <Home />
+      </Route>
+      <AuthRoute exact={true} path={ROUTES.LOGIN}>
+        <Login />
+      </AuthRoute>
+      <AuthRoute exact={true} path={ROUTES.SIGNUP}>
+        <Signup />
+      </AuthRoute>
+      <AuthenticatedRoute exact={true} path="/balance/:balanceId">
+        <Balance />
+      </AuthenticatedRoute>
+      <AuthenticatedRoute
+        exact={true}
+        path={ROUTES.PROFILE}
+        component={Profile}
+      />
+      {/* <AuthenticatedRoute exact={true} path={ROUTES.ADMIN}>
 				<Admin />
 			</AuthenticatedRoute> */}
-		</Switch>
-	);
+    </Switch>
+  );
 }
 
 export default Routes;

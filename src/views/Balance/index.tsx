@@ -169,13 +169,13 @@ function Balance() {
     return <Loader active />;
   }
 
-  if (needToJoin) {
-    return <s.JoinButton onClick={onJoinClick}>+ JOIN</s.JoinButton>;
-  }
+  const navigateToHomePage = () => {
+    history.push(ROUTES.HOME);
+  };
 
   const onDelete = async () => {
     await deleteBalance(balance);
-    history.push(ROUTES.HOME);
+    navigateToHomePage();
   };
 
   const openTransactionModal = () => {
@@ -265,6 +265,21 @@ function Balance() {
               Delete
             </Button>
             <Button onClick={closeDeleteConfirmation}>Cancel</Button>
+          </Flex>
+        </Flex>
+      </Modal>
+      <Modal isOpen={needToJoin} header={`Join Balance "${balance.title}" `}>
+        <Flex padding="16px" gap="16px" direction="column">
+          <BodyText>
+            Ready to simplify your group expenses? Click the "Join Balance"
+            button below to join balance <strong>{balance.title}</strong> with{' '}
+            <strong>{users?.map((u) => u.displayName).join(', ')}</strong>
+          </BodyText>
+          <Flex direction="column" gap="8px" justify="center">
+            <Button onClick={onJoinClick} variant="primary">
+              Join Balance
+            </Button>
+            <Button onClick={navigateToHomePage}>Cancel</Button>
           </Flex>
         </Flex>
       </Modal>
