@@ -176,35 +176,47 @@ function History(props: IProps) {
           </s.TransactionDetailsRow>
           <Field label="Users">
             <s.Balances>
-              {props.users?.map((u) => {
-                const userBalance =
-                  (selectedTransaction?.paidUsers[u.id] || 0) -
-                  (selectedTransaction?.spentUsers[u.id] || 0);
-
-                return (
-                  <s.DetailsCard>
-                    <BodyTextHighlight>{u.displayName}</BodyTextHighlight>
-                    <s.TransactionDetailsRow>
-                      <BodyText>Paid</BodyText>
-                      <BodyTextHighlight>
-                        {formatMoney(selectedTransaction?.paidUsers[u.id] || 0)}
-                      </BodyTextHighlight>
-                    </s.TransactionDetailsRow>
-                    <s.TransactionDetailsRow>
-                      <BodyText>Spent</BodyText>
-                      <BodyTextHighlight>
-                        {formatMoney(
-                          selectedTransaction?.spentUsers[u.id] || 0
-                        )}
-                      </BodyTextHighlight>
-                    </s.TransactionDetailsRow>
-                    <s.TransactionDetailsRow>
-                      <BodyText>Balance</BodyText>
-                      <MoneyValue value={userBalance} />
-                    </s.TransactionDetailsRow>
-                  </s.DetailsCard>
-                );
-              })}
+              {props.users?.length &&
+                props.users
+                  .filter(
+                    (u) =>
+                      (typeof selectedTransaction?.spentUsers[u.id] ===
+                        'number' &&
+                        selectedTransaction?.spentUsers[u.id] !== 0) ||
+                      (typeof selectedTransaction?.spentUsers[u.id] ===
+                        'number' &&
+                        selectedTransaction?.paidUsers[u.id] !== 0)
+                  )
+                  .map((u) => {
+                    const userBalance =
+                      (selectedTransaction?.paidUsers[u.id] || 0) -
+                      (selectedTransaction?.spentUsers[u.id] || 0);
+                    return (
+                      <s.DetailsCard>
+                        <BodyTextHighlight>{u.displayName}</BodyTextHighlight>
+                        <s.TransactionDetailsRow>
+                          <BodyText>Paid</BodyText>
+                          <BodyTextHighlight>
+                            {formatMoney(
+                              selectedTransaction?.paidUsers[u.id] || 0
+                            )}
+                          </BodyTextHighlight>
+                        </s.TransactionDetailsRow>
+                        <s.TransactionDetailsRow>
+                          <BodyText>Spent</BodyText>
+                          <BodyTextHighlight>
+                            {formatMoney(
+                              selectedTransaction?.spentUsers[u.id] || 0
+                            )}
+                          </BodyTextHighlight>
+                        </s.TransactionDetailsRow>
+                        <s.TransactionDetailsRow>
+                          <BodyText>Balance</BodyText>
+                          <MoneyValue value={userBalance} />
+                        </s.TransactionDetailsRow>
+                      </s.DetailsCard>
+                    );
+                  })}
             </s.Balances>
           </Field>
           <Button onClick={closeTransaction}>Close</Button>
