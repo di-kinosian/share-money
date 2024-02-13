@@ -252,7 +252,7 @@ function Balance() {
 
           {navigator.share ? (
             <Button width="100%" variant="primary" onClick={handleShare}>
-              Share balance
+              Share
             </Button>
           ) : (
             <Button
