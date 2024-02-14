@@ -37,16 +37,10 @@ const HistoryItem: FC<IProps> = (props) => {
         <MoneyValue value={total} />
       </s.HistoryItemRow>
       <s.HistoryItemRow>
-        {paidUser ? (
-          <NoteText>
-            Paid by <strong>{paidUser.displayName}</strong>
-          </NoteText>
-        ) : (
-          <NoteText>Shared transaction</NoteText>
-        )}
-        <s.TotalAmound>
-          <strong>{props.data.amount}</strong>
-        </s.TotalAmound>
+        <NoteText>
+          {paidUser ? paidUser.displayName : 'Shared payment'}
+        </NoteText>
+        <NoteText>{props.data.amount}</NoteText>
       </s.HistoryItemRow>
     </s.HistoryItem>
   );
