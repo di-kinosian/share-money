@@ -183,6 +183,15 @@ function Balance() {
     closeActions();
   };
 
+  const handleShare = async () => {
+    await navigator.share({
+      text: 'Share balance with your friend',
+      url: window.location.href,
+    });
+
+    closeShare();
+  };
+
   return (
     <PageContent>
       <BalanceCard
@@ -240,16 +249,23 @@ function Balance() {
         <s.ShareContent>
           <H4>Share Link</H4>
           <QRCode value={window.location.href} width="fit-content" />
-          <Button
-            width="100%"
-            variant="primary"
-            onClick={() => {
-              copyToClipboard(window.location.href);
-              closeShare();
-            }}
-          >
-            Copy link
-          </Button>
+
+          {navigator.share ? (
+            <Button width="100%" variant="primary" onClick={handleShare}>
+              Share
+            </Button>
+          ) : (
+            <Button
+              width="100%"
+              variant="primary"
+              onClick={() => {
+                copyToClipboard(window.location.href);
+                closeShare();
+              }}
+            >
+              Copy link
+            </Button>
+          )}
         </s.ShareContent>
       </Modal>
       <Modal isOpen={isDeleteConfirmation} onClose={closeDeleteConfirmation}>
