@@ -1,11 +1,17 @@
+import currency from 'currency.js';
 import moment from 'moment';
 
-function formatMoney(amount) {
+function formatMoney(amount, symbol?: string) {
   let number = Number(amount);
   if (isNaN(number)) {
     return '-';
   } else {
-    return Number(amount).toFixed(2);
+    return currency(amount, {
+      symbol: symbol || '',
+      separator: ' ',
+      precision: 2,
+      pattern: '#!',
+    }).format();
   }
 }
 

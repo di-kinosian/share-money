@@ -1,31 +1,41 @@
-import { FC, useState } from 'react';
+import { FC, useEffect, useState } from 'react';
 import * as s from './styled';
-import Modal from '../../components/Modal';
-import Field from '../../components/Field';
-import Button from '../../components/Button';
+import Modal from '../Modal';
+import Field from '../Field';
+import Button from '../Button';
 import customData from '../../constants/currencies.json';
 import { useModalState } from '../../helpers/hooks';
 import {
   BodyText,
   BodyTextHighlight,
   HorisontalSeparator,
-} from '../../components/styled';
+} from '../styled';
+import { IBalanceDetails } from '../../firebase/types';
 
 interface ICreateBalanceModalProps {
   onClose: () => void;
-  onCreate: (title: string, currencyCode: string) => void;
+  onSave: (title: string, currencyCode: string) => void;
   isOpen: boolean;
+  data?: IBalanceDetails;
 }
 
 const CreateBalanceModal: FC<ICreateBalanceModalProps> = ({
   onClose,
-  onCreate,
+  onSave,
   isOpen,
+  data,
 }) => {
   const [title, setTitle] = useState('');
   const [currencyCode, setCurrencyCode] = useState('');
   const [titleError, setTitleError] = useState('');
   const [currencyError, setCurrencyError] = useState('');
+
+  useEffect(() => {
+    if (data) {
+      setTitle(data.title);
+      setCurrencyCode(data.currency);
+    }
+  }, [data]);
 
   const changeTitle = (event) => {
     setTitle(event.target.value);
@@ -44,9 +54,9 @@ const CreateBalanceModal: FC<ICreateBalanceModalProps> = ({
     setCurrencyError('');
   };
 
-  const createNewBalance = () => {
+  const onSubmit = () => {
     if (title && currencyCode) {
-      onCreate(title, currencyCode);
+      onSave(title, currencyCode);
       reset();
     }
     if (!title) {
@@ -70,7 +80,11 @@ const CreateBalanceModal: FC<ICreateBalanceModalProps> = ({
 
   return (
     <>
-      <Modal onClose={onCloseModal} isOpen={isOpen} header="Create new balance">
+      <Modal
+        onClose={onCloseModal}
+        isOpen={isOpen}
+        header={data ? 'Edit balance' : 'Create new balance'}
+      >
         <s.ModalContent>
           <Field label="Balance name" error={titleError}>
             <s.TitleInput
@@ -90,8 +104,8 @@ const CreateBalanceModal: FC<ICreateBalanceModalProps> = ({
               )}
             </s.CurrencySelector>
           </Field>
-          <Button variant="primary" onClick={createNewBalance} width="100%">
-            Create
+          <Button variant="primary" onClick={onSubmit} width="100%">
+            {data ? 'Save' : 'Create'}
           </Button>
         </s.ModalContent>
       </Modal>
