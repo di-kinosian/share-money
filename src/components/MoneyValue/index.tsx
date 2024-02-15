@@ -1,18 +1,23 @@
-import { formatMoney, getConnatationForNumber } from '../../helpers/format';
+import { getConnatationForNumber } from '../../helpers/format';
 import cx from 'classnames';
 import * as s from './styled';
+import currency from 'currency.js';
 
 interface IProps {
   value: number | string | null;
+  symbol?: string;
   className?: string;
 }
 
-function MoneyValue(props: IProps) {
+function MoneyValue({ value, symbol, className }: IProps) {
   return (
-    <s.BalanceAmount
-      className={cx(getConnatationForNumber(props.value), props.className)}
-    >
-      {formatMoney(props.value)}
+    <s.BalanceAmount className={cx(getConnatationForNumber(value), className)}>
+      {currency(value, {
+        symbol: symbol || '',
+        separator: ' ',
+        precision: 2,
+        pattern: '#!',
+      }).format()}
     </s.BalanceAmount>
   );
 }

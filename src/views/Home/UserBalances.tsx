@@ -12,12 +12,14 @@ import MoneyValue from '../../components/MoneyValue';
 import { BodyText, BodyTextHighlight, H4, H5 } from '../../components/styled';
 import { AddButton } from '../../components/AddButton';
 import { Loader } from 'semantic-ui-react';
+import currencies from '../../constants/currencies.json';
 
 interface IProps {
   id: string;
   users: Record<string, number>;
   userId: string;
   title: string;
+  currency: string;
 }
 
 const BalanceItem: FC<IProps> = (props) => {
@@ -32,13 +34,16 @@ const BalanceItem: FC<IProps> = (props) => {
   return (
     <s.Balance onClick={handelBalanceClick}>
       <BodyTextHighlight>{props.title}</BodyTextHighlight>
-      <MoneyValue value={balanceAmount} />
+      <MoneyValue
+        value={balanceAmount}
+        symbol={currencies[props.currency]?.symbol_native}
+      />
     </s.Balance>
   );
 };
 
 // Firebase
-const addNewBalance = (userId: string, title: string) => {
+const addNewBalance = (userId: string, title: string, currencyCode: string) => {
   const newUserBalanceRef = push(getUserBalancesRef(userId));
   const balanceId: string = newUserBalanceRef.key;
   const newBalance: IBalanceDetails = {
@@ -47,6 +52,7 @@ const addNewBalance = (userId: string, title: string) => {
     },
     id: balanceId,
     title,
+    currency: currencyCode,
   };
 
   set(newUserBalanceRef, true);
@@ -82,8 +88,8 @@ function UserBalances() {
 
   const [isCreate, setIsCreate] = useState(false);
 
-  const createNewBalance = (title: string) => {
-    addNewBalance(user._id, title);
+  const createNewBalance = (title: string, currencyCode: string) => {
+    addNewBalance(user._id, title, currencyCode);
     // dispatch(addBalance(title));
     setIsCreate(false);
   };
@@ -114,6 +120,7 @@ function UserBalances() {
           title={balance.title}
           users={balance.users}
           userId={user._id}
+          currency={balance.currency}
         />
       ))
     ) : (

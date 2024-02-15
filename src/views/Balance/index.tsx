@@ -284,11 +284,11 @@ function Balance() {
           </Flex>
         </Flex>
       </Modal>
-      <Modal isOpen={needToJoin} header={`Join Balance "${balance.title}" `}>
+      <Modal isOpen={needToJoin} header={`Join Balance "${balance?.title}" `}>
         <Flex padding="16px" gap="16px" direction="column">
           <BodyText>
             Ready to simplify your group expenses? Click the "Join Balance"
-            button below to join balance <strong>{balance.title}</strong> with{' '}
+            button below to join balance <strong>{balance?.title}</strong> with{' '}
             <strong>{users?.map((u) => u.displayName).join(', ')}</strong>
           </BodyText>
           <Flex direction="column" gap="8px" justify="center">

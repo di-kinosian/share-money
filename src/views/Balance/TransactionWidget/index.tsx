@@ -19,7 +19,6 @@ import Button from '../../../components/Button';
 import { getAmountError } from './helpers';
 import { IUser } from './types';
 import Modal from '../../../components/Modal';
-import { Icon } from 'semantic-ui-react';
 
 const getInitialAmountFromUsers = (users: IUser[]): Record<string, string> =>
   users.reduce((acc, user) => ({ ...acc, [user.id]: formatMoney(0) }), {});
