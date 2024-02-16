@@ -1,8 +1,6 @@
-import moment from 'moment';
-import { formatToLocalDateString } from '../../../helpers/format';
+import { FC, useMemo } from 'react';
 import MoneyValue from '../../../components/MoneyValue';
 import * as s from './styled';
-import { FC } from 'react';
 import { IHistoryItem, IUserProfile } from '../../../firebase/types';
 import { BodyTextHighlight, NoteText } from '../../../components/styled';
 
@@ -13,17 +11,24 @@ interface IProps {
   data: IHistoryItem;
   userId: string;
   users: IUserProfile[];
-  onSelect: (data: IHistoryItem) => void
+  onSelect: (data: IHistoryItem) => void;
 }
 
 const HistoryItem: FC<IProps> = (props) => {
+  const paidUser = useMemo(() => {
+    return props.users?.find((u) =>
+      props.data?.paidUsers[u.id] === Number(props.data.amount)
+        ? u.displayName
+        : null
+    );
+  }, [props.data.amount, props.data.paidUsers, props.users]);
+
   const showHistoryInfo = () => {
-    props.onSelect(props.data)
+    props.onSelect(props.data);
   };
 
   const total =
-    props.data.paidUsers[props.userId] -
-    props.data.spentUsers[props.userId];
+    props.data.paidUsers[props.userId] - props.data.spentUsers[props.userId];
 
   return (
     <s.HistoryItem onClick={showHistoryInfo}>
@@ -32,10 +37,10 @@ const HistoryItem: FC<IProps> = (props) => {
         <MoneyValue value={total} />
       </s.HistoryItemRow>
       <s.HistoryItemRow>
-        <NoteText>Shared transaction</NoteText>
-        <s.Date>
-          {formatToLocalDateString(moment(props.date).toDate())}
-        </s.Date>
+        <NoteText>
+          {paidUser ? paidUser.displayName : 'Shared payment'}
+        </NoteText>
+        <NoteText>{props.data.amount}</NoteText>
       </s.HistoryItemRow>
     </s.HistoryItem>
   );
