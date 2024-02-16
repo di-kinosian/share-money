@@ -16,8 +16,8 @@ interface IProps {
 
 const HistoryItem: FC<IProps> = (props) => {
   const paidUser = useMemo(() => {
-    return props.users.find((u) =>
-      props.data.paidUsers[u.id] === Number(props.data.amount)
+    return props.users?.find((u) =>
+      props.data?.paidUsers[u.id] === Number(props.data.amount)
         ? u.displayName
         : null
     );
