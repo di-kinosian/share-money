@@ -13,29 +13,27 @@ interface IProps {
   data: IHistoryItem;
   userId: string;
   users: IUserProfile[];
-  onSelect: (data: IHistoryItem) => void
+  symbol: string;
+  onSelect: (data: IHistoryItem) => void;
 }
 
 const HistoryItem: FC<IProps> = (props) => {
   const showHistoryInfo = () => {
-    props.onSelect(props.data)
+    props.onSelect(props.data);
   };
 
   const total =
-    props.data.paidUsers[props.userId] -
-    props.data.spentUsers[props.userId];
+    props.data.paidUsers[props.userId] - props.data.spentUsers[props.userId];
 
   return (
     <s.HistoryItem onClick={showHistoryInfo}>
       <s.HistoryItemRow>
         <BodyTextHighlight>{props.title}</BodyTextHighlight>
-        <MoneyValue value={total} />
+        <MoneyValue value={total} symbol={props.symbol} />
       </s.HistoryItemRow>
       <s.HistoryItemRow>
         <NoteText>Shared transaction</NoteText>
-        <s.Date>
-          {formatToLocalDateString(moment(props.date).toDate())}
-        </s.Date>
+        <s.Date>{formatToLocalDateString(moment(props.date).toDate())}</s.Date>
       </s.HistoryItemRow>
     </s.HistoryItem>
   );

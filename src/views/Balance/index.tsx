@@ -223,6 +223,7 @@ function Balance() {
         userId={user?.uid}
         users={users}
         onDeleteTransaction={onDeleteTransaction}
+        symbol={currencies[balance.currency]?.symbol_native}
       />
       <AddButton onClick={openTransactionModal} />
       <Modal

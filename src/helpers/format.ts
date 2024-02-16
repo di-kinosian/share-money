@@ -11,6 +11,7 @@ function formatMoney(amount, symbol?: string) {
       separator: ' ',
       precision: 2,
       pattern: '#!',
+      negativePattern: '-#!',
     }).format();
   }
 }
