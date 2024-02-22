@@ -3,21 +3,23 @@ import { useSelector } from 'react-redux';
 import { getUser } from '../../modules/auth/duck';
 import { useHistory } from 'react-router-dom';
 import * as s from './styled';
-import CreateBalanceModal from './CreateBalanceModal';
-import { push, set } from 'firebase/database';
-import { getBalanceDetailsRef, getUserBalancesRef } from '../../firebase/refs';
+import CreateBalanceModal from '../../components/CreateBalanceModal';
+import { getUserBalancesRef } from '../../firebase/refs';
 import { IBalanceDetails } from '../../firebase/types';
 import { useKeysList, useMultipleValues } from '../../firebase/hooks';
 import MoneyValue from '../../components/MoneyValue';
 import { BodyText, BodyTextHighlight, H4, H5 } from '../../components/styled';
 import { AddButton } from '../../components/AddButton';
 import { Loader } from 'semantic-ui-react';
+import currencies from '../../constants/currencies.json';
+import { createBalance } from '../../firebase/balance';
 
 interface IProps {
   id: string;
   users: Record<string, number>;
   userId: string;
   title: string;
+  currency: string;
 }
 
 const BalanceItem: FC<IProps> = (props) => {
@@ -32,25 +34,12 @@ const BalanceItem: FC<IProps> = (props) => {
   return (
     <s.Balance onClick={handelBalanceClick}>
       <BodyTextHighlight>{props.title}</BodyTextHighlight>
-      <MoneyValue value={balanceAmount} />
+      <MoneyValue
+        value={balanceAmount}
+        symbol={currencies[props.currency]?.symbol_native}
+      />
     </s.Balance>
   );
-};
-
-// Firebase
-const addNewBalance = (userId: string, title: string) => {
-  const newUserBalanceRef = push(getUserBalancesRef(userId));
-  const balanceId: string = newUserBalanceRef.key;
-  const newBalance: IBalanceDetails = {
-    users: {
-      [userId]: 0,
-    },
-    id: balanceId,
-    title,
-  };
-
-  set(newUserBalanceRef, true);
-  set(getBalanceDetailsRef(balanceId), newBalance);
 };
 
 const EmptyBalances = () => {
@@ -82,9 +71,8 @@ function UserBalances() {
 
   const [isCreate, setIsCreate] = useState(false);
 
-  const createNewBalance = (title: string) => {
-    addNewBalance(user._id, title);
-    // dispatch(addBalance(title));
+  const createNewBalance = (title: string, currencyCode: string) => {
+    createBalance(user._id, title, currencyCode);
     setIsCreate(false);
   };
 
@@ -114,6 +102,7 @@ function UserBalances() {
           title={balance.title}
           users={balance.users}
           userId={user._id}
+          currency={balance.currency}
         />
       ))
     ) : (
@@ -129,7 +118,7 @@ function UserBalances() {
       <CreateBalanceModal
         isOpen={isCreate}
         onClose={onCloseBalance}
-        onCreate={createNewBalance}
+        onSave={createNewBalance}
       />
     </s.ContainerHomePage>
   );

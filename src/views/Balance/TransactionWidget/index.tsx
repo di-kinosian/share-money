@@ -4,7 +4,6 @@ import * as s from './styled';
 import * as so from './styled-old';
 import dayjs from 'dayjs';
 import Field from '../../../components/Field';
-import { formatMoney } from '../../../helpers/format';
 import DatePicker from '../../../components/DatePicker';
 import {
   BodyText,
@@ -19,7 +18,7 @@ import Button from '../../../components/Button';
 import { getAmountError } from './helpers';
 import { IUser } from './types';
 import Modal from '../../../components/Modal';
-import { Icon } from 'semantic-ui-react';
+import { formatMoney } from '../../../helpers/money';
 
 const getInitialAmountFromUsers = (users: IUser[]): Record<string, string> =>
   users.reduce((acc, user) => ({ ...acc, [user.id]: formatMoney(0) }), {});

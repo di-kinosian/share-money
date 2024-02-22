@@ -1,14 +1,5 @@
 import moment from 'moment';
 
-function formatMoney(amount) {
-  let number = Number(amount);
-  if (isNaN(number)) {
-    return '-';
-  } else {
-    return Number(amount).toFixed(2);
-  }
-}
-
 function formatDateForDatepicker(date) {
   var d = new Date(date),
     month = '' + (d.getMonth() + 1),
@@ -71,7 +62,6 @@ const formatTransactionDate = (date: string) =>
 
 export {
   formatDate,
-  formatMoney,
   getConnatationForNumber,
   formatDateForDatepicker,
   formatTime,
