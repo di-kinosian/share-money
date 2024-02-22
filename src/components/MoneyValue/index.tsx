@@ -1,6 +1,7 @@
-import { formatMoney, getConnatationForNumber } from '../../helpers/format';
+import { getConnatationForNumber } from '../../helpers/format';
 import cx from 'classnames';
 import * as s from './styled';
+import { formatMoney } from '../../helpers/money';
 
 interface IProps {
   value: number | string | null;

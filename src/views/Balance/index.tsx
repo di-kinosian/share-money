@@ -6,7 +6,6 @@ import { PageContent } from './styled';
 import BalanceCard from './BalanceCard';
 import { auth, database } from '../../firebase';
 import * as s from './styled';
-import { formatMoney } from '../../helpers/format';
 import History from './History';
 import { useMultipleValues, useValue } from '../../firebase/hooks';
 import {
@@ -42,6 +41,7 @@ import { useDisableScroll, useModalState } from '../../helpers/hooks';
 import { AddButton } from '../../components/AddButton';
 import CreateBalanceModal from '../../components/CreateBalanceModal';
 import currencies from '../../constants/currencies.json';
+import { formatMoney } from '../../helpers/money';
 
 const addTransaction = (
   balance: IBalanceDetails,
@@ -171,10 +171,6 @@ function Balance() {
     [users]
   );
 
-  if (loading) {
-    return <Loader active />;
-  }
-
   const navigateToHomePage = () => {
     history.push(ROUTES.HOME);
   };
@@ -207,6 +203,14 @@ function Balance() {
     });
     closeActions();
   };
+
+  if (loading) {
+    return <Loader active />;
+  }
+
+  if (!balance) {
+    return null;
+  }
 
   return (
     <PageContent>

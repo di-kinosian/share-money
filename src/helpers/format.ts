@@ -1,20 +1,4 @@
-import currency from 'currency.js';
 import moment from 'moment';
-
-function formatMoney(amount, symbol?: string) {
-  let number = Number(amount);
-  if (isNaN(number)) {
-    return '-';
-  } else {
-    return currency(amount, {
-      symbol: symbol || '',
-      separator: ' ',
-      precision: 2,
-      pattern: '#!',
-      negativePattern: '-#!',
-    }).format();
-  }
-}
 
 function formatDateForDatepicker(date) {
   var d = new Date(date),
@@ -78,7 +62,6 @@ const formatTransactionDate = (date: string) =>
 
 export {
   formatDate,
-  formatMoney,
   getConnatationForNumber,
   formatDateForDatepicker,
   formatTime,

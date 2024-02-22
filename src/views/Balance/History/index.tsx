@@ -18,13 +18,13 @@ import {
 import MoneyValue from '../../../components/MoneyValue';
 import Button from '../../../components/Button';
 import {
-  formatMoney,
   formatToLocalDateString,
   formatTransactionDate,
 } from '../../../helpers/format';
 import { groupBy } from '../../../helpers/data';
 import moment from 'moment';
 import Field from '../../../components/Field';
+import { formatMoney } from '../../../helpers/money';
 
 interface IProps {
   balanceId: string;
@@ -195,7 +195,9 @@ function History(props: IProps) {
                       (selectedTransaction?.spentUsers[u.id] || 0);
                     return (
                       <s.DetailsCard key={u.id}>
-                        <BodyTextHighlight>{u.displayName}</BodyTextHighlight>
+                        <BodyTextHighlight>
+                          {u.displayName || u.email}
+                        </BodyTextHighlight>
                         <s.TransactionDetailsRow>
                           <BodyText>Paid</BodyText>
                           <BodyTextHighlight>

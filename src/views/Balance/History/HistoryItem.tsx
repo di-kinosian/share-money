@@ -18,9 +18,7 @@ interface IProps {
 const HistoryItem: FC<IProps> = (props) => {
   const paidUser = useMemo(() => {
     return props.users?.find((u) =>
-      props.data?.paidUsers[u.id] === Number(props.data.amount)
-        ? u.displayName
-        : null
+      props.data?.paidUsers[u.id] === Number(props.data.amount) ? u : null
     );
   }, [props.data.amount, props.data.paidUsers, props.users]);
 
@@ -39,7 +37,7 @@ const HistoryItem: FC<IProps> = (props) => {
       </s.HistoryItemRow>
       <s.HistoryItemRow>
         <NoteText>
-          {paidUser ? paidUser.displayName : 'Shared payment'}
+          {paidUser ? paidUser.displayName || paidUser.email : 'Shared payment'}
         </NoteText>
         <NoteText>{props.data.amount}</NoteText>
       </s.HistoryItemRow>
