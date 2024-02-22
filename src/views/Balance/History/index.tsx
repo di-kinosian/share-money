@@ -192,7 +192,7 @@ function History(props: IProps) {
                       (selectedTransaction?.paidUsers[u.id] || 0) -
                       (selectedTransaction?.spentUsers[u.id] || 0);
                     return (
-                      <s.DetailsCard>
+                      <s.DetailsCard key={u.id}>
                         <BodyTextHighlight>{u.displayName}</BodyTextHighlight>
                         <s.TransactionDetailsRow>
                           <BodyText>Paid</BodyText>
