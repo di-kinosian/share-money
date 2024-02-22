@@ -3,13 +3,9 @@ import * as s from './styled';
 import Modal from '../Modal';
 import Field from '../Field';
 import Button from '../Button';
-import customData from '../../constants/currencies.json';
+import currencies from '../../constants/currencies.json';
 import { useModalState } from '../../helpers/hooks';
-import {
-  BodyText,
-  BodyTextHighlight,
-  HorisontalSeparator,
-} from '../styled';
+import { BodyText, BodyTextHighlight, HorisontalSeparator } from '../styled';
 import { IBalanceDetails } from '../../firebase/types';
 
 interface ICreateBalanceModalProps {
@@ -98,7 +94,12 @@ const CreateBalanceModal: FC<ICreateBalanceModalProps> = ({
           <Field label="Currency" error={currencyError}>
             <s.CurrencySelector onClick={openOptions}>
               {currencyCode ? (
-                <BodyText>{currencyCode}</BodyText>
+                <s.SelectorValue>
+                  <BodyText>{currencies[currencyCode].name}</BodyText>
+                  <BodyTextHighlight>
+                    {currencies[currencyCode].symbol}
+                  </BodyTextHighlight>
+                </s.SelectorValue>
               ) : (
                 <s.CurrencyPlaceholder>Select currency</s.CurrencyPlaceholder>
               )}
@@ -111,14 +112,14 @@ const CreateBalanceModal: FC<ICreateBalanceModalProps> = ({
       </Modal>
       <Modal isOpen={open} onClose={closeOptions} header="Select currency">
         <s.Actions>
-          {Object.values(customData).map(({ code, name, symbol }) => (
-            <>
-              <s.Action key={code} onClick={selectCurrency(code)}>
+          {Object.values(currencies).map(({ code, name, symbol }) => (
+            <s.ActionWrapper key={code}>
+              <s.Action onClick={selectCurrency(code)}>
                 <BodyText>{name}</BodyText>
                 <BodyTextHighlight>{symbol}</BodyTextHighlight>
               </s.Action>
               <HorisontalSeparator />
-            </>
+            </s.ActionWrapper>
           ))}
         </s.Actions>
       </Modal>

@@ -18,18 +18,19 @@ import {
 import MoneyValue from '../../../components/MoneyValue';
 import Button from '../../../components/Button';
 import {
-  formatMoney,
   formatToLocalDateString,
   formatTransactionDate,
 } from '../../../helpers/format';
 import { groupBy } from '../../../helpers/data';
 import moment from 'moment';
 import Field from '../../../components/Field';
+import { formatMoney } from '../../../helpers/money';
 
 interface IProps {
   balanceId: string;
   userId: string;
   users: IUserProfile[];
+  symbol?: string;
   onDeleteTransaction: (transaction: IHistoryItem) => void;
 }
 
@@ -116,6 +117,7 @@ function History(props: IProps) {
                 data={transaction}
                 users={props.users}
                 userId={props.userId}
+                symbol={props.symbol}
                 onSelect={onSelectTransaction}
               />
             ))}
@@ -171,7 +173,7 @@ function History(props: IProps) {
           <s.TransactionDetailsRow>
             <BodyText>Total</BodyText>
             <BodyTextHighlight>
-              {formatMoney(selectedTransaction?.amount)}
+              {formatMoney(selectedTransaction?.amount, props.symbol)}
             </BodyTextHighlight>
           </s.TransactionDetailsRow>
           <Field label="Users">
@@ -193,12 +195,15 @@ function History(props: IProps) {
                       (selectedTransaction?.spentUsers[u.id] || 0);
                     return (
                       <s.DetailsCard key={u.id}>
-                        <BodyTextHighlight>{u.displayName}</BodyTextHighlight>
+                        <BodyTextHighlight>
+                          {u.displayName || u.email}
+                        </BodyTextHighlight>
                         <s.TransactionDetailsRow>
                           <BodyText>Paid</BodyText>
                           <BodyTextHighlight>
                             {formatMoney(
-                              selectedTransaction?.paidUsers[u.id] || 0
+                              selectedTransaction?.paidUsers[u.id] || 0,
+                              props.symbol
                             )}
                           </BodyTextHighlight>
                         </s.TransactionDetailsRow>
@@ -206,13 +211,17 @@ function History(props: IProps) {
                           <BodyText>Spent</BodyText>
                           <BodyTextHighlight>
                             {formatMoney(
-                              selectedTransaction?.spentUsers[u.id] || 0
+                              selectedTransaction?.spentUsers[u.id] || 0,
+                              props.symbol
                             )}
                           </BodyTextHighlight>
                         </s.TransactionDetailsRow>
                         <s.TransactionDetailsRow>
                           <BodyText>Balance</BodyText>
-                          <MoneyValue value={userBalance} />
+                          <MoneyValue
+                            value={userBalance}
+                            symbol={props.symbol}
+                          />
                         </s.TransactionDetailsRow>
                       </s.DetailsCard>
                     );

@@ -1,7 +1,7 @@
 import { getConnatationForNumber } from '../../helpers/format';
 import cx from 'classnames';
 import * as s from './styled';
-import currency from 'currency.js';
+import { formatMoney } from '../../helpers/money';
 
 interface IProps {
   value: number | string | null;
@@ -12,12 +12,7 @@ interface IProps {
 function MoneyValue({ value, symbol, className }: IProps) {
   return (
     <s.BalanceAmount className={cx(getConnatationForNumber(value), className)}>
-      {currency(value, {
-        symbol: symbol || '',
-        separator: ' ',
-        precision: 2,
-        pattern: '#!',
-      }).format()}
+      {formatMoney(value, symbol)}
     </s.BalanceAmount>
   );
 }

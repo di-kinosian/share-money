@@ -43,3 +43,11 @@ export const Action = styled.div`
   justify-content: space-between;
   gap: 4px;
 `;
+
+export const SelectorValue = styled.div`
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+`;
+
+export const ActionWrapper = styled.div``;
