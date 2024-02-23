@@ -1,4 +1,4 @@
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useRef } from 'react';
 import HistoryItem from './HistoryItem';
 import { Icon, Loader } from 'semantic-ui-react';
 import { useList } from '../../../firebase/hooks';
@@ -25,6 +25,7 @@ import {
 import { groupBy } from '../../../helpers/data';
 import moment from 'moment';
 import Field from '../../../components/Field';
+import { Icons } from '@makhynenko/ui-components';
 
 interface IProps {
   balanceId: string;
@@ -62,7 +63,17 @@ const EmptyHistory = () => {
   );
 };
 
+const NoSearchResult = () => {
+  return (
+    <s.NoResult>
+      <H5>No Result found</H5>
+      <BodyText>Seems you have no transactions with such name.</BodyText>
+    </s.NoResult>
+  );
+};
+
 function History(props: IProps) {
+  const ref = useRef<HTMLInputElement>();
   const { list, loading } = useList<IHistoryItem>(
     getBalanceHistoryRef(props.balanceId)
   );
@@ -85,8 +96,21 @@ function History(props: IProps) {
   } = useModalState();
   const [selectedTransaction, setSelectedTransaction] =
     useState<IHistoryItem | null>(null);
+  const [searchValue, setSearchValue] = useState<string>('');
+  const [isSearchOpen, setIsSearchOpen] = useState<boolean>(false);
 
-  const transactionGroups = useMemo(() => prepareGroups(list), [list]);
+  const filteredList = useMemo(
+    () =>
+      searchValue
+        ? list.filter((transaction) => transaction.title.includes(searchValue))
+        : list,
+    [list, searchValue]
+  );
+
+  const transactionGroups = useMemo(
+    () => prepareGroups(filteredList),
+    [filteredList]
+  );
 
   const onSelectTransaction = (data: IHistoryItem) => {
     openTransaction();
@@ -99,8 +123,31 @@ function History(props: IProps) {
     closeTransaction();
   };
 
-  const renderHistoryContent = () =>
-    transactionGroups.length ? (
+  const handleSearchClick = () => {
+    setIsSearchOpen(true);
+    if (ref.current && !isSearchOpen) {
+      ref.current.focus();
+    }
+  };
+
+  const handleCloseSearchClick = () => {
+    setIsSearchOpen(false);
+    setSearchValue('');
+  };
+
+  const handleSearchBlur = (e) => {
+    if (e.target.value.length === 0) {
+      setIsSearchOpen(false);
+      setSearchValue('');
+    }
+  };
+
+  const handleSearchChange = (e) => {
+    setSearchValue(e.target.value);
+  };
+
+  const renderTransactions = () => {
+    return transactionGroups.length ? (
       transactionGroups.map((group) => (
         <s.Group key={group.date}>
           <s.DateLabel>
@@ -123,8 +170,39 @@ function History(props: IProps) {
         </s.Group>
       ))
     ) : (
+      <NoSearchResult />
+    );
+  };
+
+  const renderHistoryContent = () => {
+    return transactionGroups.length || searchValue ? (
+      <>
+        <s.SearchLayout>
+          <s.SearchWrapper
+            onClick={handleSearchClick}
+            $isSearchOpen={isSearchOpen}
+          >
+            <s.SearchInput
+              value={searchValue}
+              type="text"
+              placeholder="Search"
+              onChange={handleSearchChange}
+              onBlur={handleSearchBlur}
+              ref={ref}
+            />
+            {isSearchOpen ? (
+              <Icons name="cross" size={20} onClick={handleCloseSearchClick} />
+            ) : (
+              <Icons name="search" size={20} />
+            )}
+          </s.SearchWrapper>
+        </s.SearchLayout>
+        {renderTransactions()}
+      </>
+    ) : (
       <EmptyHistory />
     );
+  };
 
   return (
     <s.HistoryContainer>

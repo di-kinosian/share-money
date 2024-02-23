@@ -7,7 +7,7 @@ export const HistoryHeader = styled.div`
   background: white;
   position: sticky;
   top: 64px;
-  z-index: 2;
+  z-index: 3;
 `;
 
 export const HistoryTitle = styled.div`
@@ -48,9 +48,7 @@ export const DateLabel = styled.div`
   height: 48px;
   display: flex;
   align-items: center;
-  justify-content: center;
   background-color: #fff;
-  padding: 0 16px;
   position: sticky;
   top: 112px;
   z-index: 1;
@@ -94,6 +92,7 @@ export const HeaderCell = styled(Cell)`
   background-color: #f1f0f0;
   font-weight: bold;
 `;
+
 export const LiftIcon = styled.img`
   width: 20px;
   height: 20px;
@@ -148,6 +147,53 @@ export const UserBalance = styled.div`
 export const EmptyHistoryContainer = styled.div`
   display: flex;
   flex-direction: column;
+  padding: 16px;
+  gap: 16px;
+`;
+
+export const SearchLayout = styled.div`
+  position: sticky;
+  top: 112px;
+  z-index: 5;
+`;
+
+export const SearchWrapper = styled.div<{
+  $isSearchOpen: boolean;
+}>`
+  margin: 8px 0;
+  position: absolute;
+  right: 16px;
+  top: 0;
+  height: 32px;
+  line-height: 42px;
+  display: flex;
+  align-items: center;
+  z-index: 2;
+  justify-content: space-between;
+  width: ${(props) => (props.$isSearchOpen ? '142px' : '40px')};
+  border: ${(props) =>
+    props.$isSearchOpen ? '1px solid #d8d8d8' : '1px solid white'};
+  border-radius: 4px;
+  overflow: hidden;
+  transition: 500ms width ease-in-out, 500ms border ease-in-out;
+
+  svg {
+    flex-shrink: 0;
+    margin-right: 2px;
+  }
+`;
+
+export const SearchInput = styled.input`
+  border: none;
+  padding: 4px 8px;
+  font-family: sans-serif;
+  outline: none;
+`;
+
+export const NoResult = styled.div`
+  display: flex;
+  flex-direction: column;
+  margin-top: 48px;
   padding: 16px;
   gap: 16px;
 `;
