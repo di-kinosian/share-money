@@ -19,6 +19,7 @@ import { getAmountError } from './helpers';
 import { IUser } from './types';
 import Modal from '../../../components/Modal';
 import { formatMoney } from '../../../helpers/money';
+import { Icons } from '@makhynenko/ui-components';
 
 const getInitialAmountFromUsers = (users: IUser[]): Record<string, string> =>
   users.reduce((acc, user) => ({ ...acc, [user.id]: formatMoney(0) }), {});
@@ -405,7 +406,7 @@ function TransactionWidget(props: IProps) {
               }))}
               onSelect={setPaidUserId}
             />
-            <s.RotateIcon name="sync" onClick={onSwichUser} />
+            <Icons name="refresh" onClick={onSwichUser} />
           </s.DropdownWrapper>
         )}
       </div>

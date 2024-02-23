@@ -28,6 +28,8 @@ export const Action = styled.div`
 `;
 
 export const GoHomeButton = styled.div`
+  display: flex;
+  align-items: center;
   width: 100%;
-  padding: 6px 16px;
+  padding: 6px 8px;
 `;

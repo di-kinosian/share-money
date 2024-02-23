@@ -43,6 +43,7 @@ import { AddButton } from '../../components/AddButton';
 import CreateBalanceModal from '../../components/CreateBalanceModal';
 import currencies from '../../constants/currencies.json';
 import { formatMoney } from '../../helpers/money';
+import { Icons } from '@makhynenko/ui-components';
 
 const addTransaction = (
   balance: IBalanceDetails,
@@ -215,8 +216,8 @@ function Balance() {
 
   return (
     <PageContent>
-      <s.GoHomeButton>
-        <BodyText size="16px">‹</BodyText>
+      <s.GoHomeButton onClick={navigateToHomePage}>
+        <Icons name="chevronLeft" color="#1a8a7d" />
         <BodyText color="#1a8a7d">Back to balances</BodyText>
       </s.GoHomeButton>
       <BalanceCard
