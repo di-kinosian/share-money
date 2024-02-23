@@ -24,6 +24,7 @@ import TransactionWidget from './TransactionWidget';
 import Modal from '../../components/Modal';
 import {
   BodyText,
+  BodyTextHighlight,
   Flex,
   H4,
   HorisontalSeparator,
@@ -214,6 +215,10 @@ function Balance() {
 
   return (
     <PageContent>
+      <s.GoHomeButton>
+        <BodyText size="16px">‹</BodyText>
+        <BodyText color="#1a8a7d">Back to balances</BodyText>
+      </s.GoHomeButton>
       <BalanceCard
         title={balance?.title}
         balance={formatMoney(

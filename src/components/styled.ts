@@ -61,8 +61,9 @@ export const NoteText = styled.span`
   line-height: 20px;
 `;
 
-export const BodyText = styled.span`
-  font-size: 16px;
+export const BodyText = styled.span<{ color?: string; size?: string }>`
+  font-size: ${(props) => props.size || '16px'};
+  color: ${(props) => props.color};
   font-style: normal;
   font-weight: 400;
   line-height: 24px;
