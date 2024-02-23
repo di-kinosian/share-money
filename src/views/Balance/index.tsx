@@ -6,7 +6,6 @@ import { PageContent } from './styled';
 import BalanceCard from './BalanceCard';
 import { auth, database } from '../../firebase';
 import * as s from './styled';
-import { formatMoney } from '../../helpers/format';
 import History from './History';
 import { useMultipleValues, useValue } from '../../firebase/hooks';
 import {
@@ -32,16 +31,17 @@ import {
 import QRCode from 'react-qr-code';
 import copyToClipboard from '../../helpers/copyToClipboard';
 import Button from '../../components/Button';
-import { deleteBalance } from '../../firebase/balance';
+import {
+  deleteBalance,
+  joinToBalance,
+  updateBalance,
+} from '../../firebase/balance';
 import { ROUTES } from '../../routes/constants';
 import { useDisableScroll, useModalState } from '../../helpers/hooks';
 import { AddButton } from '../../components/AddButton';
-
-// Firebase
-const joinToBalance = (balanceId, userId) => {
-  set(ref(database, `users/${userId}/balances/${balanceId}`), true);
-  set(ref(database, `balances/${balanceId}/details/users/${userId}`), 0);
-};
+import CreateBalanceModal from '../../components/CreateBalanceModal';
+import currencies from '../../constants/currencies.json';
+import { formatMoney } from '../../helpers/money';
 
 const addTransaction = (
   balance: IBalanceDetails,
@@ -114,6 +114,12 @@ function Balance() {
   const params = useParams<{ balanceId: string }>();
   const user = auth.currentUser;
 
+  const {
+    isOpen: isEditOpen,
+    open: openEdit,
+    close: closeEdit,
+  } = useModalState();
+
   useDisableScroll(
     isTransactionOpen || isActionsOpen || isShareOpen || isDeleteConfirmation
   );
@@ -165,10 +171,6 @@ function Balance() {
     [users]
   );
 
-  if (loading) {
-    return <Loader active />;
-  }
-
   const navigateToHomePage = () => {
     history.push(ROUTES.HOME);
   };
@@ -192,11 +194,32 @@ function Balance() {
     closeShare();
   };
 
+  const onEdit = (title: string, currency: string) => {
+    closeEdit();
+    updateBalance({
+      title,
+      currency,
+      id: balance.id,
+    });
+    closeActions();
+  };
+
+  if (loading) {
+    return <Loader active />;
+  }
+
+  if (!balance) {
+    return null;
+  }
+
   return (
     <PageContent>
       <BalanceCard
         title={balance?.title}
-        balance={formatMoney(userAmount)}
+        balance={formatMoney(
+          userAmount,
+          currencies[balance.currency]?.symbol_native
+        )}
         openMenu={openActions}
       />
       <History
@@ -204,6 +227,7 @@ function Balance() {
         userId={user?.uid}
         users={users}
         onDeleteTransaction={onDeleteTransaction}
+        symbol={currencies[balance.currency]?.symbol_native}
       />
       <AddButton onClick={openTransactionModal} />
       <Modal
@@ -217,7 +241,7 @@ function Balance() {
             <BodyText>Add Transaction</BodyText>
           </s.Action>
           <HorisontalSeparator />
-          <s.Action>
+          <s.Action onClick={openEdit}>
             <Icon name="edit outline" />
             <BodyText>Edit</BodyText>
           </s.Action>
@@ -284,11 +308,11 @@ function Balance() {
           </Flex>
         </Flex>
       </Modal>
-      <Modal isOpen={needToJoin} header={`Join Balance "${balance.title}" `}>
+      <Modal isOpen={needToJoin} header={`Join Balance "${balance?.title}" `}>
         <Flex padding="16px" gap="16px" direction="column">
           <BodyText>
             Ready to simplify your group expenses? Click the "Join Balance"
-            button below to join balance <strong>{balance.title}</strong> with{' '}
+            button below to join balance <strong>{balance?.title}</strong> with{' '}
             <strong>{users?.map((u) => u.displayName).join(', ')}</strong>
           </BodyText>
           <Flex direction="column" gap="8px" justify="center">
@@ -299,6 +323,12 @@ function Balance() {
           </Flex>
         </Flex>
       </Modal>
+      <CreateBalanceModal
+        isOpen={isEditOpen}
+        onClose={closeEdit}
+        onSave={onEdit}
+        data={balance}
+      />
     </PageContent>
   );
 }

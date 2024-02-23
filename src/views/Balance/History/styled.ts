@@ -29,8 +29,6 @@ export const HistoryTitle = styled.div`
   }
 `;
 
-export const HistoryContent = styled.div``;
-
 // By HistoryItems
 
 export const Group = styled.div`
@@ -62,6 +60,7 @@ export const HistoryItem = styled.div`
 
 export const HistoryItemRow = styled.div`
   display: flex;
+  justify-content: space-between;
   width: 100%;
 `;
 
@@ -135,13 +134,6 @@ export const DetailsCard = styled.div`
   border-radius: 4px;
   padding: 16px;
   min-width: 80%;
-`;
-
-export const UserBalance = styled.div`
-  display: flex;
-  flex-direction: column;
-  gap: 4px;
-  align-items: flex-end;
 `;
 
 export const EmptyHistoryContainer = styled.div`
