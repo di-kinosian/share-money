@@ -19,6 +19,7 @@ import TransactionWidget from './TransactionWidget';
 import Modal from '../../components/Modal';
 import {
   BodyText,
+  BodyTextHighlight,
   Flex,
   H4,
   HorisontalSeparator,
@@ -38,6 +39,7 @@ import CreateBalanceModal from '../../components/CreateBalanceModal';
 import currencies from '../../constants/currencies.json';
 import { formatMoney } from '../../helpers/money';
 import { addTransaction, deleteTransaction } from '../../firebase/transactions';
+import { Icons } from '@makhynenko/ui-components';
 
 function Balance() {
   const {
@@ -164,6 +166,10 @@ function Balance() {
 
   return (
     <PageContent>
+      <s.GoHomeButton onClick={navigateToHomePage}>
+        <Icons name="chevronLeft" color="#1a8a7d" />
+        <BodyText color="#1a8a7d">Back to balances</BodyText>
+      </s.GoHomeButton>
       <BalanceCard
         title={balance?.title}
         balance={formatMoney(
