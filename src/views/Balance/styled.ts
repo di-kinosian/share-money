@@ -26,3 +26,10 @@ export const Action = styled.div`
   align-items: baseline;
   gap: 4px;
 `;
+
+export const GoHomeButton = styled.div`
+  display: flex;
+  align-items: center;
+  width: 100%;
+  padding: 6px 8px;
+`;
