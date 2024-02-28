@@ -19,7 +19,6 @@ import TransactionWidget from './TransactionWidget';
 import Modal from '../../components/Modal';
 import {
   BodyText,
-  BodyTextHighlight,
   Flex,
   H4,
   HorisontalSeparator,
