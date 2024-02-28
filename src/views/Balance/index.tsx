@@ -39,6 +39,7 @@ import currencies from '../../constants/currencies.json';
 import { formatMoney } from '../../helpers/money';
 import { addTransaction, deleteTransaction } from '../../firebase/transactions';
 import { Icons } from '@makhynenko/ui-components';
+import NotFound from '../NotFound';
 
 function Balance() {
   const {
@@ -160,7 +161,7 @@ function Balance() {
   }
 
   if (!balance) {
-    return null;
+    return <NotFound isBalance />;
   }
 
   return (
