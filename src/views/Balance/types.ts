@@ -1,9 +1,5 @@
-import { Map } from '../../firebase/types';
+import { IHistoryItem } from '../../firebase/types';
 
-export interface ITransaction {
-    title: string;
-    paidUsers: Map<number>;
-    spentUsers: Map<number>;
-    amount: string;
-    date: string;
+export interface ITransaction extends Omit<IHistoryItem, 'id'> {
+  id?: string;
 }

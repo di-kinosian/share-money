@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { ITransaction } from '../types';
 import * as s from './styled';
 import * as so from './styled-old';
@@ -145,7 +145,7 @@ const UsersInputGroup = ({
           />
         </so.UserAmountRow>
       ))}
-      <Modal isOpen={isOptionsOpen} onClose={closeOptions}>
+      <Modal isOpen={isOptionsOpen} onClose={closeOptions} zIndex={8}>
         <s.Actions>
           <H4>Please select part of total amount</H4>
           <s.Action onClick={handleAmountSelect('100%')}>
@@ -181,10 +181,23 @@ const transformStringMapToNumberMap = (
   return resultMap;
 };
 
+const transformNumberMapStringMap = (
+  numberMap: Record<string, number>
+): Record<string, string> => {
+  const resultMap: Record<string, string> = {};
+
+  for (let key in numberMap) {
+    resultMap[key] = String(numberMap[key]);
+  }
+
+  return resultMap;
+};
+
 interface IProps {
-  onAdd: (transaction: ITransaction) => void;
+  onSubmit: (transaction: ITransaction) => void;
   users: IUser[];
   userId: string;
+  data?: IHistoryItem;
 }
 
 const DATE_FORMAT = 'DD-MMM-YYYY HH:mm';
@@ -210,18 +223,38 @@ function TransactionWidget(props: IProps) {
     open: openConfigurable,
     close: closeConfigurable,
   } = useModalState();
-  const [date, setDate] = useState<string>(INITIAL_DATE);
-  const [title, setTitle] = useState<string>('');
+
+  const paidUser = useMemo(() => {
+    return props.users?.find((u) =>
+      props.data?.paidUsers[u.id] === Number(props.data?.amount) ? u : null
+    );
+  }, [props.data?.amount, props.data?.paidUsers, props?.users]);
+
+  const [date, setDate] = useState<string>(
+    props.data ? props.data.date : INITIAL_DATE
+  );
+  const [title, setTitle] = useState<string>(
+    props.data ? props.data.title : ''
+  );
   const [errors, setErrors] = useState([]);
   const [amountError, setAmountError] = useState('');
   const [paidUsers, setPaidUsers] = useState(
-    getInitialAmountFromUsers(props.users)
+    props.data
+      ? transformNumberMapStringMap(props.data.paidUsers)
+      : getInitialAmountFromUsers(props.users)
   );
   const [spentUsers, setSpentUsers] = useState(
-    getInitialAmountFromUsers(props.users)
+    props.data
+      ? transformNumberMapStringMap(props.data.spentUsers)
+      : getInitialAmountFromUsers(props.users)
   );
-  const [totalAmount, setTotalAmount] = useState('0.00');
-  const [paidUserId, setPaidUserId] = useState(props.userId);
+  const [totalAmount, setTotalAmount] = useState(
+    props.data ? String(props.data.amount) : '0.00'
+  );
+
+  const [paidUserId, setPaidUserId] = useState(
+    props.data ? paidUser?.id : props.userId
+  );
   const [isSubmitted, setIsSubmitted] = useState(false);
 
   const params = useParams<{ balanceId: string }>();
@@ -230,6 +263,15 @@ function TransactionWidget(props: IProps) {
   );
 
   const titlesArray = useMemo(() => list?.map((item) => item.title), [list]);
+  const isEdit = Boolean(props.data);
+
+  useEffect(() => {
+    if (isEdit) {
+      if (!paidUser) {
+        openConfigurable();
+      }
+    }
+  }, [isEdit, openConfigurable, paidUser]);
 
   const removeError = (err: 'title' | 'totalAmount') => {
     if (errors.includes(err)) {
@@ -271,7 +313,7 @@ function TransactionWidget(props: IProps) {
 
     if (!errors.length && !err) {
       setIsSubmitted(true);
-      props.onAdd({
+      props.onSubmit({
         title,
         date,
         amount: totalAmount,
@@ -434,7 +476,7 @@ function TransactionWidget(props: IProps) {
       </s.SpentContainer>
 
       <Button variant="primary" onClick={onSubmit} disabled={isSubmitted}>
-        Add
+        {isEdit ? 'Edit' : 'Add'}
       </Button>
     </s.Container>
   );

@@ -26,6 +26,7 @@ import moment from 'moment';
 import Field from '../../../components/Field';
 import { Icons } from '@makhynenko/ui-components';
 import { formatMoney } from '../../../helpers/money';
+import TransactionWidget from '../TransactionWidget';
 
 interface IProps {
   balanceId: string;
@@ -84,6 +85,7 @@ function History(props: IProps) {
     open: openTransaction,
     close: closeTransaction,
   } = useModalState();
+
   const {
     isOpen: isSoonOpen,
     open: openSoon,
@@ -95,6 +97,12 @@ function History(props: IProps) {
     open: openDelete,
     close: closeDelete,
   } = useModalState();
+  const {
+    isOpen: isEditOpen,
+    open: openEdit,
+    close: closeEdit,
+  } = useModalState();
+
   const [selectedTransaction, setSelectedTransaction] =
     useState<IHistoryItem | null>(null);
   const [searchValue, setSearchValue] = useState<string>('');
@@ -226,7 +234,7 @@ function History(props: IProps) {
             <BodyTextHighlight>Delete</BodyTextHighlight>
           </Flex>
           <VerticalSeparator />
-          <Flex gap="4px" onClick={openSoon}>
+          <Flex gap="4px" onClick={openEdit}>
             <Icon name="edit outline" />
             <BodyTextHighlight>Edit</BodyTextHighlight>
           </Flex>
@@ -309,6 +317,7 @@ function History(props: IProps) {
           <Button onClick={closeTransaction}>Close</Button>
         </s.TransactionDetails>
       </Modal>
+
       <Modal isOpen={isDeleteOpen} onClose={closeDelete} zIndex={6}>
         <Flex padding="16px" direction="column" gap="16px">
           <BodyTextHighlight>
@@ -326,6 +335,7 @@ function History(props: IProps) {
           </Flex>
         </Flex>
       </Modal>
+
       <Modal isOpen={isSoonOpen} onClose={closeSoon} zIndex={6}>
         <Flex padding="16px" direction="column" gap="16px">
           <BodyTextHighlight>Coming Soon!</BodyTextHighlight>
@@ -337,6 +347,18 @@ function History(props: IProps) {
             <Button onClick={closeSoon}>Okay</Button>
           </Flex>
         </Flex>
+      </Modal>
+
+      <Modal isOpen={isEditOpen} onClose={closeEdit} zIndex={6}>
+        <TransactionWidget
+          userId={props.userId}
+          users={props.users?.map((u) => ({
+            id: u.id,
+            name: u.displayName || u.email,
+          }))}
+          onSubmit={() => console.log('edit submit')}
+          data={selectedTransaction}
+        />
       </Modal>
     </s.HistoryContainer>
   );
