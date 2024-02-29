@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useMemo, useState } from 'react';
 import { ITransaction } from '../types';
 import * as s from './styled';
 import * as so from './styled-old';
@@ -13,13 +13,17 @@ import {
 } from '../../../components/styled';
 import Dropdown from '../../../components/Dropdown';
 import { useModalState } from '../../../helpers/hooks';
-import { Map } from '../../../firebase/types';
+import { IHistoryItem, Map } from '../../../firebase/types';
 import Button from '../../../components/Button';
 import { getAmountError } from './helpers';
 import { IUser } from './types';
 import Modal from '../../../components/Modal';
 import { formatMoney } from '../../../helpers/money';
 import { Icons } from '@makhynenko/ui-components';
+import Autocomplete from '../../../components/Autocomplete';
+import { useParams } from 'react-router-dom';
+import { useList } from '../../../firebase/hooks';
+import { getBalanceHistoryRef } from '../../../firebase/refs';
 
 const getInitialAmountFromUsers = (users: IUser[]): Record<string, string> =>
   users.reduce((acc, user) => ({ ...acc, [user.id]: formatMoney(0) }), {});
@@ -220,15 +224,17 @@ function TransactionWidget(props: IProps) {
   const [paidUserId, setPaidUserId] = useState(props.userId);
   const [isSubmitted, setIsSubmitted] = useState(false);
 
+  const params = useParams<{ balanceId: string }>();
+  const { list } = useList<IHistoryItem>(
+    getBalanceHistoryRef(params.balanceId)
+  );
+
+  const titlesArray = useMemo(() => list?.map((item) => item.title), [list]);
+
   const removeError = (err: 'title' | 'totalAmount') => {
     if (errors.includes(err)) {
       setErrors(errors.filter((e) => e !== err));
     }
-  };
-
-  const changeTitle = (event) => {
-    setTitle(event.target.value);
-    removeError('title');
   };
 
   const changeDate = (value: Date) => {
@@ -357,11 +363,12 @@ function TransactionWidget(props: IProps) {
   return (
     <s.Container>
       <Field label="Name">
-        <so.TracsactionInput
+        <Autocomplete
           placeholder="Enter title"
-          value={title}
-          onChange={changeTitle}
           error={errors.includes('title')}
+          options={titlesArray}
+          onChange={setTitle}
+          value={title}
         />
       </Field>
       <Field label="Date">
