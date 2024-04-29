@@ -33,3 +33,6 @@ export const GoHomeButton = styled.div`
   width: 100%;
   padding: 6px 8px;
 `;
+
+export const BalanceInfo = styled.div``;
+export const UserBalance = styled.div``;

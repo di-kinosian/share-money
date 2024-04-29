@@ -53,6 +53,11 @@ function Balance() {
     close: closeActions,
   } = useModalState();
   const {
+    isOpen: isBalanceInfoOpen,
+    open: openBalanceInfo,
+    close: closeBalanceInfo,
+  } = useModalState();
+  const {
     isOpen: isShareOpen,
     open: openShare,
     close: closeShare,
@@ -73,7 +78,11 @@ function Balance() {
   } = useModalState();
 
   useDisableScroll(
-    isTransactionOpen || isActionsOpen || isShareOpen || isDeleteConfirmation
+    isTransactionOpen ||
+      isActionsOpen ||
+      isShareOpen ||
+      isDeleteConfirmation ||
+      isBalanceInfoOpen
   );
 
   const { value: balance, loading } = useValue<IBalanceDetails>(
@@ -164,6 +173,27 @@ function Balance() {
     return <NotFound isBalance />;
   }
 
+  const DisplayBalance = ({ balanceDetails, userProfiles }) => {
+    return (
+      <s.BalanceInfo>
+        {Object.entries(balanceDetails?.users).map(([userId, userBalance]) => {
+          const userProfile = userProfiles.find(
+            (profile) => profile.id === userId
+          );
+          if (userProfile) {
+            return (
+              <s.UserBalance key={userId}>
+                {`${userProfile.displayName}: ${Math.round(+userBalance)}`}
+              </s.UserBalance>
+            );
+          } else {
+            return null;
+          }
+        })}
+      </s.BalanceInfo>
+    );
+  };
+
   return (
     <PageContent>
       <s.GoHomeButton onClick={navigateToHomePage}>
@@ -177,6 +207,7 @@ function Balance() {
           currencies[balance.currency]?.symbol_native
         )}
         openMenu={openActions}
+        openBalanceInfo={openBalanceInfo}
       />
       <History
         balanceId={params.balanceId}
@@ -278,6 +309,31 @@ function Balance() {
             <Button onClick={navigateToHomePage}>Cancel</Button>
           </Flex>
         </Flex>
+      </Modal>
+      <Modal
+        isOpen={isBalanceInfoOpen}
+        header={'Balance Info'}
+        onClose={closeBalanceInfo}
+      >
+        <s.Actions>
+          <Flex padding="8px 0" align="baseline" gap="8px">
+            <BodyText>Balance name:</BodyText>
+            <BodyText>{balance?.title}</BodyText>
+          </Flex>
+          <HorisontalSeparator />
+          <Flex padding="8px 0" align="baseline" gap="8px">
+            <BodyText>Currency:</BodyText>
+            <BodyText>{balance?.currency}</BodyText>
+          </Flex>
+          <HorisontalSeparator />
+          <Flex padding="8px 0" align="baseline" gap="16px">
+            <BodyText>Users Balances:</BodyText>
+            <DisplayBalance
+              balanceDetails={balance}
+              userProfiles={users}
+            ></DisplayBalance>
+          </Flex>
+        </s.Actions>
       </Modal>
       <CreateBalanceModal
         isOpen={isEditOpen}
