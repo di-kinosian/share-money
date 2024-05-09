@@ -8,7 +8,7 @@ import Signup from '../views/Auth/Signup';
 import AuthenticatedRoute from './AuthentificatedRoute';
 import AuthRoute from './AuthRoute';
 import NotFound from '../views/NotFound';
-// import Admin from '../views/Admin';
+import Admin from '../views/Admin';
 
 function Routes() {
   return (
@@ -30,11 +30,11 @@ function Routes() {
         path={ROUTES.PROFILE}
         component={Profile}
       />
-      <AuthenticatedRoute component={NotFound} path={'/*'} />
 
-      {/* <AuthenticatedRoute exact={true} path={ROUTES.ADMIN}>
+      <AuthenticatedRoute exact={true} path={ROUTES.ADMIN}>
 				<Admin />
-			</AuthenticatedRoute> */}
+			</AuthenticatedRoute>
+      <AuthenticatedRoute component={NotFound} path={'/*'} />
     </Switch>
   );
 }

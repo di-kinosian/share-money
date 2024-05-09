@@ -18,8 +18,7 @@ export const useList = <T>(ref: Query) => {
       setError(err);
       console.error(err, 'error');
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [ref]);
 
   return { list, loading, error };
 };
@@ -62,8 +61,7 @@ export const useValue = <T>(ref: Query) => {
       setError(err);
       console.error(err, 'error');
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [ref]);
 
   return { value, loading, error };
 };

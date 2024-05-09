@@ -1,12 +1,11 @@
-export const transformUser = (user) =>
+import { User } from "@firebase/auth";
+
+export const transformUser = (user: User) =>
   user
     ? {
         _id: user.uid,
-        emailVerified: user.emailVerified,
         displayName: user.displayName,
         email: user.email,
-        phone: user.phoneNumber,
-        photo: user.photoURL,
-        refreshToken: user.refreshToken,
+        photoURL: user.photoURL,
       }
     : null;

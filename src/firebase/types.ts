@@ -27,6 +27,7 @@ export interface IUserProfile {
   id: string;
   displayName: string;
   email: string;
+  photoURL?: string;
 }
 
 export interface IUserState {

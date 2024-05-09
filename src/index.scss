@@ -1,0 +1,125 @@
+@use "@makhynenko/ui-components/styles/components.scss" as general-ui-styles;
+
+:root {
+  --accent-color: #3e7bfa;
+  --menu-links-color: #9e9fb2;
+
+  //variables for button component
+  --button-primary-background: #3e7bfa;
+  --button-primary-border-color: #3e7bfa;
+  --button-primary-background-hover: #386fe1;
+  --button-primary-border-hover-color: #386fe1;
+  --button-primary-background-active: #3569d4;
+  --button-primary-border-active-color: #3569d4;
+  --button-primary-text-color: #f9fbff;
+  --button-secondary-background: #f3f8ff;
+  --button-secondary-background-hover: #e7f1ff;
+  --button-secondary-background-active: #dbeaff;
+  --button-secondary-text-color: #3e7bfa;
+  --button-secondary-border-color: #3e7bfa;
+  --button-ghost-text-color: #3e7bfa;
+  --button-ghost-text-color-hover: #386fe1;
+
+  //variables for button checkbox component
+  --checkbox-background-color-checked: #3e7bfa;
+  --checkbox-border-color: #3e7bfa;
+  --checkbox-background-color-disabled-checked: rgba(62, 123, 250, 0.4);
+  --checkbox-border-color-disabled: rgba(62, 123, 250, 0.4);
+  --checkbox-checkmark-color: #fff;
+
+  //variables for button input component
+  --input-border-color: #eaeaec;
+  --input-placeholder-color: #a6a7ba;
+  --input-border-color-active: #3e7bfa;
+  --input-border-color-invalid: #fe7374;
+  --input-background-color-disabled: #f1f2f5;
+  --input-border-color-disabled: #f3f3f5;
+  --input-placeholder-color-disabled: #a5a6b9;
+  --input-icon-color: #a6a7ba;
+  --input-icon-color-invalid: #fe7374;
+  --input-icon-color-active: #3e7bfa;
+
+  //variables for button modal component
+  --modal-overlay-background-color: #a5a6b985;
+  --modal-background-color: #fff;
+
+  //variables for  sidebar component
+  --sidebar-overlay-background-color: #a5a6b985;
+  --sidebar-background-color: #fff;
+
+  //variables for button radio component
+  --radio-background-color-checked: #3e7bfa;
+  --radio-border-color: #3e7bfa;
+  --radio-background-color-disabled-checked: rgba(62, 123, 250, 0.4);
+  --radio-border-color-disabled: rgba(62, 123, 250, 0.4);
+  --radio-checkmark-color: #fff;
+
+  //variables for select component
+  --select-hover-text-color: #fff;
+  --select-hover-background-color: #3e7bfa;
+  --select-background-color: #fff;
+
+  //general variables
+  --devider-default: rgb(232, 232, 232);
+  --default-screen-background: rgb(242, 242, 242);
+  --default-components-background: #fff;
+
+  //variables for text
+  --text-default-color: #3b3b3b;
+  --text-subdued-color: #9e9fb2;
+  --text-critical-color: #fe7374;
+
+  //Error color
+  --error-text-color: #fe7374;
+
+  //variables for table
+  --table-border-color: #a5a6b985;
+  --table-hovered-row-background: #fafafa;
+  --table-header-cell-background: #fff;
+  --table-cell-background: #fff;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  font-family: 'Montserrat', -apple-system, BlinkMacSystemFont, 'Segoe UI',
+    'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans',
+    'Helvetica Neue', sans-serif !important;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+code {
+  font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
+    monospace;
+}
+
+#root {
+  height: 100%;
+}
+
+input {
+  height: 40px;
+  border-radius: 4px;
+  padding: 0 8px;
+  font-size: 16px;
+  border: 1px solid rgb(169, 169, 169);
+  width: 100%;
+}
+
+input:focus {
+  border-color: #85b7d9;
+  outline: none;
+}
+
+select {
+  height: 40px;
+  width: 130px;
+  background: transparent;
+  border-radius: 4px;
+  font-size: 16px;
+  padding: 0 2px;
+}

@@ -27,6 +27,7 @@ import Field from '../../../components/Field';
 import { Icons } from '@makhynenko/ui-components';
 import { formatMoney } from '../../../helpers/money';
 import TransactionWidget from '../TransactionWidget';
+import { ITransaction } from '../types';
 
 interface IProps {
   balanceId: string;
@@ -34,6 +35,7 @@ interface IProps {
   users: IUserProfile[];
   symbol?: string;
   onDeleteTransaction: (transaction: IHistoryItem) => void;
+  onEditTransaction: (oldTransaction: IHistoryItem, newTransaction: ITransaction) => void;
 }
 
 const prepareGroups = (items: IHistoryItem[]) => {
@@ -76,9 +78,8 @@ const NoSearchResult = () => {
 
 function History(props: IProps) {
   const ref = useRef<HTMLInputElement>();
-  const { list, loading } = useList<IHistoryItem>(
-    getBalanceHistoryRef(props.balanceId)
-  );
+  const balanceHistoryRef = useMemo(() => getBalanceHistoryRef(props.balanceId), [props.balanceId])
+  const { list, loading } = useList<IHistoryItem>(balanceHistoryRef);
 
   const {
     isOpen: isTransactionOpen,
@@ -103,8 +104,10 @@ function History(props: IProps) {
     close: closeEdit,
   } = useModalState();
 
-  const [selectedTransaction, setSelectedTransaction] =
-    useState<IHistoryItem | null>(null);
+
+  const [selectedTransactionId, setSelectedTransactionId] = useState<string>();
+
+  const selectedTransaction = useMemo(() => list?.find(item => item.id === selectedTransactionId), [selectedTransactionId, list])
   const [searchValue, setSearchValue] = useState<string>('');
   const [isSearchOpen, setIsSearchOpen] = useState<boolean>(false);
 
@@ -123,7 +126,7 @@ function History(props: IProps) {
 
   const onSelectTransaction = (data: IHistoryItem) => {
     openTransaction();
-    setSelectedTransaction(data);
+    setSelectedTransactionId(data.id)
   };
 
   const onConfirmDelete = () => {
@@ -213,6 +216,11 @@ function History(props: IProps) {
       <EmptyHistory />
     );
   };
+
+  const onEditTransaction = (updatedTransaction: ITransaction) => {
+    props.onEditTransaction(selectedTransaction, updatedTransaction)
+    closeEdit()
+  }
 
   return (
     <s.HistoryContainer>
@@ -356,7 +364,7 @@ function History(props: IProps) {
             id: u.id,
             name: u.displayName || u.email,
           }))}
-          onSubmit={() => console.log('edit submit')}
+          onSubmit={onEditTransaction}
           data={selectedTransaction}
         />
       </Modal>

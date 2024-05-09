@@ -49,3 +49,33 @@ export const deleteTransaction = (
   remove(getBalanceHistoryItemRef(balance.id, transaction.id));
   update(ref(database), updates);
 };
+
+export const updateTransaction = (
+  balance: IBalanceDetails,
+  transaction: IHistoryItem,
+  updatedTransaction: IHistoryItem
+) => {
+  // Update transaction details in the database
+  set(
+    ref(database, `balances/${balance.id}/history/${transaction.id}`),
+    updatedTransaction
+  );
+
+  const updates = {};
+
+  // Adjust balance for each user involved in the transaction
+  Object.keys(updatedTransaction.paidUsers).forEach((id) => {
+    const paidDiff =
+      (updatedTransaction.paidUsers[id] || 0) -
+      (transaction.paidUsers[id] || 0);
+    const spentDiff =
+      (updatedTransaction.spentUsers[id] || 0) -
+      (transaction.spentUsers[id] || 0);
+
+    updates[`balances/${balance.id}/details/users/${id}`] =
+      balance.users[id] + paidDiff - spentDiff;
+  });
+
+  // Update the balance in the database
+  update(ref(database), updates);
+};

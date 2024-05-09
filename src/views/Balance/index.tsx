@@ -37,7 +37,7 @@ import { AddButton } from '../../components/AddButton';
 import CreateBalanceModal from '../../components/CreateBalanceModal';
 import currencies from '../../constants/currencies.json';
 import { formatMoney } from '../../helpers/money';
-import { addTransaction, deleteTransaction } from '../../firebase/transactions';
+import { addTransaction, deleteTransaction, updateTransaction } from '../../firebase/transactions';
 import { Icons } from '@makhynenko/ui-components';
 import NotFound from '../NotFound';
 
@@ -76,9 +76,9 @@ function Balance() {
     isTransactionOpen || isActionsOpen || isShareOpen || isDeleteConfirmation
   );
 
-  const { value: balance, loading } = useValue<IBalanceDetails>(
-    getBalanceDetailsRef(params.balanceId)
-  );
+  const balanceDetailsRef = useMemo(() => getBalanceDetailsRef(params.balanceId), [params.balanceId])
+
+  const { value: balance, loading } = useValue<IBalanceDetails>(balanceDetailsRef);
 
   const userIds = useMemo(
     () => (balance ? Object.keys(balance?.users) : []),
@@ -116,9 +116,9 @@ function Balance() {
     () =>
       users
         ? users.map((user) => ({
-            id: user?.id,
-            name: user?.displayName || user?.email,
-          }))
+          id: user?.id,
+          name: user?.displayName || user?.email,
+        }))
         : [],
     [users]
   );
@@ -146,7 +146,7 @@ function Balance() {
     closeShare();
   };
 
-  const onEdit = (title: string, currency: string) => {
+  const onEditBalance = (title: string, currency: string) => {
     closeEdit();
     updateBalance({
       title,
@@ -154,6 +154,11 @@ function Balance() {
       id: balance.id,
     });
     closeActions();
+  };
+
+  const onEditTransaction = (oldTransaction: IHistoryItem, newTransaction: ITransaction) => {
+    console.log({ oldTransaction, newTransaction });
+    updateTransaction(balance, oldTransaction, { ...newTransaction, id: oldTransaction.id })
   };
 
   if (loading) {
@@ -183,9 +188,11 @@ function Balance() {
         userId={user?.uid}
         users={users}
         onDeleteTransaction={onDeleteTransaction}
+        onEditTransaction={onEditTransaction}
         symbol={currencies[balance.currency]?.symbol_native}
       />
       <AddButton onClick={openTransactionModal} />
+      {/* Balance Menu */}
       <Modal
         isOpen={isActionsOpen}
         onClose={closeActions}
@@ -218,6 +225,7 @@ function Balance() {
           </s.Action>
         </s.Actions>
       </Modal>
+      {/* Transaction Create */}
       <Modal isOpen={isTransactionOpen} onClose={closeTransaction}>
         <TransactionWidget
           onSubmit={onAddTransaction}
@@ -225,6 +233,7 @@ function Balance() {
           userId={user?.uid}
         />
       </Modal>
+      {/* Share Balance */}
       <Modal isOpen={isShareOpen} onClose={closeShare}>
         <s.ShareContent>
           <H4>Share Link</H4>
@@ -248,6 +257,7 @@ function Balance() {
           )}
         </s.ShareContent>
       </Modal>
+      {/* Delete Balance confirmation */}
       <Modal isOpen={isDeleteConfirmation} onClose={closeDeleteConfirmation}>
         <Flex padding="16px" gap="16px" direction="column">
           <H4>Confirm Balance Deletion</H4>
@@ -264,6 +274,7 @@ function Balance() {
           </Flex>
         </Flex>
       </Modal>
+      {/* Join Balance */}
       <Modal isOpen={needToJoin} header={`Join Balance "${balance?.title}" `}>
         <Flex padding="16px" gap="16px" direction="column">
           <BodyText>
@@ -279,10 +290,11 @@ function Balance() {
           </Flex>
         </Flex>
       </Modal>
+      {/* Edit Balance */}
       <CreateBalanceModal
         isOpen={isEditOpen}
         onClose={closeEdit}
-        onSave={onEdit}
+        onSave={onEditBalance}
         data={balance}
       />
     </PageContent>
