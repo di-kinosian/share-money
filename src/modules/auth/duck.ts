@@ -1,5 +1,5 @@
 import { createAction } from 'redux-actions';
-import { signInWithPopup, GoogleAuthProvider } from 'firebase/auth';
+import { signInWithPopup, GoogleAuthProvider, UserCredential } from 'firebase/auth';
 import { transformUser } from './helpers';
 import {
     addUserToDatabaseService,
@@ -88,7 +88,7 @@ function* loginSaga(action) {
 
 function* externalSignInSaga(action) {
     try {
-        const result = yield signInWithPopup(auth, provider);
+        const result: UserCredential = yield signInWithPopup(auth, provider);
         const user = transformUser(result.user);
         yield put(loginSuccess(user));
         yield addUserToDatabaseService(user);

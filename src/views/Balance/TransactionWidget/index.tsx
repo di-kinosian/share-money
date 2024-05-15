@@ -256,10 +256,8 @@ function TransactionWidget(props: IProps) {
   const isEdit = Boolean(props.data);
 
   useEffect(() => {
-    if (isEdit) {
-      if (!paidUser) {
-        openConfigurable();
-      }
+    if (isEdit && !paidUser) {
+      openConfigurable();
     }
   }, [isEdit, openConfigurable, paidUser]);
 
