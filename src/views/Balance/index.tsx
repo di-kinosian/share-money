@@ -37,7 +37,11 @@ import { AddButton } from '../../components/AddButton';
 import CreateBalanceModal from '../../components/CreateBalanceModal';
 import currencies from '../../constants/currencies.json';
 import { formatMoney } from '../../helpers/money';
-import { addTransaction, deleteTransaction, updateTransaction } from '../../firebase/transactions';
+import {
+  addTransaction,
+  deleteTransaction,
+  updateTransaction,
+} from '../../firebase/transactions';
 import { Icons } from '@makhynenko/ui-components';
 import NotFound from '../NotFound';
 
@@ -51,6 +55,11 @@ function Balance() {
     isOpen: isActionsOpen,
     open: openActions,
     close: closeActions,
+  } = useModalState();
+  const {
+    isOpen: isBalanceInfoOpen,
+    open: openBalanceInfo,
+    close: closeBalanceInfo,
   } = useModalState();
   const {
     isOpen: isShareOpen,
@@ -73,12 +82,20 @@ function Balance() {
   } = useModalState();
 
   useDisableScroll(
-    isTransactionOpen || isActionsOpen || isShareOpen || isDeleteConfirmation
+    isTransactionOpen ||
+      isActionsOpen ||
+      isShareOpen ||
+      isDeleteConfirmation ||
+      isBalanceInfoOpen
   );
 
-  const balanceDetailsRef = useMemo(() => getBalanceDetailsRef(params.balanceId), [params.balanceId])
+  const balanceDetailsRef = useMemo(
+    () => getBalanceDetailsRef(params.balanceId),
+    [params.balanceId]
+  );
 
-  const { value: balance, loading } = useValue<IBalanceDetails>(balanceDetailsRef);
+  const { value: balance, loading } =
+    useValue<IBalanceDetails>(balanceDetailsRef);
 
   const userIds = useMemo(
     () => (balance ? Object.keys(balance?.users) : []),
@@ -116,9 +133,9 @@ function Balance() {
     () =>
       users
         ? users.map((user) => ({
-          id: user?.id,
-          name: user?.displayName || user?.email,
-        }))
+            id: user?.id,
+            name: user?.displayName || user?.email,
+          }))
         : [],
     [users]
   );
@@ -156,9 +173,15 @@ function Balance() {
     closeActions();
   };
 
-  const onEditTransaction = (oldTransaction: IHistoryItem, newTransaction: ITransaction) => {
+  const onEditTransaction = (
+    oldTransaction: IHistoryItem,
+    newTransaction: ITransaction
+  ) => {
     console.log({ oldTransaction, newTransaction });
-    updateTransaction(balance, oldTransaction, { ...newTransaction, id: oldTransaction.id })
+    updateTransaction(balance, oldTransaction, {
+      ...newTransaction,
+      id: oldTransaction.id,
+    });
   };
 
   if (loading) {
@@ -168,6 +191,27 @@ function Balance() {
   if (!balance) {
     return <NotFound isBalance />;
   }
+
+  const DisplayBalance = ({ balanceDetails, userProfiles }) => {
+    return (
+      <s.BalanceInfo>
+        {Object.entries(balanceDetails?.users).map(([userId, userBalance]) => {
+          const userProfile = userProfiles.find(
+            (profile) => profile.id === userId
+          );
+          if (userProfile) {
+            return (
+              <s.UserBalance key={userId}>
+                {`${userProfile.displayName}: ${Math.round(+userBalance)}`}
+              </s.UserBalance>
+            );
+          } else {
+            return null;
+          }
+        })}
+      </s.BalanceInfo>
+    );
+  };
 
   return (
     <PageContent>
@@ -182,6 +226,7 @@ function Balance() {
           currencies[balance.currency]?.symbol_native
         )}
         openMenu={openActions}
+        openBalanceInfo={openBalanceInfo}
       />
       <History
         balanceId={params.balanceId}
@@ -289,6 +334,32 @@ function Balance() {
             <Button onClick={navigateToHomePage}>Cancel</Button>
           </Flex>
         </Flex>
+      </Modal>
+      {/* Balance info*/}
+      <Modal
+        isOpen={isBalanceInfoOpen}
+        header={'Balance Info'}
+        onClose={closeBalanceInfo}
+      >
+        <s.Actions>
+          <Flex padding="8px 0" align="baseline" gap="8px">
+            <BodyText>Balance name:</BodyText>
+            <BodyText>{balance?.title}</BodyText>
+          </Flex>
+          <HorisontalSeparator />
+          <Flex padding="8px 0" align="baseline" gap="8px">
+            <BodyText>Currency:</BodyText>
+            <BodyText>{balance?.currency}</BodyText>
+          </Flex>
+          <HorisontalSeparator />
+          <Flex padding="8px 0" align="baseline" gap="16px">
+            <BodyText>Users Balances:</BodyText>
+            <DisplayBalance
+              balanceDetails={balance}
+              userProfiles={users}
+            ></DisplayBalance>
+          </Flex>
+        </s.Actions>
       </Modal>
       {/* Edit Balance */}
       <CreateBalanceModal
