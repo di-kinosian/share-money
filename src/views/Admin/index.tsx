@@ -20,11 +20,7 @@ function Admin() {
 
   const userIds = balance ? Object.keys(balance.users) : []
 
-  console.log({ balance, list });
-
   const balance1 = list?.reduce((acc, item) => acc + (item.paidUsers[userIds[0]] - item.spentUsers[userIds[0]]), 0)
-
-  console.log(balance1);
 
   const onSearch = () => {
     setId(searchRef.current.value)

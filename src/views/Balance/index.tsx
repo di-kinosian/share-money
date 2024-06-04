@@ -7,11 +7,12 @@ import BalanceCard from './BalanceCard';
 import { auth } from '../../firebase';
 import * as s from './styled';
 import History from './History';
-import { useMultipleValues, useValue } from '../../firebase/hooks';
-import { getBalanceDetailsRef } from '../../firebase/refs';
+import { useList, useMultipleValues, useValue } from '../../firebase/hooks';
+import { getBalanceDetailsRef, getNonRealUsersRef } from '../../firebase/refs';
 import {
   IBalanceDetails,
   IHistoryItem,
+  IUserLite,
   IUserProfile,
 } from '../../firebase/types';
 import { ITransaction } from './types';
@@ -108,6 +109,13 @@ function Balance() {
     '/profile'
   );
 
+  const nonRealUsersRef = useMemo(
+    () => (balance ? getNonRealUsersRef(balance.id) : undefined),
+    [balance]
+  );
+
+  const { list: nonRealUsersList } = useList<IUserLite>(nonRealUsersRef);
+
   const userAmount = useMemo(() => {
     return balance && user && balance.users[user.uid];
   }, [balance, user]);
@@ -130,14 +138,14 @@ function Balance() {
   };
 
   const usersLite = useMemo(
-    () =>
-      users
-        ? users.map((user) => ({
-            id: user?.id,
-            name: user?.displayName || user?.email,
-          }))
-        : [],
-    [users]
+    () => [
+      ...(users || []).map((user) => ({
+        id: user?.id,
+        name: user?.displayName || user?.email,
+      })),
+      ...(nonRealUsersList || []),
+    ],
+    [users, nonRealUsersList]
   );
 
   const navigateToHomePage = () => {
@@ -177,7 +185,6 @@ function Balance() {
     oldTransaction: IHistoryItem,
     newTransaction: ITransaction
   ) => {
-    console.log({ oldTransaction, newTransaction });
     updateTransaction(balance, oldTransaction, {
       ...newTransaction,
       id: oldTransaction.id,
@@ -192,7 +199,12 @@ function Balance() {
     return <NotFound isBalance />;
   }
 
-  const DisplayBalance = ({ balanceDetails, userProfiles }) => {
+  type Props = {
+    balanceDetails: IBalanceDetails;
+    userProfiles: IUserLite[];
+  };
+
+  const DisplayBalance = ({ balanceDetails, userProfiles }: Props) => {
     return (
       <s.BalanceInfo>
         {Object.entries(balanceDetails?.users).map(([userId, userBalance]) => {
@@ -202,7 +214,7 @@ function Balance() {
           if (userProfile) {
             return (
               <s.UserBalance key={userId}>
-                {`${userProfile.displayName}: ${Math.round(+userBalance)}`}
+                {`${userProfile.name}: ${Math.round(+userBalance)}`}
               </s.UserBalance>
             );
           } else {
@@ -261,7 +273,7 @@ function Balance() {
             }}
           >
             <Icon name="share square outline" />
-            <BodyText>Share</BodyText>
+            <BodyText>Invite</BodyText>
           </s.Action>
           <HorisontalSeparator />
           <s.Action onClick={openDeleteConfirmation}>
@@ -281,12 +293,12 @@ function Balance() {
       {/* Share Balance */}
       <Modal isOpen={isShareOpen} onClose={closeShare}>
         <s.ShareContent>
-          <H4>Share Link</H4>
+          <H4>Invite Link</H4>
           <QRCode value={window.location.href} width="fit-content" />
 
           {navigator.share ? (
             <Button width="100%" variant="primary" onClick={handleShare}>
-              Share
+              Invite
             </Button>
           ) : (
             <Button
@@ -325,7 +337,7 @@ function Balance() {
           <BodyText>
             Ready to simplify your group expenses? Click the "Join Balance"
             button below to join balance <strong>{balance?.title}</strong> with{' '}
-            <strong>{users?.map((u) => u.displayName).join(', ')}</strong>
+            <strong>{users?.map((u) => u?.displayName).join(', ')}</strong>
           </BodyText>
           <Flex direction="column" gap="8px" justify="center">
             <Button onClick={onJoinClick} variant="primary">
@@ -356,7 +368,7 @@ function Balance() {
             <BodyText>Users Balances:</BodyText>
             <DisplayBalance
               balanceDetails={balance}
-              userProfiles={users}
+              userProfiles={usersLite}
             ></DisplayBalance>
           </Flex>
         </s.Actions>

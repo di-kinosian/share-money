@@ -1,9 +1,18 @@
 import { useState, useMemo, useRef } from 'react';
 import HistoryItem from './HistoryItem';
 import { Icon, Loader } from 'semantic-ui-react';
-import { useList } from '../../../firebase/hooks';
-import { getBalanceHistoryRef } from '../../../firebase/refs';
-import { IHistoryItem, IUserProfile } from '../../../firebase/types';
+import { useList, useMultipleValues, useValue } from '../../../firebase/hooks';
+import {
+  getBalanceDetailsRef,
+  getBalanceHistoryRef,
+  getNonRealUsersRef,
+} from '../../../firebase/refs';
+import {
+  IBalanceDetails,
+  IHistoryItem,
+  IUserLite,
+  IUserProfile,
+} from '../../../firebase/types';
 import * as s from './styled';
 import { useModalState } from '../../../helpers/hooks';
 import Modal from '../../../components/Modal';
@@ -11,6 +20,7 @@ import {
   BodyText,
   BodyTextHighlight,
   Flex,
+  H4,
   H5,
   HorisontalSeparator,
   VerticalSeparator,
@@ -28,6 +38,16 @@ import { Icons } from '@makhynenko/ui-components';
 import { formatMoney } from '../../../helpers/money';
 import TransactionWidget from '../TransactionWidget';
 import { ITransaction } from '../types';
+import { useParams } from 'react-router-dom';
+import QRCode from 'react-qr-code';
+import copyToClipboard from '../../../helpers/copyToClipboard';
+import { useForm } from 'react-hook-form';
+import * as Yup from 'yup';
+import { yupResolver } from '@hookform/resolvers/yup';
+import { v4 as uuid } from 'uuid';
+import { addNonRealUser } from '../../../firebase/balance';
+import { Input } from '@makhynenko/ui-components';
+import { FormField } from '../../../components/FormField';
 
 interface IProps {
   balanceId: string;
@@ -35,7 +55,10 @@ interface IProps {
   users: IUserProfile[];
   symbol?: string;
   onDeleteTransaction: (transaction: IHistoryItem) => void;
-  onEditTransaction: (oldTransaction: IHistoryItem, newTransaction: ITransaction) => void;
+  onEditTransaction: (
+    oldTransaction: IHistoryItem,
+    newTransaction: ITransaction
+  ) => void;
 }
 
 const prepareGroups = (items: IHistoryItem[]) => {
@@ -54,15 +77,184 @@ const prepareGroups = (items: IHistoryItem[]) => {
   }));
 };
 
+type SubmitForm = {
+  name?: string;
+};
+
+const validationSchema = Yup.object().shape({
+  name: Yup.string().min(1, 'Name must be at least 1 character').required(''),
+});
+
+export enum ElementSize {
+  Small = 'small',
+  Medium = 'medium',
+  Large = 'large',
+}
+
 const EmptyHistory = () => {
+  const {
+    register,
+    handleSubmit,
+    reset,
+    formState: { errors },
+    getValues,
+  } = useForm<SubmitForm>({
+    resolver: yupResolver(validationSchema),
+  });
+
+  const {
+    isOpen: isInviteOpen,
+    open: openInvite,
+    close: closeInvite,
+  } = useModalState();
+  const {
+    isOpen: isNotRealUserOpen,
+    open: openNotRealUser,
+    close: closeNotRealUser,
+  } = useModalState();
+
+  const params = useParams<{ balanceId: string }>();
+
+  const balanceDetailsRef = useMemo(
+    () => getBalanceDetailsRef(params.balanceId),
+    [params.balanceId]
+  );
+
+  const { value: balance } = useValue<IBalanceDetails>(balanceDetailsRef);
+
+  const userIds = useMemo(
+    () => (balance ? Object.keys(balance?.users) : []),
+    [balance]
+  );
+  const { list: users } = useMultipleValues<IUserProfile>(
+    'users/',
+    userIds,
+    '/profile'
+  );
+
+  const handleShare = async () => {
+    await navigator.share({
+      text: 'Share balance with your friend',
+      url: window.location.href,
+    });
+
+    closeInvite();
+  };
+
+  const onSubmit = () => {
+    const data = getValues();
+
+    const notRealUser = {
+      name: data.name,
+      id: uuid(),
+    };
+
+    addNonRealUser(balance.id, notRealUser);
+    reset();
+    closeNotRealUser();
+  };
+
+  const nonRealUsersRef = useMemo(
+    () => (balance ? getNonRealUsersRef(balance.id) : undefined),
+    [balance]
+  );
+
+  const { list: nonRealUsersList } = useList<IUserLite>(nonRealUsersRef);
+
   return (
     <s.EmptyHistoryContainer>
-      <H5>No Transactions Yet</H5>
-      <BodyText>
-        It looks like there are no transactions recorded here. Start tracking
-        shared expenses and managing your balances by adding transactions.
-        Simply tap the "+" button to get started!
-      </BodyText>
+      {users?.length || nonRealUsersList?.length ? (
+        <>
+          <H5>No Transactions Yet</H5>
+          <BodyText>
+            It looks like there are no transactions recorded here. Start
+            tracking shared expenses and managing your balances by adding
+            transactions. Simply tap the "+" button to get started!
+          </BodyText>
+          <H5>Also you can add extra user here</H5>
+          <Button
+            width="100%"
+            variant="primary"
+            onClick={() => {
+              openNotRealUser();
+            }}
+          >
+            Create user by your own
+          </Button>
+        </>
+      ) : (
+        <>
+          <H5>You are the only one here!</H5>
+          <BodyText>You can invite people to your balance</BodyText>
+          <Button
+            width="100%"
+            variant="primary"
+            onClick={() => {
+              openInvite();
+            }}
+          >
+            Invite
+          </Button>
+          <BodyText>or</BodyText>
+          <Button
+            width="100%"
+            variant="primary"
+            onClick={() => {
+              openNotRealUser();
+            }}
+          >
+            Create user by your own
+          </Button>
+
+          <Modal isOpen={isInviteOpen} onClose={closeInvite}>
+            <s.InviteContent>
+              <H4>Invite Link</H4>
+              <QRCode value={window.location.href} width="fit-content" />
+
+              {navigator.share ? (
+                <Button width="100%" variant="primary" onClick={handleShare}>
+                  Invite
+                </Button>
+              ) : (
+                <Button
+                  width="100%"
+                  variant="primary"
+                  onClick={() => {
+                    copyToClipboard(window.location.href);
+                    closeInvite();
+                  }}
+                >
+                  Copy link
+                </Button>
+              )}
+            </s.InviteContent>
+          </Modal>
+          <Modal
+            isOpen={isNotRealUserOpen}
+            header="Create user"
+            onClose={closeNotRealUser}
+          >
+            <s.ModalContent>
+              <s.Form onSubmit={handleSubmit(onSubmit)}>
+                <FormField
+                  label="Balance name"
+                  errorText={errors?.name?.message}
+                >
+                  <Input
+                    size={ElementSize.Large}
+                    width="100%"
+                    placeholder="Enter user's name"
+                    {...register('name')}
+                  />
+                </FormField>
+                <Button type="submit" width="100%" variant="primary">
+                  Create User
+                </Button>
+              </s.Form>
+            </s.ModalContent>
+          </Modal>
+        </>
+      )}
     </s.EmptyHistoryContainer>
   );
 };
@@ -78,7 +270,11 @@ const NoSearchResult = () => {
 
 function History(props: IProps) {
   const ref = useRef<HTMLInputElement>();
-  const balanceHistoryRef = useMemo(() => getBalanceHistoryRef(props.balanceId), [props.balanceId])
+  const balanceHistoryRef = useMemo(
+    () => getBalanceHistoryRef(props.balanceId),
+    [props.balanceId]
+  );
+
   const { list, loading } = useList<IHistoryItem>(balanceHistoryRef);
 
   const {
@@ -104,10 +300,12 @@ function History(props: IProps) {
     close: closeEdit,
   } = useModalState();
 
-
   const [selectedTransactionId, setSelectedTransactionId] = useState<string>();
 
-  const selectedTransaction = useMemo(() => list?.find(item => item.id === selectedTransactionId), [selectedTransactionId, list])
+  const selectedTransaction = useMemo(
+    () => list?.find((item) => item.id === selectedTransactionId),
+    [selectedTransactionId, list]
+  );
   const [searchValue, setSearchValue] = useState<string>('');
   const [isSearchOpen, setIsSearchOpen] = useState<boolean>(false);
 
@@ -126,7 +324,7 @@ function History(props: IProps) {
 
   const onSelectTransaction = (data: IHistoryItem) => {
     openTransaction();
-    setSelectedTransactionId(data.id)
+    setSelectedTransactionId(data.id);
   };
 
   const onConfirmDelete = () => {
@@ -218,9 +416,9 @@ function History(props: IProps) {
   };
 
   const onEditTransaction = (updatedTransaction: ITransaction) => {
-    props.onEditTransaction(selectedTransaction, updatedTransaction)
-    closeEdit()
-  }
+    props.onEditTransaction(selectedTransaction, updatedTransaction);
+    closeEdit();
+  };
 
   return (
     <s.HistoryContainer>
@@ -361,8 +559,8 @@ function History(props: IProps) {
         <TransactionWidget
           userId={props.userId}
           users={props.users?.map((u) => ({
-            id: u.id,
-            name: u.displayName || u.email,
+            id: u?.id,
+            name: u?.displayName || u?.email,
           }))}
           onSubmit={onEditTransaction}
           data={selectedTransaction}
