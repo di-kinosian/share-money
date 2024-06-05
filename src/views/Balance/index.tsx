@@ -28,6 +28,7 @@ import QRCode from 'react-qr-code';
 import copyToClipboard from '../../helpers/copyToClipboard';
 import Button from '../../components/Button';
 import {
+  addNonRealUser,
   deleteBalance,
   joinToBalance,
   updateBalance,
@@ -43,8 +44,26 @@ import {
   deleteTransaction,
   updateTransaction,
 } from '../../firebase/transactions';
-import { Icons } from '@makhynenko/ui-components';
+import { Icons, Input } from '@makhynenko/ui-components';
 import NotFound from '../NotFound';
+import { FormField } from '../../components/FormField';
+import { useForm } from 'react-hook-form';
+import * as Yup from 'yup';
+import { yupResolver } from '@hookform/resolvers/yup';
+
+type SubmitForm = {
+  name?: string;
+};
+
+const validationSchema = Yup.object().shape({
+  name: Yup.string().min(1, 'Name must be at least 1 character').required(''),
+});
+
+export enum ElementSize {
+  Small = 'small',
+  Medium = 'medium',
+  Large = 'large',
+}
 
 function Balance() {
   const {
@@ -72,6 +91,11 @@ function Balance() {
     open: openDeleteConfirmation,
     close: closeDeleteConfirmation,
   } = useModalState();
+  const {
+    isOpen: isNotRealUserOpen,
+    open: openNotRealUser,
+    close: closeNotRealUser,
+  } = useModalState();
   const history = useHistory();
   const params = useParams<{ balanceId: string }>();
   const user = auth.currentUser;
@@ -81,6 +105,29 @@ function Balance() {
     open: openEdit,
     close: closeEdit,
   } = useModalState();
+
+  const {
+    register,
+    handleSubmit,
+    reset,
+    formState: { errors },
+    getValues,
+  } = useForm<SubmitForm>({
+    resolver: yupResolver(validationSchema),
+  });
+
+  const onSubmit = () => {
+    const data = getValues();
+
+    const notRealUser = {
+      name: data.name,
+      // id: uuid(),
+    };
+
+    addNonRealUser(balance.id, notRealUser);
+    reset();
+    closeNotRealUser();
+  };
 
   useDisableScroll(
     isTransactionOpen ||
@@ -244,6 +291,8 @@ function Balance() {
         balanceId={params.balanceId}
         userId={user?.uid}
         users={users}
+        onShareOpen={() => openShare()}
+        openNotRealUser={() => openNotRealUser()}
         onDeleteTransaction={onDeleteTransaction}
         onEditTransaction={onEditTransaction}
         symbol={currencies[balance.currency]?.symbol_native}
@@ -372,6 +421,28 @@ function Balance() {
             ></DisplayBalance>
           </Flex>
         </s.Actions>
+      </Modal>
+      {/* Create nonRealUser */}
+      <Modal
+        isOpen={isNotRealUserOpen}
+        header="Create user"
+        onClose={closeNotRealUser}
+      >
+        <s.ModalContent>
+          <s.Form onSubmit={handleSubmit(onSubmit)}>
+            <FormField label="Balance name" errorText={errors?.name?.message}>
+              <Input
+                size={ElementSize.Large}
+                width="100%"
+                placeholder="Enter user's name"
+                {...register('name')}
+              />
+            </FormField>
+            <Button type="submit" width="100%" variant="primary">
+              Create User
+            </Button>
+          </s.Form>
+        </s.ModalContent>
       </Modal>
       {/* Edit Balance */}
       <CreateBalanceModal

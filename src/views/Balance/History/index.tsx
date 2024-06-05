@@ -20,7 +20,6 @@ import {
   BodyText,
   BodyTextHighlight,
   Flex,
-  H4,
   H5,
   HorisontalSeparator,
   VerticalSeparator,
@@ -39,21 +38,14 @@ import { formatMoney } from '../../../helpers/money';
 import TransactionWidget from '../TransactionWidget';
 import { ITransaction } from '../types';
 import { useParams } from 'react-router-dom';
-import QRCode from 'react-qr-code';
-import copyToClipboard from '../../../helpers/copyToClipboard';
-import { useForm } from 'react-hook-form';
-import * as Yup from 'yup';
-import { yupResolver } from '@hookform/resolvers/yup';
-import { v4 as uuid } from 'uuid';
-import { addNonRealUser } from '../../../firebase/balance';
-import { Input } from '@makhynenko/ui-components';
-import { FormField } from '../../../components/FormField';
 
 interface IProps {
   balanceId: string;
   userId: string;
   users: IUserProfile[];
   symbol?: string;
+  onShareOpen?: () => void;
+  openNotRealUser?: () => void;
   onDeleteTransaction: (transaction: IHistoryItem) => void;
   onEditTransaction: (
     oldTransaction: IHistoryItem,
@@ -77,42 +69,15 @@ const prepareGroups = (items: IHistoryItem[]) => {
   }));
 };
 
-type SubmitForm = {
-  name?: string;
+type EmptyHistoryProp = {
+  onShareOpen?: () => void;
+  openNotRealUser?: () => void;
 };
 
-const validationSchema = Yup.object().shape({
-  name: Yup.string().min(1, 'Name must be at least 1 character').required(''),
-});
-
-export enum ElementSize {
-  Small = 'small',
-  Medium = 'medium',
-  Large = 'large',
-}
-
-const EmptyHistory = () => {
-  const {
-    register,
-    handleSubmit,
-    reset,
-    formState: { errors },
-    getValues,
-  } = useForm<SubmitForm>({
-    resolver: yupResolver(validationSchema),
-  });
-
-  const {
-    isOpen: isInviteOpen,
-    open: openInvite,
-    close: closeInvite,
-  } = useModalState();
-  const {
-    isOpen: isNotRealUserOpen,
-    open: openNotRealUser,
-    close: closeNotRealUser,
-  } = useModalState();
-
+export const EmptyHistory = ({
+  onShareOpen,
+  openNotRealUser,
+}: EmptyHistoryProp) => {
   const params = useParams<{ balanceId: string }>();
 
   const balanceDetailsRef = useMemo(
@@ -132,28 +97,6 @@ const EmptyHistory = () => {
     '/profile'
   );
 
-  const handleShare = async () => {
-    await navigator.share({
-      text: 'Share balance with your friend',
-      url: window.location.href,
-    });
-
-    closeInvite();
-  };
-
-  const onSubmit = () => {
-    const data = getValues();
-
-    const notRealUser = {
-      name: data.name,
-      id: uuid(),
-    };
-
-    addNonRealUser(balance.id, notRealUser);
-    reset();
-    closeNotRealUser();
-  };
-
   const nonRealUsersRef = useMemo(
     () => (balance ? getNonRealUsersRef(balance.id) : undefined),
     [balance]
@@ -163,7 +106,7 @@ const EmptyHistory = () => {
 
   return (
     <s.EmptyHistoryContainer>
-      {users?.length || nonRealUsersList?.length ? (
+      {users?.length > 1 || nonRealUsersList?.length ? (
         <>
           <H5>No Transactions Yet</H5>
           <BodyText>
@@ -190,7 +133,7 @@ const EmptyHistory = () => {
             width="100%"
             variant="primary"
             onClick={() => {
-              openInvite();
+              onShareOpen();
             }}
           >
             Invite
@@ -205,54 +148,6 @@ const EmptyHistory = () => {
           >
             Create user by your own
           </Button>
-
-          <Modal isOpen={isInviteOpen} onClose={closeInvite}>
-            <s.InviteContent>
-              <H4>Invite Link</H4>
-              <QRCode value={window.location.href} width="fit-content" />
-
-              {navigator.share ? (
-                <Button width="100%" variant="primary" onClick={handleShare}>
-                  Invite
-                </Button>
-              ) : (
-                <Button
-                  width="100%"
-                  variant="primary"
-                  onClick={() => {
-                    copyToClipboard(window.location.href);
-                    closeInvite();
-                  }}
-                >
-                  Copy link
-                </Button>
-              )}
-            </s.InviteContent>
-          </Modal>
-          <Modal
-            isOpen={isNotRealUserOpen}
-            header="Create user"
-            onClose={closeNotRealUser}
-          >
-            <s.ModalContent>
-              <s.Form onSubmit={handleSubmit(onSubmit)}>
-                <FormField
-                  label="Balance name"
-                  errorText={errors?.name?.message}
-                >
-                  <Input
-                    size={ElementSize.Large}
-                    width="100%"
-                    placeholder="Enter user's name"
-                    {...register('name')}
-                  />
-                </FormField>
-                <Button type="submit" width="100%" variant="primary">
-                  Create User
-                </Button>
-              </s.Form>
-            </s.ModalContent>
-          </Modal>
         </>
       )}
     </s.EmptyHistoryContainer>
@@ -411,7 +306,10 @@ function History(props: IProps) {
         {renderTransactions()}
       </>
     ) : (
-      <EmptyHistory />
+      <EmptyHistory
+        onShareOpen={props.onShareOpen}
+        openNotRealUser={props.openNotRealUser}
+      />
     );
   };
 
