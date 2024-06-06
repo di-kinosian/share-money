@@ -42,7 +42,7 @@ import { useParams } from 'react-router-dom';
 interface IProps {
   balanceId: string;
   userId: string;
-  users: IUserProfile[];
+  users: IUserLite[];
   symbol?: string;
   onShareOpen?: () => void;
   openNotRealUser?: () => void;
@@ -124,6 +124,10 @@ export const EmptyHistory = ({
           >
             Create user by your own
           </Button>
+          <BodyText>
+            *After creating a transaction, you will be able to add extra user in
+            "Balance operation"
+          </BodyText>
         </>
       ) : (
         <>
@@ -386,7 +390,7 @@ function History(props: IProps) {
                     return (
                       <s.DetailsCard key={u.id}>
                         <BodyTextHighlight>
-                          {u.displayName || u.email}
+                          {u.name || u.email}
                         </BodyTextHighlight>
                         <s.TransactionDetailsRow>
                           <BodyText>Paid</BodyText>
@@ -458,7 +462,7 @@ function History(props: IProps) {
           userId={props.userId}
           users={props.users?.map((u) => ({
             id: u?.id,
-            name: u?.displayName || u?.email,
+            name: u?.name || u?.email,
           }))}
           onSubmit={onEditTransaction}
           data={selectedTransaction}

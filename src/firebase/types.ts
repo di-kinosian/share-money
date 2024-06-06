@@ -27,6 +27,7 @@ export interface IBalanceDetails {
 export interface IUserLite {
   name: string;
   id: string;
+  email?: string;
 }
 
 export interface IUserProfile {

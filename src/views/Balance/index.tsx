@@ -121,7 +121,7 @@ function Balance() {
 
     const notRealUser = {
       name: data.name,
-      // id: uuid(),
+      email: 'non-real-user@gmail.com',
     };
 
     addNonRealUser(balance.id, notRealUser);
@@ -184,13 +184,24 @@ function Balance() {
     deleteTransaction(balance, transaction);
   };
 
+  const processUsers = (user, nameKey) => {
+    return (user || [])
+      .map((user) => {
+        if (user) {
+          return {
+            id: user?.id,
+            name: user?.[nameKey] || user?.email,
+          };
+        }
+        return null;
+      })
+      .filter(Boolean);
+  };
+
   const usersLite = useMemo(
     () => [
-      ...(users || []).map((user) => ({
-        id: user?.id,
-        name: user?.displayName || user?.email,
-      })),
-      ...(nonRealUsersList || []),
+      ...processUsers(users, 'displayName'),
+      ...processUsers(nonRealUsersList, 'name'),
     ],
     [users, nonRealUsersList]
   );
@@ -216,6 +227,11 @@ function Balance() {
     });
 
     closeShare();
+  };
+
+  const openNonRealUserModal = () => {
+    openNotRealUser();
+    closeActions();
   };
 
   const onEditBalance = (title: string, currency: string) => {
@@ -290,7 +306,7 @@ function Balance() {
       <History
         balanceId={params.balanceId}
         userId={user?.uid}
-        users={users}
+        users={usersLite}
         onShareOpen={() => openShare()}
         openNotRealUser={() => openNotRealUser()}
         onDeleteTransaction={onDeleteTransaction}
@@ -315,6 +331,13 @@ function Balance() {
             <BodyText>Edit</BodyText>
           </s.Action>
           <HorisontalSeparator />
+
+          <s.Action onClick={openNonRealUserModal}>
+            <Icon name="plus square outline" />
+            <BodyText>Add extra user</BodyText>
+          </s.Action>
+          <HorisontalSeparator />
+
           <s.Action
             onClick={() => {
               openShare();
