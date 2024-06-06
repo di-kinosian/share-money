@@ -1,9 +1,18 @@
 import { useState, useMemo, useRef } from 'react';
 import HistoryItem from './HistoryItem';
 import { Icon, Loader } from 'semantic-ui-react';
-import { useList } from '../../../firebase/hooks';
-import { getBalanceHistoryRef } from '../../../firebase/refs';
-import { IHistoryItem, IUserProfile } from '../../../firebase/types';
+import { useList, useMultipleValues, useValue } from '../../../firebase/hooks';
+import {
+  getBalanceDetailsRef,
+  getBalanceHistoryRef,
+  getNonRealUsersRef,
+} from '../../../firebase/refs';
+import {
+  IBalanceDetails,
+  IHistoryItem,
+  IUserLite,
+  IUserProfile,
+} from '../../../firebase/types';
 import * as s from './styled';
 import { useModalState } from '../../../helpers/hooks';
 import Modal from '../../../components/Modal';
@@ -28,14 +37,20 @@ import { Icons } from '@makhynenko/ui-components';
 import { formatMoney } from '../../../helpers/money';
 import TransactionWidget from '../TransactionWidget';
 import { ITransaction } from '../types';
+import { useParams } from 'react-router-dom';
 
 interface IProps {
   balanceId: string;
   userId: string;
-  users: IUserProfile[];
+  users: IUserLite[];
   symbol?: string;
+  onShareOpen?: () => void;
+  openNotRealUser?: () => void;
   onDeleteTransaction: (transaction: IHistoryItem) => void;
-  onEditTransaction: (oldTransaction: IHistoryItem, newTransaction: ITransaction) => void;
+  onEditTransaction: (
+    oldTransaction: IHistoryItem,
+    newTransaction: ITransaction
+  ) => void;
 }
 
 const prepareGroups = (items: IHistoryItem[]) => {
@@ -54,15 +69,91 @@ const prepareGroups = (items: IHistoryItem[]) => {
   }));
 };
 
-const EmptyHistory = () => {
+type EmptyHistoryProp = {
+  onShareOpen?: () => void;
+  openNotRealUser?: () => void;
+};
+
+export const EmptyHistory = ({
+  onShareOpen,
+  openNotRealUser,
+}: EmptyHistoryProp) => {
+  const params = useParams<{ balanceId: string }>();
+
+  const balanceDetailsRef = useMemo(
+    () => getBalanceDetailsRef(params.balanceId),
+    [params.balanceId]
+  );
+
+  const { value: balance } = useValue<IBalanceDetails>(balanceDetailsRef);
+
+  const userIds = useMemo(
+    () => (balance ? Object.keys(balance?.users) : []),
+    [balance]
+  );
+  const { list: users } = useMultipleValues<IUserProfile>(
+    'users/',
+    userIds,
+    '/profile'
+  );
+
+  const nonRealUsersRef = useMemo(
+    () => (balance ? getNonRealUsersRef(balance.id) : undefined),
+    [balance]
+  );
+
+  const { list: nonRealUsersList } = useList<IUserLite>(nonRealUsersRef);
+
   return (
     <s.EmptyHistoryContainer>
-      <H5>No Transactions Yet</H5>
-      <BodyText>
-        It looks like there are no transactions recorded here. Start tracking
-        shared expenses and managing your balances by adding transactions.
-        Simply tap the "+" button to get started!
-      </BodyText>
+      {users?.length > 1 || nonRealUsersList?.length ? (
+        <>
+          <H5>No Transactions Yet</H5>
+          <BodyText>
+            It looks like there are no transactions recorded here. Start
+            tracking shared expenses and managing your balances by adding
+            transactions. Simply tap the "+" button to get started!
+          </BodyText>
+          <H5>Also you can add extra user here</H5>
+          <Button
+            width="100%"
+            variant="primary"
+            onClick={() => {
+              openNotRealUser();
+            }}
+          >
+            Create user by your own
+          </Button>
+          <BodyText>
+            *After creating a transaction, you will be able to add extra user in
+            "Balance operation"
+          </BodyText>
+        </>
+      ) : (
+        <>
+          <H5>You are the only one here!</H5>
+          <BodyText>You can invite people to your balance</BodyText>
+          <Button
+            width="100%"
+            variant="primary"
+            onClick={() => {
+              onShareOpen();
+            }}
+          >
+            Invite
+          </Button>
+          <BodyText>or</BodyText>
+          <Button
+            width="100%"
+            variant="primary"
+            onClick={() => {
+              openNotRealUser();
+            }}
+          >
+            Create user by your own
+          </Button>
+        </>
+      )}
     </s.EmptyHistoryContainer>
   );
 };
@@ -78,7 +169,11 @@ const NoSearchResult = () => {
 
 function History(props: IProps) {
   const ref = useRef<HTMLInputElement>();
-  const balanceHistoryRef = useMemo(() => getBalanceHistoryRef(props.balanceId), [props.balanceId])
+  const balanceHistoryRef = useMemo(
+    () => getBalanceHistoryRef(props.balanceId),
+    [props.balanceId]
+  );
+
   const { list, loading } = useList<IHistoryItem>(balanceHistoryRef);
 
   const {
@@ -104,10 +199,12 @@ function History(props: IProps) {
     close: closeEdit,
   } = useModalState();
 
-
   const [selectedTransactionId, setSelectedTransactionId] = useState<string>();
 
-  const selectedTransaction = useMemo(() => list?.find(item => item.id === selectedTransactionId), [selectedTransactionId, list])
+  const selectedTransaction = useMemo(
+    () => list?.find((item) => item.id === selectedTransactionId),
+    [selectedTransactionId, list]
+  );
   const [searchValue, setSearchValue] = useState<string>('');
   const [isSearchOpen, setIsSearchOpen] = useState<boolean>(false);
 
@@ -126,7 +223,7 @@ function History(props: IProps) {
 
   const onSelectTransaction = (data: IHistoryItem) => {
     openTransaction();
-    setSelectedTransactionId(data.id)
+    setSelectedTransactionId(data.id);
   };
 
   const onConfirmDelete = () => {
@@ -213,14 +310,17 @@ function History(props: IProps) {
         {renderTransactions()}
       </>
     ) : (
-      <EmptyHistory />
+      <EmptyHistory
+        onShareOpen={props.onShareOpen}
+        openNotRealUser={props.openNotRealUser}
+      />
     );
   };
 
   const onEditTransaction = (updatedTransaction: ITransaction) => {
-    props.onEditTransaction(selectedTransaction, updatedTransaction)
-    closeEdit()
-  }
+    props.onEditTransaction(selectedTransaction, updatedTransaction);
+    closeEdit();
+  };
 
   return (
     <s.HistoryContainer>
@@ -290,7 +390,7 @@ function History(props: IProps) {
                     return (
                       <s.DetailsCard key={u.id}>
                         <BodyTextHighlight>
-                          {u.displayName || u.email}
+                          {u.name || u.email}
                         </BodyTextHighlight>
                         <s.TransactionDetailsRow>
                           <BodyText>Paid</BodyText>
@@ -361,8 +461,8 @@ function History(props: IProps) {
         <TransactionWidget
           userId={props.userId}
           users={props.users?.map((u) => ({
-            id: u.id,
-            name: u.displayName || u.email,
+            id: u?.id,
+            name: u?.name || u?.email,
           }))}
           onSubmit={onEditTransaction}
           data={selectedTransaction}

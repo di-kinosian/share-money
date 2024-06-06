@@ -6,26 +6,25 @@ import { useHistory } from 'react-router-dom';
 import { ROUTES } from '../../routes/constants';
 import * as s from './styled';
 
-
 function Home() {
-    const history = useHistory();
-    const user = useSelector(getUser);
+  const history = useHistory();
+  const user = useSelector(getUser);
 
-    if (user) {
-        return <UserBalances />;
-    }
+  if (user) {
+    return <UserBalances />;
+  }
 
-    const onLoginClick = () => {
-        history.push(ROUTES.LOGIN);
-    };
-    return (
-        <s.ContainerHomePage>
-            <s.PageTitle>Spent money together!</s.PageTitle>
-            <Button variant="primary" onClick={onLoginClick}>
-                Login
-            </Button>
-        </s.ContainerHomePage>
-    );
+  const onLoginClick = () => {
+    history.push(ROUTES.LOGIN);
+  };
+  return (
+    <s.ContainerHomePage>
+      <s.PageTitle>Spend money together!</s.PageTitle>
+      <Button variant="primary" onClick={onLoginClick}>
+        Login
+      </Button>
+    </s.ContainerHomePage>
+  );
 }
 
 export default Home;

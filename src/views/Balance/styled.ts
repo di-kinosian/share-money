@@ -1,4 +1,5 @@
 import styled from 'styled-components';
+import { BodyText } from '../../components/styled';
 
 export const PageContent = styled.div``;
 
@@ -36,3 +37,27 @@ export const GoHomeButton = styled.div`
 
 export const BalanceInfo = styled.div``;
 export const UserBalance = styled.div``;
+
+export const ModalContent = styled.div`
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+`;
+
+export const InviteContent = styled(ModalContent)`
+  svg {
+    align-self: center;
+  }
+`;
+
+export const Form = styled.form`
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+`;
+
+export const ErrorText = styled(BodyText)`
+  color: red;
+`;
+

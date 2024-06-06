@@ -1,7 +1,7 @@
 import { FC, useMemo } from 'react';
 import MoneyValue from '../../../components/MoneyValue';
 import * as s from './styled';
-import { IHistoryItem, IUserProfile } from '../../../firebase/types';
+import { IHistoryItem, IUserLite } from '../../../firebase/types';
 import { BodyTextHighlight, NoteText } from '../../../components/styled';
 
 interface IProps {
@@ -10,7 +10,7 @@ interface IProps {
   title: string;
   data: IHistoryItem;
   userId: string;
-  users: IUserProfile[];
+  users: IUserLite[];
   symbol: string;
   onSelect: (data: IHistoryItem) => void;
 }
@@ -37,7 +37,7 @@ const HistoryItem: FC<IProps> = (props) => {
       </s.HistoryItemRow>
       <s.HistoryItemRow>
         <NoteText>
-          {paidUser ? paidUser.displayName || paidUser.email : 'Shared payment'}
+          {paidUser ? paidUser.name || paidUser.email : 'Shared payment'}
         </NoteText>
         <NoteText>{props.data.amount}</NoteText>
       </s.HistoryItemRow>

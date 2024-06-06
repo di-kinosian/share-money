@@ -14,6 +14,7 @@ export interface IHistoryItem {
 export interface IBalanceState {
   details: IBalanceDetails;
   history: Map<IHistoryItem>;
+  nonRealUsers: IUserLite;
 }
 
 export interface IBalanceDetails {
@@ -21,6 +22,12 @@ export interface IBalanceDetails {
   id: string;
   users: Map<number>;
   currency: string;
+}
+
+export interface IUserLite {
+  name: string;
+  id: string;
+  email?: string;
 }
 
 export interface IUserProfile {

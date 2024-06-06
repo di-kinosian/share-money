@@ -7,11 +7,12 @@ import BalanceCard from './BalanceCard';
 import { auth } from '../../firebase';
 import * as s from './styled';
 import History from './History';
-import { useMultipleValues, useValue } from '../../firebase/hooks';
-import { getBalanceDetailsRef } from '../../firebase/refs';
+import { useList, useMultipleValues, useValue } from '../../firebase/hooks';
+import { getBalanceDetailsRef, getNonRealUsersRef } from '../../firebase/refs';
 import {
   IBalanceDetails,
   IHistoryItem,
+  IUserLite,
   IUserProfile,
 } from '../../firebase/types';
 import { ITransaction } from './types';
@@ -27,6 +28,7 @@ import QRCode from 'react-qr-code';
 import copyToClipboard from '../../helpers/copyToClipboard';
 import Button from '../../components/Button';
 import {
+  addNonRealUser,
   deleteBalance,
   joinToBalance,
   updateBalance,
@@ -42,8 +44,21 @@ import {
   deleteTransaction,
   updateTransaction,
 } from '../../firebase/transactions';
-import { Icons } from '@makhynenko/ui-components';
+import { Icons, Input } from '@makhynenko/ui-components';
 import NotFound from '../NotFound';
+import { FormField } from '../../components/FormField';
+import { useForm } from 'react-hook-form';
+import * as Yup from 'yup';
+import { yupResolver } from '@hookform/resolvers/yup';
+import { ElementSize } from '@makhynenko/ui-components';
+
+type SubmitForm = {
+  name?: string;
+};
+
+const validationSchema = Yup.object().shape({
+  name: Yup.string().min(1, 'Name must be at least 1 character').required(''),
+});
 
 function Balance() {
   const {
@@ -71,6 +86,11 @@ function Balance() {
     open: openDeleteConfirmation,
     close: closeDeleteConfirmation,
   } = useModalState();
+  const {
+    isOpen: isNotRealUserOpen,
+    open: openNotRealUser,
+    close: closeNotRealUser,
+  } = useModalState();
   const history = useHistory();
   const params = useParams<{ balanceId: string }>();
   const user = auth.currentUser;
@@ -80,6 +100,29 @@ function Balance() {
     open: openEdit,
     close: closeEdit,
   } = useModalState();
+
+  const {
+    register,
+    handleSubmit,
+    reset,
+    formState: { errors },
+    getValues,
+  } = useForm<SubmitForm>({
+    resolver: yupResolver(validationSchema),
+  });
+
+  const onSubmit = () => {
+    const data = getValues();
+
+    const notRealUser = {
+      name: data.name,
+      email: 'non-real-user@gmail.com',
+    };
+
+    addNonRealUser(balance.id, notRealUser);
+    reset();
+    closeNotRealUser();
+  };
 
   useDisableScroll(
     isTransactionOpen ||
@@ -108,6 +151,13 @@ function Balance() {
     '/profile'
   );
 
+  const nonRealUsersRef = useMemo(
+    () => (balance ? getNonRealUsersRef(balance.id) : undefined),
+    [balance]
+  );
+
+  const { list: nonRealUsersList } = useList<IUserLite>(nonRealUsersRef);
+
   const userAmount = useMemo(() => {
     return balance && user && balance.users[user.uid];
   }, [balance, user]);
@@ -129,15 +179,26 @@ function Balance() {
     deleteTransaction(balance, transaction);
   };
 
-  const usersLite = useMemo(
-    () =>
-      users
-        ? users.map((user) => ({
+  const processUsers = (user, nameKey) => {
+    return (user || [])
+      .map((user) => {
+        if (user) {
+          return {
             id: user?.id,
-            name: user?.displayName || user?.email,
-          }))
-        : [],
-    [users]
+            name: user?.[nameKey] || user?.email,
+          };
+        }
+        return null;
+      })
+      .filter(Boolean);
+  };
+
+  const usersLite = useMemo(
+    () => [
+      ...processUsers(users, 'displayName'),
+      ...processUsers(nonRealUsersList, 'name'),
+    ],
+    [users, nonRealUsersList]
   );
 
   const navigateToHomePage = () => {
@@ -163,6 +224,11 @@ function Balance() {
     closeShare();
   };
 
+  const openNonRealUserModal = () => {
+    openNotRealUser();
+    closeActions();
+  };
+
   const onEditBalance = (title: string, currency: string) => {
     closeEdit();
     updateBalance({
@@ -177,7 +243,6 @@ function Balance() {
     oldTransaction: IHistoryItem,
     newTransaction: ITransaction
   ) => {
-    console.log({ oldTransaction, newTransaction });
     updateTransaction(balance, oldTransaction, {
       ...newTransaction,
       id: oldTransaction.id,
@@ -192,7 +257,12 @@ function Balance() {
     return <NotFound isBalance />;
   }
 
-  const DisplayBalance = ({ balanceDetails, userProfiles }) => {
+  type Props = {
+    balanceDetails: IBalanceDetails;
+    userProfiles: IUserLite[];
+  };
+
+  const DisplayBalance = ({ balanceDetails, userProfiles }: Props) => {
     return (
       <s.BalanceInfo>
         {Object.entries(balanceDetails?.users).map(([userId, userBalance]) => {
@@ -202,7 +272,7 @@ function Balance() {
           if (userProfile) {
             return (
               <s.UserBalance key={userId}>
-                {`${userProfile.displayName}: ${Math.round(+userBalance)}`}
+                {`${userProfile.name}: ${Math.round(+userBalance)}`}
               </s.UserBalance>
             );
           } else {
@@ -231,7 +301,9 @@ function Balance() {
       <History
         balanceId={params.balanceId}
         userId={user?.uid}
-        users={users}
+        users={usersLite}
+        onShareOpen={() => openShare()}
+        openNotRealUser={() => openNotRealUser()}
         onDeleteTransaction={onDeleteTransaction}
         onEditTransaction={onEditTransaction}
         symbol={currencies[balance.currency]?.symbol_native}
@@ -254,6 +326,13 @@ function Balance() {
             <BodyText>Edit</BodyText>
           </s.Action>
           <HorisontalSeparator />
+
+          <s.Action onClick={openNonRealUserModal}>
+            <Icon name="plus square outline" />
+            <BodyText>Add extra user</BodyText>
+          </s.Action>
+          <HorisontalSeparator />
+
           <s.Action
             onClick={() => {
               openShare();
@@ -261,7 +340,7 @@ function Balance() {
             }}
           >
             <Icon name="share square outline" />
-            <BodyText>Share</BodyText>
+            <BodyText>Invite</BodyText>
           </s.Action>
           <HorisontalSeparator />
           <s.Action onClick={openDeleteConfirmation}>
@@ -281,12 +360,12 @@ function Balance() {
       {/* Share Balance */}
       <Modal isOpen={isShareOpen} onClose={closeShare}>
         <s.ShareContent>
-          <H4>Share Link</H4>
+          <H4>Invite Link</H4>
           <QRCode value={window.location.href} width="fit-content" />
 
           {navigator.share ? (
             <Button width="100%" variant="primary" onClick={handleShare}>
-              Share
+              Invite
             </Button>
           ) : (
             <Button
@@ -325,7 +404,7 @@ function Balance() {
           <BodyText>
             Ready to simplify your group expenses? Click the "Join Balance"
             button below to join balance <strong>{balance?.title}</strong> with{' '}
-            <strong>{users?.map((u) => u.displayName).join(', ')}</strong>
+            <strong>{users?.map((u) => u?.displayName).join(', ')}</strong>
           </BodyText>
           <Flex direction="column" gap="8px" justify="center">
             <Button onClick={onJoinClick} variant="primary">
@@ -356,10 +435,32 @@ function Balance() {
             <BodyText>Users Balances:</BodyText>
             <DisplayBalance
               balanceDetails={balance}
-              userProfiles={users}
+              userProfiles={usersLite}
             ></DisplayBalance>
           </Flex>
         </s.Actions>
+      </Modal>
+      {/* Create nonRealUser */}
+      <Modal
+        isOpen={isNotRealUserOpen}
+        header="Create user"
+        onClose={closeNotRealUser}
+      >
+        <s.ModalContent>
+          <s.Form onSubmit={handleSubmit(onSubmit)}>
+            <FormField label="Balance name" errorText={errors?.name?.message}>
+              <Input
+                size={ElementSize.Large}
+                width="100%"
+                placeholder="Enter user's name"
+                {...register('name')}
+              />
+            </FormField>
+            <Button type="submit" width="100%" variant="primary">
+              Create User
+            </Button>
+          </s.Form>
+        </s.ModalContent>
       </Modal>
       {/* Edit Balance */}
       <CreateBalanceModal

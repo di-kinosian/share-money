@@ -45,3 +45,9 @@ export const joinToBalance = (balanceId, userId) => {
   set(ref(database, `users/${userId}/balances/${balanceId}`), true);
   set(ref(database, `balances/${balanceId}/details/users/${userId}`), 0);
 };
+
+export const addNonRealUser = (balanceId, user) => {
+  const newUserRef = push(ref(database, `balances/${balanceId}/nonRealUsers`));
+  set(ref(database, `balances/${balanceId}/details/users/${newUserRef.key}`), 0);
+  set(newUserRef, {...user, id: newUserRef.key});
+};
