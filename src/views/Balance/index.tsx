@@ -50,6 +50,7 @@ import { FormField } from '../../components/FormField';
 import { useForm } from 'react-hook-form';
 import * as Yup from 'yup';
 import { yupResolver } from '@hookform/resolvers/yup';
+import { ElementSize } from '@makhynenko/ui-components';
 
 type SubmitForm = {
   name?: string;
@@ -58,12 +59,6 @@ type SubmitForm = {
 const validationSchema = Yup.object().shape({
   name: Yup.string().min(1, 'Name must be at least 1 character').required(''),
 });
-
-export enum ElementSize {
-  Small = 'small',
-  Medium = 'medium',
-  Large = 'large',
-}
 
 function Balance() {
   const {
