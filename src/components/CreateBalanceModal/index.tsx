@@ -1,12 +1,13 @@
 import { FC, useEffect, useState } from 'react';
 import * as s from './styled';
 import Modal from '../Modal';
-import Field from '../Field';
 import Button from '../Button';
 import currencies from '../../constants/currencies.json';
 import { useModalState } from '../../helpers/hooks';
 import { BodyText, BodyTextHighlight, HorisontalSeparator } from '../styled';
 import { IBalanceDetails } from '../../firebase/types';
+import { InputField } from '../InputField';
+import { ElementSize, Input } from '@makhynenko/ui-components';
 
 interface ICreateBalanceModalProps {
   onClose: () => void;
@@ -82,17 +83,17 @@ const CreateBalanceModal: FC<ICreateBalanceModalProps> = ({
         header={data ? 'Edit balance' : 'Create new balance'}
       >
         <s.ModalContent>
-          <Field label="Balance name" error={titleError}>
-            <s.TitleInput
-              type="text"
+          <InputField label="Balance name" errorText={titleError}>
+            <Input
               placeholder="Enter balance name"
               value={title}
+              size={ElementSize.Large}
               onChange={changeTitle}
-              error={Boolean(titleError)}
+              invalid={Boolean(titleError)}
             />
-          </Field>
-          <Field label="Currency" error={currencyError}>
-            <s.CurrencySelector onClick={openOptions}>
+          </InputField>
+          <InputField label="Currency" errorText={currencyError}>
+            <s.CurrencySelector onClick={openOptions} invalid={Boolean(currencyError)}>
               {currencyCode ? (
                 <s.SelectorValue>
                   <BodyText>{currencies[currencyCode].name}</BodyText>
@@ -104,7 +105,7 @@ const CreateBalanceModal: FC<ICreateBalanceModalProps> = ({
                 <s.CurrencyPlaceholder>Select currency</s.CurrencyPlaceholder>
               )}
             </s.CurrencySelector>
-          </Field>
+          </InputField>
           <Button variant="primary" onClick={onSubmit} width="100%">
             {data ? 'Save' : 'Create'}
           </Button>

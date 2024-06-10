@@ -35,14 +35,10 @@ export const StyledForm = styled(Form)`
     display: flex;
     flex-direction: column;
     align-items: center;
+    gap: 8px;
     padding: 20px 40px 40px;
     border-bottom: 1px solid #e8e8e8;
     margin-bottom: 20px;
-`;
-
-export const StyledFormInput = styled(Form.Input)`
-    width: 270px;
-    height: 40px;
 `;
 
 export const SumbitButton = styled(Button)`
