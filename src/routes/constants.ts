@@ -4,6 +4,7 @@ const ROUTES = {
     SPECIAL: "/special",
     PROFILE: "/profile",
     ADMIN: '/admin',
+    CAPITAL: '/capital',
     HOME: "/",
 };
 

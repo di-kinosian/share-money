@@ -9,6 +9,7 @@ import AuthenticatedRoute from './AuthentificatedRoute';
 import AuthRoute from './AuthRoute';
 import NotFound from '../views/NotFound';
 import Admin from '../views/Admin';
+import MyCapital from '../views/MyCapital/MyCapital';
 
 function Routes() {
   return (
@@ -29,6 +30,11 @@ function Routes() {
         exact={true}
         path={ROUTES.PROFILE}
         component={Profile}
+      />
+      <AuthenticatedRoute
+        exact={true}
+        path={ROUTES.CAPITAL}
+        component={MyCapital}
       />
 
       <AuthenticatedRoute exact={true} path={ROUTES.ADMIN}>

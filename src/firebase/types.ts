@@ -42,7 +42,32 @@ export interface IUserState {
   balances: Map<IBalanceDetails>;
 }
 
+interface IReport {
+  id: string;
+  date: string;
+  currency: string;
+  totalAmount: number;
+  fieldAmounts: Map<number>
+}
+
+interface IField {
+  id: string;
+  currency: string;
+  name: string;
+}
+
+interface ICapitalConfig {
+  basicCurrency: string;
+  fields: Map<IField>;
+}
+
+export interface ICapitalState {
+  reports: Map<IReport>;
+  config: ICapitalConfig;
+}
+
 export interface IDataBase {
   users: Map<IUserState>;
   balances: Map<IBalanceState>;
+  capitals: Map<IBalanceState>
 }
