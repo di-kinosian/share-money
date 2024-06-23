@@ -9,15 +9,12 @@ import Sidebar from '../../components/Sidebar';
 import * as s from './styled';
 import { useAuth } from '../../firebase/auth';
 import { useModalState } from '../../helpers/hooks';
+import { HorisontalSeparator } from '../../components/styled';
 
 const HeaderProvider: FC = (props) => {
   useAuth();
-  const {isOpen, open, close} = useModalState()
+  const { isOpen, open, close } = useModalState()
   const dispatch = useDispatch();
-
-  const onProfileClick = () => {
-    close();
-  };
 
   const onLogoutClick = () => {
     dispatch(logout());
@@ -44,14 +41,24 @@ const HeaderProvider: FC = (props) => {
             onClick={close}
             alt=""
           />
+          <HorisontalSeparator />
           <s.MenuRow>
             <s.MenuIcon name="user circle" />
-            <s.MenuText onClick={onProfileClick}>
+            <s.MenuText onClick={close}>
               <Link to="/profile">Profile</Link>
             </s.MenuText>
           </s.MenuRow>
           <s.MenuRow>
-            <s.MenuIcon name="log out"></s.MenuIcon>
+            <s.MenuIcon name="dollar" />
+            <s.MenuText onClick={close}>
+              <Link to="/capital">My Capital</Link>
+            </s.MenuText>
+          </s.MenuRow>
+          <HorisontalSeparator style={{
+            marginTop: 'auto'
+          }} />
+          <s.MenuRow>
+            <s.MenuIcon name="log out" />
             <s.MenuText onClick={onLogoutClick}>Log out</s.MenuText>
           </s.MenuRow>
         </s.Menu>

@@ -54,16 +54,15 @@ export const Menu = styled.div`
     height: 100%;
     background: rgb(255, 255, 255);
     box-shadow: 0 20px rgba(34, 36, 38, 0.15);
-    padding-top: 50px;
+    padding-top: 63px;
     display: flex;
     flex-direction: column;
-    justify-content: space-between;
 `;
 
 export const CloseMenuIcon = styled.img`
     position: absolute;
-    top: 13px;
-    right: 13px;
+    top: 20px;
+    right: 20px;
     width: 24px;
     height: 24px;
     cursor: pointer;
@@ -75,7 +74,7 @@ export const MenuRow = styled.div`
     display: flex;
     align-items: center;
     cursor: pointer;
-    border-top: 1px solid #d8d8d8;
+    /* border-top: 1px solid #d8d8d8; */
 `;
 
 export const MenuIcon = styled(Icon)`

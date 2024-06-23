@@ -60,4 +60,3 @@ export const Form = styled.form`
 export const ErrorText = styled(BodyText)`
   color: red;
 `;
-
