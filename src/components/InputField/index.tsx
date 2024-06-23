@@ -1,7 +1,7 @@
 import { ReactNode } from 'react';
 import * as s from './styled';
 
-interface FormFieldProps {
+interface InputFieldProps {
   label?: string;
   errorText?: string;
   children?: ReactNode;
@@ -9,7 +9,7 @@ interface FormFieldProps {
   className?: string;
 }
 
-export const FormField: React.FC<FormFieldProps> = ({
+export const InputField: React.FC<InputFieldProps> = ({
   label,
   errorText,
   isRequired,

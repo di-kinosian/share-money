@@ -19,7 +19,8 @@ import { getAmountError } from './helpers';
 import { IUser } from './types';
 import Modal from '../../../components/Modal';
 import { formatMoney } from '../../../helpers/money';
-import { Icons } from '@makhynenko/ui-components';
+import { ElementSize, Icons, Input } from '@makhynenko/ui-components';
+import { InputField } from '../../../components/InputField';
 
 const getInitialAmountFromUsers = (users: IUser[]): Record<string, string> =>
   users.reduce((acc, user) => ({ ...acc, [user.id]: formatMoney(0) }), {});
@@ -397,18 +398,19 @@ function TransactionWidget(props: IProps) {
 
   return (
     <s.Container>
-      <Field label="Name">
-        <so.TracsactionInput
+      <InputField label="Name" errorText={!errors.includes('title') ? '' : 'title is required'}>
+        <Input
           placeholder="Enter title"
           value={title}
           onChange={changeTitle}
-          error={errors.includes('title')}
+          size={ElementSize.Large}
+          invalid={Boolean(errors.includes('title'))}
         />
-      </Field>
-      <Field label="Date">
+      </InputField>
+      <InputField  label="Date">
         <DatePicker onChange={changeDate} value={new Date(date)} />
-      </Field>
-      <Field label="Total amount">
+      </InputField >
+      <InputField  label="Total amount">
         <so.AmountInput
           value={totalAmount}
           onChange={onChangeTotalAmount}
@@ -419,7 +421,7 @@ function TransactionWidget(props: IProps) {
           onBlur={onTotalAmountBlur}
           error={errors.includes('totalAmount')}
         />
-      </Field>
+      </InputField >
 
       <div>
         <Flex margin="0 0 4px" justify="space-between">

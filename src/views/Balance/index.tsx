@@ -46,7 +46,7 @@ import {
 } from '../../firebase/transactions';
 import { Icons, Input } from '@makhynenko/ui-components';
 import NotFound from '../NotFound';
-import { FormField } from '../../components/FormField';
+import { InputField } from '../../components/InputField';
 import { useForm } from 'react-hook-form';
 import * as Yup from 'yup';
 import { yupResolver } from '@hookform/resolvers/yup';
@@ -272,7 +272,7 @@ function Balance() {
           if (userProfile) {
             return (
               <s.UserBalance key={userId}>
-                {`${userProfile.name}: ${Math.round(+userBalance)}`}
+                {`${userProfile.name}: ${formatMoney(+userBalance)}`}
               </s.UserBalance>
             );
           } else {
@@ -448,14 +448,15 @@ function Balance() {
       >
         <s.ModalContent>
           <s.Form onSubmit={handleSubmit(onSubmit)}>
-            <FormField label="Balance name" errorText={errors?.name?.message}>
+            <InputField label="Balance name" errorText={errors?.name?.message}>
               <Input
                 size={ElementSize.Large}
                 width="100%"
                 placeholder="Enter user's name"
                 {...register('name')}
+                invalid={Boolean(errors?.name?.message)}
               />
-            </FormField>
+            </InputField>
             <Button type="submit" width="100%" variant="primary">
               Create User
             </Button>
