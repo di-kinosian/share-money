@@ -50,7 +50,7 @@ interface IReport {
   fieldAmounts: Map<number>
 }
 
-interface IField {
+export interface IField {
   id: string;
   currency: string;
   name: string;
@@ -69,5 +69,5 @@ export interface ICapitalState {
 export interface IDataBase {
   users: Map<IUserState>;
   balances: Map<IBalanceState>;
-  capitals: Map<IBalanceState>
+  capitals: Map<IBalanceState>;
 }

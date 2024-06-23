@@ -7,9 +7,9 @@ import {
   HorisontalSeparator,
 } from '../../components/styled';
 import { useModalState, useModals } from '../../helpers/hooks';
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { auth, database } from '../../firebase';
-import { ref } from 'firebase/database';
+import { push, ref, set } from 'firebase/database';
 import { useValue } from '../../firebase/hooks';
 import currencies from '../../constants/currencies.json';
 import { useSelector } from 'react-redux';
@@ -18,7 +18,21 @@ import * as s from './styled';
 import Modal from '../../components/Modal';
 import Field from '../../components/Field';
 import { CurrencySelector } from '../../components/CurrencySelector';
+import { ICapitalState, IField } from '../../firebase/types';
 
+const initCapitalConfig = (userId: string) => {
+  const initialState: ICapitalState = {
+    config: {
+      basicCurrency: 'USD',
+      fields: {}
+    },
+    reports: {}
+  }
+  set(
+    ref(database, 'capitals/' + userId),
+    initialState
+  )
+}
 type Props = {
   tabs: Option[];
   activeTab: string;
@@ -60,10 +74,6 @@ function MyCapital() {
   const [currencyError, setCurrencyError] = useState('');
   const [fieldList, setFieldList] = useState([]);
 
-  console.log(auth);
-
-  console.log(user);
-
   const capitalRef = useMemo(
     () => ref(database, 'capitals/' + user._id),
     [user]
@@ -90,13 +100,14 @@ function MyCapital() {
 
   const onSubmit = () => {
     const newField = {
-      title: title,
+      name: title,
       currency: currencyForField,
     };
 
+
     if (title && currencyForField) {
       // onSave(title, currencyCode);
-      setFieldList((prevFieldList) => [...prevFieldList, newField]);
+      onAddField(newField)
       reset();
     }
     if (!title) {
@@ -112,7 +123,39 @@ function MyCapital() {
     reset();
   };
 
-  const capitalData = useValue(capitalRef);
+  const { value, loading } = useValue<ICapitalState>(capitalRef);
+
+
+  const fields = useMemo(() => {
+    return Object.values(value?.config.fields || {}) || []
+  }, [value])
+
+  console.log(fields);
+  useEffect(() => {
+    if (!loading && !value) {
+      initCapitalConfig(user._id)
+    }
+  }, [loading, value, user])
+
+  const onChangeBasicCurrency = (code: string) => {
+    set(
+      ref(database, 'capitals/' + user._id + '/config/basicCurrency'),
+      code
+    )
+  }
+
+  const onAddField = (field: Omit<IField, 'id'>) => {
+    const fieldsRef = ref(database, 'capitals/' + user._id + '/config/fields')
+    const newFieldRef = push(fieldsRef)
+    set(
+      newFieldRef,
+      {
+        ...field,
+        id: newFieldRef.key,
+      }
+    )
+  }
+
 
   const fieldsModal = () => {
     return (
@@ -134,8 +177,8 @@ function MyCapital() {
           </Field>
           <Field label="Currency" error={currencyError}>
             <CurrencySelector
-              openCurrencySelector={openCurrencySelector}
               currency={currencyForField}
+              onChange={setCurrencyForField}
             />
           </Field>
           <Button variant="primary" onClick={onSubmit} width="100%">
@@ -153,19 +196,27 @@ function MyCapital() {
         <s.SettingsWrapper>
           <s.CurrencyRow>
             <BodyText>Basic currency</BodyText>
-            <s.CurrencySelector onClick={openCurrencySelector}>
-              <s.SelectorValue>
-                <BodyTextHighlight>
-                  {currencies[basicCurrency]?.code || currencies.USD.code}
-                </BodyTextHighlight>
-                <Icons name="chevronDown" />
-              </s.SelectorValue>
-            </s.CurrencySelector>
+            <CurrencySelector
+              onChange={onChangeBasicCurrency}
+              currency={value?.config.basicCurrency}
+              renderControl={(code) => {
+                return (
+                  <s.CurrencySelector>
+                    <s.SelectorValue>
+                      <BodyTextHighlight>
+                        {code}
+                      </BodyTextHighlight>
+                      <Icons name="chevronDown" />
+                    </s.SelectorValue>
+                  </s.CurrencySelector>
+                )
+              }} />
+
           </s.CurrencyRow>
-          {fieldList &&
-            fieldList.map(({ title, currency }) => (
+          {
+            fields.map(({ name, currency }) => (
               <div>
-                <div>{title}</div>
+                <div>{name}</div>
                 <div>{currency}</div>
               </div>
             ))}
@@ -173,7 +224,7 @@ function MyCapital() {
             variant="ghost"
             size={ElementSize.Large}
             onClick={openCapitalModal}
-            // color="rgb(105, 226, 212)"
+          // color="rgb(105, 226, 212)"
           >
             + Add new field
           </Button>

@@ -20,3 +20,22 @@ export const CurrencyPlaceholder = styled.span`
   font-family: Lato, 'Helvetica Neue', Arial, Helvetica, sans-serif;
   color: rgba(34, 36, 38, 0.3);
 `;
+
+export const Actions = styled.div`
+  max-height: 70vh;
+  overflow: auto;
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+`;
+
+export const Action = styled.div`
+  padding: 8px 0;
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 4px;
+`;
+
+export const ActionWrapper = styled.div``;
