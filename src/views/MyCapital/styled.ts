@@ -1,4 +1,3 @@
-import { Input } from 'semantic-ui-react';
 import styled from 'styled-components';
 
 export const Tabs = styled.div`
@@ -38,6 +37,7 @@ export const CurrencyRow = styled.div`
   display: flex;
   justify-content: space-between;
   align-items: center;
+  margin-bottom: 8px;
 `;
 
 export const CurrencySelector = styled.div`
@@ -75,7 +75,6 @@ export const Action = styled.div`
 
 export const ActionWrapper = styled.div``;
 
-
 export const ModalContent = styled.div`
   padding: 16px;
   display: flex;
@@ -83,12 +82,16 @@ export const ModalContent = styled.div`
   gap: 16px;
 `;
 
-export const TitleInput = styled(Input)`
+export const ItemField = styled.div`
   width: 100%;
+  height: 48px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
 `;
 
-export const CurrencyPlaceholder = styled.span`
-  font-family: Lato, 'Helvetica Neue', Arial, Helvetica, sans-serif;
-  color: rgba(34, 36, 38, 0.3);
+export const FieldsList = styled.div`
 `;
 
+export const FieldInfo = styled.div`
+`;

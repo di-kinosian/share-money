@@ -1,13 +1,16 @@
 import styled from 'styled-components';
 
-export const CurrencySelector = styled.div`
+export const CurrencySelector = styled.div<{ invalid: boolean }>`
   height: 40px;
   width: 100%;
   border-radius: 4px;
-  border: 1px solid rgba(34, 36, 38, 0.15);
+  border: 1px solid #eaeaec;
   display: flex;
   align-items: center;
-  padding: 9px 14px;
+  padding: 0 8px;
+  border-color: ${(props) => {
+    return props.invalid ? '#fe7374' : '#eaeaec';
+  }};
 `;
 
 export const SelectorValue = styled.div`
@@ -18,7 +21,8 @@ export const SelectorValue = styled.div`
 
 export const CurrencyPlaceholder = styled.span`
   font-family: Lato, 'Helvetica Neue', Arial, Helvetica, sans-serif;
-  color: rgba(34, 36, 38, 0.3);
+  color: #a6a7ba;
+  font-size: 16px;
 `;
 
 export const Actions = styled.div`

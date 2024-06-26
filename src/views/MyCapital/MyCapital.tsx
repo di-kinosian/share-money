@@ -1,4 +1,4 @@
-import { Button, ElementSize, Option } from '@makhynenko/ui-components';
+import { Button, ElementSize, Input, Option } from '@makhynenko/ui-components';
 import {
   BodyText,
   BodyTextHighlight,
@@ -8,31 +8,28 @@ import {
 } from '../../components/styled';
 import { useModalState, useModals } from '../../helpers/hooks';
 import { useEffect, useMemo, useState } from 'react';
-import { auth, database } from '../../firebase';
+import { database } from '../../firebase';
 import { push, ref, set } from 'firebase/database';
 import { useValue } from '../../firebase/hooks';
-import currencies from '../../constants/currencies.json';
 import { useSelector } from 'react-redux';
 import { Icons } from '@makhynenko/ui-components';
-import * as s from './styled';
 import Modal from '../../components/Modal';
-import Field from '../../components/Field';
 import { CurrencySelector } from '../../components/CurrencySelector';
 import { ICapitalState, IField } from '../../firebase/types';
+import { InputField } from '../../components/InputField';
+import * as s from './styled';
+// import { initCapitalConfig, onAddField, onChangeBasicCurrency } from '../../firebase/capital';
 
 const initCapitalConfig = (userId: string) => {
   const initialState: ICapitalState = {
     config: {
       basicCurrency: 'USD',
-      fields: {}
+      fields: {},
     },
-    reports: {}
-  }
-  set(
-    ref(database, 'capitals/' + userId),
-    initialState
-  )
-}
+    reports: {},
+  };
+  set(ref(database, 'capitals/' + userId), initialState);
+};
 type Props = {
   tabs: Option[];
   activeTab: string;
@@ -59,12 +56,6 @@ const Tabs = ({ tabs, activeTab, onChange }: Props) => {
 
 function MyCapital() {
   const [currencyForField, setCurrencyForField] = useState('');
-  const [basicCurrency, setBasicCurrency] = useState('');
-  const {
-    isOpen: isCurrencySelectorOpen,
-    open: openCurrencySelector,
-    close: closeCurrencySelector,
-  } = useModalState();
 
   const { open } = useModals('addNewSource');
   const user = useSelector((s: any) => s.auth.user);
@@ -72,7 +63,6 @@ function MyCapital() {
   const [title, setTitle] = useState('');
   const [titleError, setTitleError] = useState('');
   const [currencyError, setCurrencyError] = useState('');
-  const [fieldList, setFieldList] = useState([]);
 
   const capitalRef = useMemo(
     () => ref(database, 'capitals/' + user._id),
@@ -104,10 +94,8 @@ function MyCapital() {
       currency: currencyForField,
     };
 
-
     if (title && currencyForField) {
-      // onSave(title, currencyCode);
-      onAddField(newField)
+      onAddField(newField);
       reset();
     }
     if (!title) {
@@ -125,37 +113,28 @@ function MyCapital() {
 
   const { value, loading } = useValue<ICapitalState>(capitalRef);
 
-
   const fields = useMemo(() => {
-    return Object.values(value?.config.fields || {}) || []
-  }, [value])
-
+    return Object.values(value?.config.fields || {}) || [];
+  }, [value]);
   console.log(fields);
   useEffect(() => {
     if (!loading && !value) {
-      initCapitalConfig(user._id)
+      initCapitalConfig(user._id);
     }
-  }, [loading, value, user])
+  }, [loading, value, user]);
 
   const onChangeBasicCurrency = (code: string) => {
-    set(
-      ref(database, 'capitals/' + user._id + '/config/basicCurrency'),
-      code
-    )
-  }
+    set(ref(database, 'capitals/' + user._id + '/config/basicCurrency'), code);
+  };
 
   const onAddField = (field: Omit<IField, 'id'>) => {
-    const fieldsRef = ref(database, 'capitals/' + user._id + '/config/fields')
-    const newFieldRef = push(fieldsRef)
-    set(
-      newFieldRef,
-      {
-        ...field,
-        id: newFieldRef.key,
-      }
-    )
-  }
-
+    const fieldsRef = ref(database, 'capitals/' + user._id + '/config/fields');
+    const newFieldRef = push(fieldsRef);
+    set(newFieldRef, {
+      ...field,
+      id: newFieldRef.key,
+    });
+  };
 
   const fieldsModal = () => {
     return (
@@ -166,22 +145,27 @@ function MyCapital() {
         header="Create new field"
       >
         <s.ModalContent>
-          <Field label="Balance name" error={titleError}>
-            <s.TitleInput
-              type="text"
+          <InputField label="Balance name" errorText={titleError}>
+            <Input
+              size={ElementSize.Large}
               placeholder="Enter balance name"
               value={title}
               onChange={changeTitle}
-              error={Boolean(titleError)}
             />
-          </Field>
-          <Field label="Currency" error={currencyError}>
+          </InputField>
+          <InputField label="Currency" errorText={currencyError}>
             <CurrencySelector
+              currencyError={currencyError}
               currency={currencyForField}
               onChange={setCurrencyForField}
             />
-          </Field>
-          <Button variant="primary" onClick={onSubmit} width="100%">
+          </InputField>
+          <Button
+            variant="primary"
+            onClick={onSubmit}
+            width="100%"
+            size={ElementSize.Large}
+          >
             {/* {data ? 'Save' : 'Create'} */}
             {'Save'}
           </Button>
@@ -203,28 +187,30 @@ function MyCapital() {
                 return (
                   <s.CurrencySelector>
                     <s.SelectorValue>
-                      <BodyTextHighlight>
-                        {code}
-                      </BodyTextHighlight>
+                      <BodyTextHighlight>{code}</BodyTextHighlight>
                       <Icons name="chevronDown" />
                     </s.SelectorValue>
                   </s.CurrencySelector>
-                )
-              }} />
-
+                );
+              }}
+            />
           </s.CurrencyRow>
-          {
-            fields.map(({ name, currency }) => (
-              <div>
-                <div>{name}</div>
-                <div>{currency}</div>
-              </div>
+          <s.FieldsList>
+            {fields.map(({ name, currency }) => (
+              <s.ItemField>
+                <s.FieldInfo>
+                  <BodyText>{name}</BodyText>
+                  <BodyText>{`(${currency})`}</BodyText>
+                </s.FieldInfo>
+                <Icons name="moreVertical" />
+              </s.ItemField>
             ))}
+          </s.FieldsList>
           <Button
             variant="ghost"
             size={ElementSize.Large}
             onClick={openCapitalModal}
-          // color="rgb(105, 226, 212)"
+            // color={"rgb(105, 226, 212)"}\
           >
             + Add new field
           </Button>
@@ -232,15 +218,6 @@ function MyCapital() {
         {fieldsModal()}
       </>
     );
-  };
-
-  const handleSelectCurrency = (code) => {
-    if (isCapitalModalOpen) {
-      setCurrencyForField(currencyForField || code);
-    } else {
-      setBasicCurrency(basicCurrency || code);
-    }
-    closeCurrencySelector();
   };
 
   return (
@@ -258,23 +235,6 @@ function MyCapital() {
         onChange={setActiveTab}
       />
       {activeTab === 'setting' ? renderSettingsContent() : null}
-      <Modal
-        isOpen={isCurrencySelectorOpen}
-        onClose={closeCurrencySelector}
-        header="Select currency"
-      >
-        <s.Actions>
-          {Object.values(currencies).map(({ code, name, symbol }) => (
-            <s.ActionWrapper key={code}>
-              <s.Action onClick={() => handleSelectCurrency(code)}>
-                <BodyText>{name}</BodyText>
-                <BodyTextHighlight>{symbol}</BodyTextHighlight>
-              </s.Action>
-              <HorisontalSeparator />
-            </s.ActionWrapper>
-          ))}
-        </s.Actions>
-      </Modal>
     </>
   );
 }
