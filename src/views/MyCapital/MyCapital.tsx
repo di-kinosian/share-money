@@ -6,6 +6,9 @@ import {
   H5,
   HorisontalSeparator,
 } from '../../components/styled';
+import { useForm } from 'react-hook-form';
+import { yupResolver } from '@hookform/resolvers/yup';
+import * as Yup from 'yup';
 import { useModalState, useModals } from '../../helpers/hooks';
 import { useEffect, useMemo, useState } from 'react';
 import { database } from '../../firebase';
@@ -18,7 +21,6 @@ import { CurrencySelector } from '../../components/CurrencySelector';
 import { ICapitalState, IField } from '../../firebase/types';
 import { InputField } from '../../components/InputField';
 import * as s from './styled';
-// import { initCapitalConfig, onAddField, onChangeBasicCurrency } from '../../firebase/capital';
 
 const initCapitalConfig = (userId: string) => {
   const initialState: ICapitalState = {
@@ -30,6 +32,7 @@ const initCapitalConfig = (userId: string) => {
   };
   set(ref(database, 'capitals/' + userId), initialState);
 };
+
 type Props = {
   tabs: Option[];
   activeTab: string;
@@ -55,24 +58,65 @@ const Tabs = ({ tabs, activeTab, onChange }: Props) => {
 };
 
 function MyCapital() {
-  const [currencyForField, setCurrencyForField] = useState('');
-
-  const { open } = useModals('addNewSource');
   const user = useSelector((s: any) => s.auth.user);
+  const capitalRef = useMemo(
+    () => ref(database, 'capitals/' + user._id),
+    [user]
+  );
+  const { value, loading } = useValue<ICapitalState>(capitalRef);
+
+  const fields = useMemo(() => {
+    return Object.values(value?.config.fields || {}) || [];
+  }, [value]);
+  console.log(fields);
+  useEffect(() => {
+    if (!loading && !value) {
+      initCapitalConfig(user._id);
+    }
+  }, [loading, value, user]);
+
+  const validationSchema = useMemo(() => {
+    return Yup.object().shape(
+      fields.reduce(
+        (acc, item) => ({
+          ...acc,
+          [item.id]: Yup.number()
+            .typeError('The value should be a number')
+            .required('Field is required'),
+        }),
+        {}
+      )
+    );
+  }, [fields]);
+
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm({
+    resolver: yupResolver(validationSchema),
+    defaultValues: {
+      reportFields: fields?.map((field) => ({ [field.id]: '' })),
+    },
+  });
+
+  const [currencyForField, setCurrencyForField] = useState('');
+  const { open } = useModals('addNewSource');
   const [activeTab, setActiveTab] = useState('reports');
   const [title, setTitle] = useState('');
   const [titleError, setTitleError] = useState('');
   const [currencyError, setCurrencyError] = useState('');
 
-  const capitalRef = useMemo(
-    () => ref(database, 'capitals/' + user._id),
-    [user]
-  );
+  const {
+    isOpen: isFieldModalOpen,
+    open: openFieldModal,
+    close: closeFieldModal,
+  } = useModalState();
 
   const {
-    isOpen: isCapitalModalOpen,
-    open: openCapitalModal,
-    close: closeCapitalModal,
+    isOpen: isReportModalOpen,
+    open: openReportModal,
+    close: closeReportModal,
   } = useModalState();
 
   const changeTitle = (event) => {
@@ -85,7 +129,7 @@ function MyCapital() {
     setTitle('');
     setCurrencyError('');
     setCurrencyForField('');
-    closeCapitalModal();
+    closeFieldModal();
   };
 
   const onSubmit = () => {
@@ -106,22 +150,14 @@ function MyCapital() {
     }
   };
 
-  const onCloseModal = () => {
-    closeCapitalModal();
-    reset();
+  const onRepotSubmit = (values) => {
+    console.log(values, 'data');
   };
 
-  const { value, loading } = useValue<ICapitalState>(capitalRef);
-
-  const fields = useMemo(() => {
-    return Object.values(value?.config.fields || {}) || [];
-  }, [value]);
-  console.log(fields);
-  useEffect(() => {
-    if (!loading && !value) {
-      initCapitalConfig(user._id);
-    }
-  }, [loading, value, user]);
+  const onCloseModal = () => {
+    closeFieldModal();
+    reset();
+  };
 
   const onChangeBasicCurrency = (code: string) => {
     set(ref(database, 'capitals/' + user._id + '/config/basicCurrency'), code);
@@ -136,12 +172,88 @@ function MyCapital() {
     });
   };
 
-  const fieldsModal = () => {
+  const basicCurrency = (title: string) => {
+    return (
+      <Flex justify="space-between" align="center">
+        <BodyText>{title}</BodyText>
+        <CurrencySelector
+          onChange={onChangeBasicCurrency}
+          currency={value?.config.basicCurrency}
+          renderControl={(code) => {
+            return (
+              <s.CurrencySelector>
+                <s.SelectorValue>
+                  <BodyTextHighlight>{code}</BodyTextHighlight>
+                  <Icons name="chevronDown" />
+                </s.SelectorValue>
+              </s.CurrencySelector>
+            );
+          }}
+        />
+      </Flex>
+    );
+  };
+
+  const reportModal = () => {
+    return (
+      <Modal
+        isOpen={isReportModalOpen}
+        onClose={closeReportModal}
+        header="Add report"
+      >
+        <s.ModalContent>
+          <Flex justify="space-between" align="center">
+            <BodyText>Currency:</BodyText>
+            <BodyTextHighlight>{value?.config.basicCurrency}</BodyTextHighlight>
+          </Flex>
+          <form onSubmit={handleSubmit(onRepotSubmit)}>
+            <Flex direction="column" gap="16px">
+              <InputField label="Fields">
+                <s.ReportFields>
+                  {fields.length &&
+                    fields.map((item) => (
+                      <s.DetailsCard key={item.id}>
+                        <BodyTextHighlight>{item.name}</BodyTextHighlight>
+                        <Flex
+                          justify="space-between"
+                          direction="row"
+                          align="center"
+                        >
+                          <BodyText>amount</BodyText>
+                          <Flex align="center" gap="8px">
+                            <Input
+                              placeholder="number"
+                              width="100px"
+                              {...register(item.id as never)}
+                              invalid={Boolean(errors[item.id])}
+                            />
+                            <BodyText>{item.currency}</BodyText>
+                          </Flex>
+                        </Flex>
+                        {errors && (
+                          <BodyText color="red">
+                            {errors[item.id]?.message}
+                          </BodyText>
+                        )}
+                      </s.DetailsCard>
+                    ))}
+                </s.ReportFields>
+              </InputField>
+              <Button variant="primary" size={ElementSize.Large} width="100%">
+                Submit
+              </Button>
+            </Flex>
+          </form>
+        </s.ModalContent>
+      </Modal>
+    );
+  };
+
+  const fieldModal = () => {
     return (
       <Modal
         onClose={onCloseModal}
-        isOpen={isCapitalModalOpen}
-        // header={data ? 'Edit balance' : 'Create new balance'}
+        isOpen={isFieldModalOpen}
         header="Create new field"
       >
         <s.ModalContent>
@@ -166,7 +278,6 @@ function MyCapital() {
             width="100%"
             size={ElementSize.Large}
           >
-            {/* {data ? 'Save' : 'Create'} */}
             {'Save'}
           </Button>
         </s.ModalContent>
@@ -177,24 +288,8 @@ function MyCapital() {
   const renderSettingsContent = () => {
     return (
       <>
-        <s.SettingsWrapper>
-          <s.CurrencyRow>
-            <BodyText>Basic currency</BodyText>
-            <CurrencySelector
-              onChange={onChangeBasicCurrency}
-              currency={value?.config.basicCurrency}
-              renderControl={(code) => {
-                return (
-                  <s.CurrencySelector>
-                    <s.SelectorValue>
-                      <BodyTextHighlight>{code}</BodyTextHighlight>
-                      <Icons name="chevronDown" />
-                    </s.SelectorValue>
-                  </s.CurrencySelector>
-                );
-              }}
-            />
-          </s.CurrencyRow>
+        <s.PageWrapper>
+          {basicCurrency('Basic currency')}
           <s.FieldsList>
             {fields.map(({ name, currency }) => (
               <s.ItemField>
@@ -209,13 +304,30 @@ function MyCapital() {
           <Button
             variant="ghost"
             size={ElementSize.Large}
-            onClick={openCapitalModal}
+            onClick={openFieldModal}
             // color={"rgb(105, 226, 212)"}\
           >
             + Add new field
           </Button>
-        </s.SettingsWrapper>
-        {fieldsModal()}
+        </s.PageWrapper>
+        {fieldModal()}
+      </>
+    );
+  };
+
+  const renderReportsContent = () => {
+    return (
+      <>
+        <s.PageWrapper>
+          <Button
+            variant="ghost"
+            size={ElementSize.Large}
+            onClick={openReportModal}
+          >
+            + Add new report
+          </Button>
+        </s.PageWrapper>
+        {reportModal()}
       </>
     );
   };
@@ -234,7 +346,9 @@ function MyCapital() {
         activeTab={activeTab}
         onChange={setActiveTab}
       />
-      {activeTab === 'setting' ? renderSettingsContent() : null}
+      {activeTab === 'setting'
+        ? renderSettingsContent()
+        : renderReportsContent()}
     </>
   );
 }

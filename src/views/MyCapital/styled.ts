@@ -24,20 +24,13 @@ export const Tab = styled.div`
   }
 `;
 
-export const SettingsWrapper = styled.div`
+export const PageWrapper = styled.div`
   padding: 16px;
 
   button {
     font-weight: bold;
     font-size: 18px;
   }
-`;
-
-export const CurrencyRow = styled.div`
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 8px;
 `;
 
 export const CurrencySelector = styled.div`
@@ -91,7 +84,22 @@ export const ItemField = styled.div`
 `;
 
 export const FieldsList = styled.div`
+  margin-top: 8px;
 `;
 
-export const FieldInfo = styled.div`
+export const FieldInfo = styled.div``;
+
+//ReportModal
+export const ReportFields = styled.div`
+  display: flex;
+  flex-direction: row;
+  gap: 8px;
+  overflow: auto;
+`;
+
+export const DetailsCard = styled.div`
+  border: 1px solid #d8d8d8;
+  border-radius: 4px;
+  padding: 16px;
+  min-width: 80%;
 `;
