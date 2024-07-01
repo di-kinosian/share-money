@@ -47,10 +47,10 @@ interface IReport {
   date: string;
   currency: string;
   totalAmount: number;
-  fieldAmounts: Map<number>
+  fieldAmounts: Map<number>;
 }
 
-interface IField {
+export interface IField {
   id: string;
   currency: string;
   name: string;
@@ -69,5 +69,17 @@ export interface ICapitalState {
 export interface IDataBase {
   users: Map<IUserState>;
   balances: Map<IBalanceState>;
-  capitals: Map<IBalanceState>
+  capitals: Map<IBalanceState>;
 }
+
+export type Currency = {
+  symbol: string;
+  name: string;
+  symbol_native: string;
+  decimal_digits: number;
+  rounding: number;
+  code: string;
+  name_plural: string;
+};
+
+export type Currencies = Record<string, Currency>;

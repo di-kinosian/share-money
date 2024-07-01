@@ -1,4 +1,4 @@
-import { Button, ElementSize, Option } from '@makhynenko/ui-components';
+import { Button, ElementSize, Input, Option } from '@makhynenko/ui-components';
 import {
   BodyText,
   BodyTextHighlight,
@@ -6,18 +6,32 @@ import {
   H5,
   HorisontalSeparator,
 } from '../../components/styled';
+import { useForm } from 'react-hook-form';
+import { yupResolver } from '@hookform/resolvers/yup';
+import * as Yup from 'yup';
 import { useModalState, useModals } from '../../helpers/hooks';
-import { useMemo, useState } from 'react';
-import { auth, database } from '../../firebase';
-import { ref } from 'firebase/database';
+import { useEffect, useMemo, useState } from 'react';
+import { database } from '../../firebase';
+import { push, ref, set } from 'firebase/database';
 import { useValue } from '../../firebase/hooks';
-import currencies from '../../constants/currencies.json';
 import { useSelector } from 'react-redux';
 import { Icons } from '@makhynenko/ui-components';
-import * as s from './styled';
 import Modal from '../../components/Modal';
-import Field from '../../components/Field';
 import { CurrencySelector } from '../../components/CurrencySelector';
+import { ICapitalState, IField } from '../../firebase/types';
+import { InputField } from '../../components/InputField';
+import * as s from './styled';
+
+const initCapitalConfig = (userId: string) => {
+  const initialState: ICapitalState = {
+    config: {
+      basicCurrency: 'USD',
+      fields: {},
+    },
+    reports: {},
+  };
+  set(ref(database, 'capitals/' + userId), initialState);
+};
 
 type Props = {
   tabs: Option[];
@@ -44,35 +58,65 @@ const Tabs = ({ tabs, activeTab, onChange }: Props) => {
 };
 
 function MyCapital() {
-  const [currencyForField, setCurrencyForField] = useState('');
-  const [basicCurrency, setBasicCurrency] = useState('');
-  const {
-    isOpen: isCurrencySelectorOpen,
-    open: openCurrencySelector,
-    close: closeCurrencySelector,
-  } = useModalState();
-
-  const { open } = useModals('addNewSource');
   const user = useSelector((s: any) => s.auth.user);
-  const [activeTab, setActiveTab] = useState('reports');
-  const [title, setTitle] = useState('');
-  const [titleError, setTitleError] = useState('');
-  const [currencyError, setCurrencyError] = useState('');
-  const [fieldList, setFieldList] = useState([]);
-
-  console.log(auth);
-
-  console.log(user);
-
   const capitalRef = useMemo(
     () => ref(database, 'capitals/' + user._id),
     [user]
   );
+  const { value, loading } = useValue<ICapitalState>(capitalRef);
+
+  const fields = useMemo(() => {
+    return Object.values(value?.config.fields || {}) || [];
+  }, [value]);
+
+  useEffect(() => {
+    if (!loading && !value) {
+      initCapitalConfig(user._id);
+    }
+  }, [loading, value, user]);
+
+  const validationSchema = useMemo(() => {
+    return Yup.object().shape(
+      fields.reduce(
+        (acc, item) => ({
+          ...acc,
+          [item.id]: Yup.number()
+            .typeError('The value should be a number')
+            .required('Field is required'),
+        }),
+        {}
+      )
+    );
+  }, [fields]);
 
   const {
-    isOpen: isCapitalModalOpen,
-    open: openCapitalModal,
-    close: closeCapitalModal,
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm({
+    resolver: yupResolver(validationSchema),
+    defaultValues: {
+      reportFields: fields?.map((field) => ({ [field.id]: '' })),
+    },
+  });
+
+  const [currencyForField, setCurrencyForField] = useState('');
+  const { open } = useModals('addNewSource');
+  const [activeTab, setActiveTab] = useState('reports');
+  const [title, setTitle] = useState('');
+  const [titleError, setTitleError] = useState('');
+  const [currencyError, setCurrencyError] = useState('');
+
+  const {
+    isOpen: isFieldModalOpen,
+    open: openFieldModal,
+    close: closeFieldModal,
+  } = useModalState();
+
+  const {
+    isOpen: isReportModalOpen,
+    open: openReportModal,
+    close: closeReportModal,
   } = useModalState();
 
   const changeTitle = (event) => {
@@ -85,18 +129,17 @@ function MyCapital() {
     setTitle('');
     setCurrencyError('');
     setCurrencyForField('');
-    closeCapitalModal();
+    closeFieldModal();
   };
 
   const onSubmit = () => {
     const newField = {
-      title: title,
+      name: title,
       currency: currencyForField,
     };
 
     if (title && currencyForField) {
-      // onSave(title, currencyCode);
-      setFieldList((prevFieldList) => [...prevFieldList, newField]);
+      onAddField(newField);
       reset();
     }
     if (!title) {
@@ -107,39 +150,132 @@ function MyCapital() {
     }
   };
 
+  const onRepotSubmit = (values) => {};
+
   const onCloseModal = () => {
-    closeCapitalModal();
+    closeFieldModal();
     reset();
   };
 
-  const capitalData = useValue(capitalRef);
+  const onChangeBasicCurrency = (code: string) => {
+    set(ref(database, 'capitals/' + user._id + '/config/basicCurrency'), code);
+  };
 
-  const fieldsModal = () => {
+  const onAddField = (field: Omit<IField, 'id'>) => {
+    const fieldsRef = ref(database, 'capitals/' + user._id + '/config/fields');
+    const newFieldRef = push(fieldsRef);
+    set(newFieldRef, {
+      ...field,
+      id: newFieldRef.key,
+    });
+  };
+
+  const basicCurrency = (title: string) => {
+    return (
+      <Flex justify="space-between" align="center">
+        <BodyText>{title}</BodyText>
+        <CurrencySelector
+          onChange={onChangeBasicCurrency}
+          currency={value?.config.basicCurrency}
+          renderControl={(code) => {
+            return (
+              <s.CurrencySelector>
+                <s.SelectorValue>
+                  <BodyTextHighlight>{code}</BodyTextHighlight>
+                  <Icons name="chevronDown" />
+                </s.SelectorValue>
+              </s.CurrencySelector>
+            );
+          }}
+        />
+      </Flex>
+    );
+  };
+
+  const reportModal = () => {
+    return (
+      <Modal
+        isOpen={isReportModalOpen}
+        onClose={closeReportModal}
+        header="Add report"
+      >
+        <s.ModalContent>
+          <Flex justify="space-between" align="center">
+            <BodyText>Currency:</BodyText>
+            <BodyTextHighlight>{value?.config.basicCurrency}</BodyTextHighlight>
+          </Flex>
+          <form onSubmit={handleSubmit(onRepotSubmit)}>
+            <Flex direction="column" gap="16px">
+              <InputField label="Fields">
+                <s.ReportFields>
+                  {fields.length &&
+                    fields.map((item) => (
+                      <s.DetailsCard key={item.id}>
+                        <BodyTextHighlight>{item.name}</BodyTextHighlight>
+                        <Flex
+                          justify="space-between"
+                          direction="row"
+                          align="center"
+                        >
+                          <BodyText>amount</BodyText>
+                          <Flex align="center" gap="8px">
+                            <Input
+                              placeholder="number"
+                              width="100px"
+                              {...register(item.id as never)}
+                              invalid={Boolean(errors[item.id])}
+                            />
+                            <BodyText>{item.currency}</BodyText>
+                          </Flex>
+                        </Flex>
+                        {errors && (
+                          <BodyText color="red">
+                            {errors[item.id]?.message}
+                          </BodyText>
+                        )}
+                      </s.DetailsCard>
+                    ))}
+                </s.ReportFields>
+              </InputField>
+              <Button variant="primary" size={ElementSize.Large} width="100%">
+                Submit
+              </Button>
+            </Flex>
+          </form>
+        </s.ModalContent>
+      </Modal>
+    );
+  };
+
+  const fieldModal = () => {
     return (
       <Modal
         onClose={onCloseModal}
-        isOpen={isCapitalModalOpen}
-        // header={data ? 'Edit balance' : 'Create new balance'}
+        isOpen={isFieldModalOpen}
         header="Create new field"
       >
         <s.ModalContent>
-          <Field label="Balance name" error={titleError}>
-            <s.TitleInput
-              type="text"
+          <InputField label="Balance name" errorText={titleError}>
+            <Input
+              size={ElementSize.Large}
               placeholder="Enter balance name"
               value={title}
               onChange={changeTitle}
-              error={Boolean(titleError)}
             />
-          </Field>
-          <Field label="Currency" error={currencyError}>
+          </InputField>
+          <InputField label="Currency" errorText={currencyError}>
             <CurrencySelector
-              openCurrencySelector={openCurrencySelector}
+              error={currencyError}
               currency={currencyForField}
+              onChange={setCurrencyForField}
             />
-          </Field>
-          <Button variant="primary" onClick={onSubmit} width="100%">
-            {/* {data ? 'Save' : 'Create'} */}
+          </InputField>
+          <Button
+            variant="primary"
+            onClick={onSubmit}
+            width="100%"
+            size={ElementSize.Large}
+          >
             {'Save'}
           </Button>
         </s.ModalContent>
@@ -150,46 +286,48 @@ function MyCapital() {
   const renderSettingsContent = () => {
     return (
       <>
-        <s.SettingsWrapper>
-          <s.CurrencyRow>
-            <BodyText>Basic currency</BodyText>
-            <s.CurrencySelector onClick={openCurrencySelector}>
-              <s.SelectorValue>
-                <BodyTextHighlight>
-                  {currencies[basicCurrency]?.code || currencies.USD.code}
-                </BodyTextHighlight>
-                <Icons name="chevronDown" />
-              </s.SelectorValue>
-            </s.CurrencySelector>
-          </s.CurrencyRow>
-          {fieldList &&
-            fieldList.map(({ title, currency }) => (
-              <div>
-                <div>{title}</div>
-                <div>{currency}</div>
-              </div>
+        <s.PageWrapper>
+          {basicCurrency('Basic currency')}
+          <s.FieldsList>
+            {fields.map(({ name, currency }) => (
+              <s.ItemField>
+                <s.FieldInfo>
+                  <BodyText>{name}</BodyText>
+                  <BodyText>{`(${currency})`}</BodyText>
+                </s.FieldInfo>
+                <Icons name="moreVertical" />
+              </s.ItemField>
             ))}
+          </s.FieldsList>
           <Button
             variant="ghost"
             size={ElementSize.Large}
-            onClick={openCapitalModal}
-            // color="rgb(105, 226, 212)"
+            onClick={openFieldModal}
+            // color={"rgb(105, 226, 212)"}\
           >
             + Add new field
           </Button>
-        </s.SettingsWrapper>
-        {fieldsModal()}
+        </s.PageWrapper>
+        {fieldModal()}
       </>
     );
   };
 
-  const handleSelectCurrency = (code) => {
-    if (isCapitalModalOpen) {
-      setCurrencyForField(currencyForField || code);
-    } else {
-      setBasicCurrency(basicCurrency || code);
-    }
-    closeCurrencySelector();
+  const renderReportsContent = () => {
+    return (
+      <>
+        <s.PageWrapper>
+          <Button
+            variant="ghost"
+            size={ElementSize.Large}
+            onClick={openReportModal}
+          >
+            + Add new report
+          </Button>
+        </s.PageWrapper>
+        {reportModal()}
+      </>
+    );
   };
 
   return (
@@ -206,24 +344,9 @@ function MyCapital() {
         activeTab={activeTab}
         onChange={setActiveTab}
       />
-      {activeTab === 'setting' ? renderSettingsContent() : null}
-      <Modal
-        isOpen={isCurrencySelectorOpen}
-        onClose={closeCurrencySelector}
-        header="Select currency"
-      >
-        <s.Actions>
-          {Object.values(currencies).map(({ code, name, symbol }) => (
-            <s.ActionWrapper key={code}>
-              <s.Action onClick={() => handleSelectCurrency(code)}>
-                <BodyText>{name}</BodyText>
-                <BodyTextHighlight>{symbol}</BodyTextHighlight>
-              </s.Action>
-              <HorisontalSeparator />
-            </s.ActionWrapper>
-          ))}
-        </s.Actions>
-      </Modal>
+      {activeTab === 'setting'
+        ? renderSettingsContent()
+        : renderReportsContent()}
     </>
   );
 }

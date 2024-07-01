@@ -1,4 +1,4 @@
-import { useState, useMemo, useRef } from 'react';
+import { useState, useMemo } from 'react';
 import HistoryItem from './HistoryItem';
 import { Icon, Loader } from 'semantic-ui-react';
 import { useList, useMultipleValues, useValue } from '../../../firebase/hooks';
@@ -33,11 +33,11 @@ import {
 import { groupBy } from '../../../helpers/data';
 import moment from 'moment';
 import Field from '../../../components/Field';
-import { Icons } from '@makhynenko/ui-components';
 import { formatMoney } from '../../../helpers/money';
 import TransactionWidget from '../TransactionWidget';
 import { ITransaction } from '../types';
 import { useParams } from 'react-router-dom';
+import { SearchInput } from '../../../components/SearchInput';
 
 interface IProps {
   balanceId: string;
@@ -168,7 +168,6 @@ const NoSearchResult = () => {
 };
 
 function History(props: IProps) {
-  const ref = useRef<HTMLInputElement>();
   const balanceHistoryRef = useMemo(
     () => getBalanceHistoryRef(props.balanceId),
     [props.balanceId]
@@ -206,7 +205,6 @@ function History(props: IProps) {
     [selectedTransactionId, list]
   );
   const [searchValue, setSearchValue] = useState<string>('');
-  const [isSearchOpen, setIsSearchOpen] = useState<boolean>(false);
 
   const filteredList = useMemo(
     () =>
@@ -230,29 +228,6 @@ function History(props: IProps) {
     props.onDeleteTransaction(selectedTransaction);
     closeDelete();
     closeTransaction();
-  };
-
-  const handleSearchClick = () => {
-    setIsSearchOpen(true);
-    if (ref.current && !isSearchOpen) {
-      ref.current.focus();
-    }
-  };
-
-  const handleCloseSearchClick = () => {
-    setIsSearchOpen(false);
-    setSearchValue('');
-  };
-
-  const handleSearchBlur = (e) => {
-    if (e.target.value.length === 0) {
-      setIsSearchOpen(false);
-      setSearchValue('');
-    }
-  };
-
-  const handleSearchChange = (e) => {
-    setSearchValue(e.target.value);
   };
 
   const renderTransactions = () => {
@@ -288,24 +263,10 @@ function History(props: IProps) {
     return transactionGroups.length || searchValue ? (
       <>
         <s.SearchLayout>
-          <s.SearchWrapper
-            onClick={handleSearchClick}
-            $isSearchOpen={isSearchOpen}
-          >
-            <s.SearchInput
-              value={searchValue}
-              type="text"
-              placeholder="Search"
-              onChange={handleSearchChange}
-              onBlur={handleSearchBlur}
-              ref={ref}
-            />
-            {isSearchOpen ? (
-              <Icons name="cross" size={20} onClick={handleCloseSearchClick} />
-            ) : (
-              <Icons name="search" size={20} />
-            )}
-          </s.SearchWrapper>
+          <SearchInput
+            setSearchValue={setSearchValue}
+            searchValue={searchValue}
+          />
         </s.SearchLayout>
         {renderTransactions()}
       </>
