@@ -69,4 +69,6 @@ export const CloseIcon = styled.div`
 export const ModalHeader = styled.div`
   padding: 16px;
   border-bottom: 1px solid #d8d8d8;
+  display: flex;
+  align-items: center;
 `

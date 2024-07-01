@@ -3,7 +3,9 @@ import currencies from '../../constants/currencies.json';
 import * as s from './styled';
 import Modal from '../Modal';
 import { useModalState } from '../../helpers/hooks';
-import { ReactNode } from 'react';
+import { ReactNode, useMemo, useState } from 'react';
+import { SearchInput } from '../SearchInput';
+import { Currencies } from '../../firebase/types';
 
 type CurrencySelectorProps = {
   currency?: string;
@@ -24,6 +26,8 @@ export const CurrencySelector = ({
     close();
   };
 
+  const [searchValue, setSearchValue] = useState<string>('');
+
   const renderDefaultControl = () => {
     return (
       <s.CurrencySelector invalid={Boolean(currencyError)}>
@@ -41,6 +45,34 @@ export const CurrencySelector = ({
     );
   };
 
+  const filteredList = useMemo(
+    () =>
+      searchValue
+        ? Object.values(currencies).filter(
+            (curr) =>
+              curr.code.toUpperCase().includes(searchValue.toUpperCase()) ||
+              curr.name.toUpperCase().includes(searchValue.toUpperCase())
+          )
+        : Object.values(currencies),
+    [searchValue]
+  );
+
+  const renderCurrenciesList = (list: Currencies | {}) => {
+    return (
+      <>
+        {Object.values(list).map(({ code, name, symbol }) => (
+          <s.ActionWrapper key={code}>
+            <s.Action onClick={() => handleSelectCurrency(code)}>
+              <BodyText>{name}</BodyText>
+              <BodyTextHighlight>{symbol}</BodyTextHighlight>
+            </s.Action>
+            <HorisontalSeparator />
+          </s.ActionWrapper>
+        ))}
+      </>
+    );
+  };
+
   return (
     <>
       <div onClick={open}>
@@ -48,17 +80,20 @@ export const CurrencySelector = ({
           ? renderControl(currency)
           : renderDefaultControl()}
       </div>
-      <Modal isOpen={isOpen} onClose={close} header="Select currency">
+      <Modal
+        isOpen={isOpen}
+        onClose={close}
+        header="Select currency"
+        searchInput={
+          <SearchInput
+            isTop={true}
+            setSearchValue={setSearchValue}
+            searchValue={searchValue}
+          />
+        }
+      >
         <s.Actions>
-          {Object.values(currencies).map(({ code, name, symbol }) => (
-            <s.ActionWrapper key={code}>
-              <s.Action onClick={() => handleSelectCurrency(code)}>
-                <BodyText>{name}</BodyText>
-                <BodyTextHighlight>{symbol}</BodyTextHighlight>
-              </s.Action>
-              <HorisontalSeparator />
-            </s.ActionWrapper>
-          ))}
+          {renderCurrenciesList(filteredList)}
         </s.Actions>
       </Modal>
     </>

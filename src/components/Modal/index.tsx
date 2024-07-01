@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import ReactDOM from 'react-dom';
 import * as s from './styled';
-import { FC } from 'react';
+import { FC, ReactNode } from 'react';
 import { H4, OverlayStyled } from '../styled';
 
 interface IProps {
@@ -10,6 +10,7 @@ interface IProps {
   onCloseEnd?: () => void;
   zIndex?: number;
   header?: string;
+  searchInput?: ReactNode;
 }
 
 const Modal: FC<IProps> = ({
@@ -19,6 +20,7 @@ const Modal: FC<IProps> = ({
   onCloseEnd,
   zIndex,
   header,
+  searchInput,
 }) => {
   const [isOpeningAnimation, setIsOpeningAnimation] = useState(null);
   const [isModalOpen, setModalOpen] = useState(isOpen);
@@ -54,6 +56,7 @@ const Modal: FC<IProps> = ({
             {header && (
               <s.ModalHeader>
                 <H4>{header}</H4>
+                {searchInput && searchInput}
               </s.ModalHeader>
             )}
             {children}
