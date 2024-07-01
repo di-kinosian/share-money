@@ -9,14 +9,14 @@ import { Currencies } from '../../firebase/types';
 
 type CurrencySelectorProps = {
   currency?: string;
-  currencyError?: string;
+  error?: string;
   onChange: (currency: string) => void;
   renderControl?: (currency?: string) => ReactNode;
 };
 
 export const CurrencySelector = ({
   currency,
-  currencyError,
+  error,
   onChange,
   renderControl,
 }: CurrencySelectorProps) => {
@@ -30,7 +30,7 @@ export const CurrencySelector = ({
 
   const renderDefaultControl = () => {
     return (
-      <s.CurrencySelector invalid={Boolean(currencyError)}>
+      <s.CurrencySelector invalid={Boolean(error)}>
         {currency ? (
           <s.SelectorValue>
             <BodyText>{currencies[currency]?.name}</BodyText>
@@ -92,9 +92,7 @@ export const CurrencySelector = ({
           />
         }
       >
-        <s.Actions>
-          {renderCurrenciesList(filteredList)}
-        </s.Actions>
+        <s.Actions>{renderCurrenciesList(filteredList)}</s.Actions>
       </Modal>
     </>
   );

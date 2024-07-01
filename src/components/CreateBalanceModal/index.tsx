@@ -23,7 +23,7 @@ const CreateBalanceModal: FC<ICreateBalanceModalProps> = ({
   const [title, setTitle] = useState('');
   const [currencyCode, setCurrencyCode] = useState('');
   const [titleError, setTitleError] = useState('');
-  const [currencyError, setCurrencyError] = useState('');
+  const [error, setError] = useState('');
 
   useEffect(() => {
     if (data) {
@@ -41,7 +41,7 @@ const CreateBalanceModal: FC<ICreateBalanceModalProps> = ({
     setTitleError('');
     setTitle('');
     setCurrencyCode('');
-    setCurrencyError('');
+    setError('');
   };
 
   const onSubmit = () => {
@@ -53,7 +53,7 @@ const CreateBalanceModal: FC<ICreateBalanceModalProps> = ({
       setTitleError('Name is required');
     }
     if (!currencyCode) {
-      setCurrencyError('Currency is required');
+      setError('Currency is required');
     }
   };
 
@@ -78,10 +78,10 @@ const CreateBalanceModal: FC<ICreateBalanceModalProps> = ({
             invalid={Boolean(titleError)}
           />
         </InputField>
-        <InputField label="Currency" errorText={currencyError}>
+        <InputField label="Currency" errorText={error}>
           <CurrencySelector
             currency={currencyCode}
-            currencyError={currencyError}
+            error={error}
             onChange={setCurrencyCode}
           />
         </InputField>

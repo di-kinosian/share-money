@@ -68,7 +68,7 @@ function MyCapital() {
   const fields = useMemo(() => {
     return Object.values(value?.config.fields || {}) || [];
   }, [value]);
-  console.log(fields);
+
   useEffect(() => {
     if (!loading && !value) {
       initCapitalConfig(user._id);
@@ -150,9 +150,7 @@ function MyCapital() {
     }
   };
 
-  const onRepotSubmit = (values) => {
-    console.log(values, 'data');
-  };
+  const onRepotSubmit = (values) => {};
 
   const onCloseModal = () => {
     closeFieldModal();
@@ -267,7 +265,7 @@ function MyCapital() {
           </InputField>
           <InputField label="Currency" errorText={currencyError}>
             <CurrencySelector
-              currencyError={currencyError}
+              error={currencyError}
               currency={currencyForField}
               onChange={setCurrencyForField}
             />
